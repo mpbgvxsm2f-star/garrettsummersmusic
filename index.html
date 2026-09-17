@@ -69,7 +69,7 @@
   }
 
   *{box-sizing:border-box;}
-  html,body{margin:0;}
+  html,body{margin:0; overscroll-behavior-x:none;}
   body{
     background:var(--ground);
     color:var(--ink);
@@ -193,6 +193,7 @@
     display:flex;
     flex-direction:column;
     gap:10px;
+    transition:background 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease;
   }
   h1{
     font-family:var(--serif);
@@ -213,6 +214,97 @@
   /* Anything with this class becomes the page heading when clicked */
   .promotable{cursor:pointer; transition:color 0.2s ease;}
   .promotable:hover{color:var(--brass);}
+
+  /* Promoted state: on desktop the hero pins to the top of the screen so
+     whatever was clicked stays part of the view while the rest scrolls.
+     Clicking the pinned heading again, or swiping left anywhere, returns
+     to the default "Garrett Summers" hero. */
+  @media (min-width:861px){
+    header.hero.promo-pinned{
+      position:sticky;
+      top:0;
+      z-index:8;
+      margin-top:0;
+      padding:16px 0 18px;
+      background:var(--panel-bg);
+      backdrop-filter:blur(10px);
+      -webkit-backdrop-filter:blur(10px);
+      border-bottom:1px solid var(--line);
+      box-shadow:0 12px 30px rgba(0,0,0,0.25);
+    }
+  }
+  header.hero.promo-pinned .tagline,
+  header.hero.promo-pinned .scroll-cue{
+    display:none;
+  }
+  header.hero.promo-pinned h1,
+  .promo-tile{
+    cursor:pointer;
+  }
+  header.hero.promo-pinned:not(.promo-collage-active) h1::after{
+    content:"\2715  tap to reset";
+    display:block;
+    font-family:var(--mono);
+    font-size:0.6rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--ink-dim);
+    margin-top:6px;
+  }
+
+  /* Two-click "collage": the previous pick sits dimmed and offset behind
+     the newest pick, like the background gallery's photo collages. A
+     third click always resets to a single fresh heading. */
+  .promo-collage{
+    display:none;
+    position:relative;
+    min-height:clamp(4.6rem, 15vw, 7.4rem);
+    padding-bottom:26px;
+    cursor:pointer;
+  }
+  @media (max-width:560px){
+    .promo-collage{min-height:9.2rem;}
+    .promo-tile-a{font-size:1.3rem;}
+    .promo-tile-b{font-size:1.9rem;}
+  }
+  header.hero.promo-collage-active h1{display:none;}
+  header.hero.promo-collage-active .promo-collage{display:block;}
+  .promo-tile{
+    position:absolute;
+    left:0;
+    max-width:94%;
+    font-family:var(--serif);
+    font-weight:600;
+    line-height:1.02;
+    text-wrap:balance;
+  }
+  .promo-tile-a{
+    top:0;
+    font-size:clamp(1.5rem, 5.5vw, 2.3rem);
+    opacity:0.5;
+    color:var(--ink-dim);
+    transform:translate(22px, 14px) rotate(-3deg);
+    z-index:1;
+  }
+  .promo-tile-b{
+    top:0;
+    font-size:clamp(2.1rem, 7.5vw, 3.4rem);
+    color:var(--ink);
+    transform:translate(0,0) rotate(1.5deg);
+    z-index:2;
+    text-shadow:0 2px 18px rgba(0,0,0,0.5);
+  }
+  .promo-collage::after{
+    content:"\2715  tap or swipe left to reset";
+    position:absolute;
+    left:0;
+    bottom:0;
+    font-family:var(--mono);
+    font-size:0.6rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--ink-dim);
+  }
   .tagline{
     font-size:1rem;
     color:var(--ink-dim);
@@ -710,6 +802,10 @@
 
   <header class="hero">
     <h1>Garrett Summers</h1>
+    <div class="promo-collage" id="promoCollage">
+      <div class="promo-tile promo-tile-a" id="promoTileA"></div>
+      <div class="promo-tile promo-tile-b" id="promoTileB"></div>
+    </div>
     <p class="tagline">Keyboardist &amp; organist &mdash; <b>Willy on the Wire</b>, supporting <b>Rob Wolf</b>.</p>
     <div class="scroll-cue">Scroll</div>
   </header>
@@ -1155,32 +1251,98 @@
 })();
 </script>
 
-<!-- Every element with .promotable becomes the page's H1 heading when clicked;
-     clicking the H1 itself resets it back to the default title. -->
+<!-- Every element with .promotable feeds a small click cycle in the hero:
+     1st click -> single pinned heading. 2nd click (something else) -> the
+     two picks collage together. 3rd click -> resets and starts over with
+     the newest pick as a fresh single heading. On desktop the hero pins
+     to the top of the screen the moment anything is promoted, so whatever
+     you clicked stays part of the view while you keep scrolling -- no more
+     forced jump back to the top. Click the pinned heading/collage, or
+     swipe left anywhere, to drop back to the default "Garrett Summers". -->
 <script>
 (function(){
-  var h1 = document.querySelector('header.hero h1');
-  if(!h1) return;
+  var header = document.querySelector('header.hero');
+  var h1 = header && header.querySelector('h1');
+  var collage = document.getElementById('promoCollage');
+  var tileA = document.getElementById('promoTileA');
+  var tileB = document.getElementById('promoTileB');
+  if(!header || !h1 || !collage) return;
   var defaultText = h1.textContent;
+  var picks = []; // 0, 1 or 2 entries -- see the cycle described above
+
+  function render(){
+    if(!picks.length){
+      header.classList.remove('promo-pinned', 'promo-collage-active');
+      h1.style.display = '';
+      h1.textContent = defaultText;
+      return;
+    }
+    header.classList.add('promo-pinned');
+    if(picks.length === 1){
+      header.classList.remove('promo-collage-active');
+      h1.style.display = '';
+      h1.textContent = picks[0];
+      h1.classList.remove('promoted');
+      void h1.offsetWidth; // restart the pulse animation on repeat clicks
+      h1.classList.add('promoted');
+    } else {
+      header.classList.add('promo-collage-active');
+      tileA.textContent = picks[0];
+      tileB.textContent = picks[1];
+    }
+  }
 
   function promote(text){
-    h1.textContent = text;
-    h1.classList.remove('promoted');
-    void h1.offsetWidth; // restart the pulse animation on repeat clicks
-    h1.classList.add('promoted');
-    window.scrollTo({top:0, behavior:'smooth'});
+    picks.push(text);
+    if(picks.length > 2) picks = [text]; // 3rd click: reset, newest becomes the heading
+    render();
+  }
+
+  function resetPromotion(){
+    if(!picks.length) return;
+    picks = [];
+    render();
   }
 
   document.addEventListener('click', function(e){
-    if(e.target === h1 || h1.contains(e.target)){
-      promote(defaultText);
+    if(e.target === h1 || collage.contains(e.target)){
+      resetPromotion();
       return;
     }
     var el = e.target.closest('.promotable');
     if(!el) return;
-    var text = el.getAttribute('data-promote') || el.textContent.trim();
-    promote(text);
+    promote(el.getAttribute('data-promote') || el.textContent.trim());
   });
+
+  // Swipe left (trackpad or touch), anywhere on the page, returns to vanilla.
+  var wheelAccumX = 0, wheelLastAt = 0;
+  window.addEventListener('wheel', function(e){
+    if(!picks.length) return;
+    if(Math.abs(e.deltaX) <= Math.abs(e.deltaY)){ wheelAccumX = 0; return; }
+    if(Date.now() - wheelLastAt > 400) wheelAccumX = 0;
+    wheelLastAt = Date.now();
+    wheelAccumX = e.deltaX < 0 ? wheelAccumX - e.deltaX : 0;
+    if(wheelAccumX > 120){
+      resetPromotion();
+      wheelAccumX = 0;
+    }
+  }, {passive:true});
+
+  var swipeStartX = null, swipeStartY = null;
+  window.addEventListener('touchstart', function(e){
+    swipeStartX = e.touches[0].clientX;
+    swipeStartY = e.touches[0].clientY;
+  }, {passive:true});
+  window.addEventListener('touchend', function(e){
+    if(swipeStartX === null || !picks.length) return;
+    var t = e.changedTouches && e.changedTouches[0];
+    if(t){
+      var dx = t.clientX - swipeStartX;
+      var dy = t.clientY - swipeStartY;
+      if(dx < -80 && Math.abs(dx) > Math.abs(dy) * 1.5) resetPromotion();
+    }
+    swipeStartX = null; swipeStartY = null;
+  }, {passive:true});
 })();
 </script>
 
