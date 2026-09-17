@@ -689,16 +689,21 @@
     align-items:center;
     justify-content:center;
     text-align:center;
-    padding:28px 20px;
+    padding:28px 20px 20px;
     gap:14px;
     box-shadow:0 20px 60px rgba(0,0,0,0.45);
   }
-  .poster-eyebrow{
+  /* Order top to bottom: band, date, venue, address -- then the site's own
+     name sits as a small watermark pinned to the bottom of the poster. */
+  .poster-band{
     font-family:var(--mono);
     font-size:0.68rem;
     letter-spacing:0.16em;
     text-transform:uppercase;
     color:var(--brass);
+    border:1px solid var(--brass);
+    border-radius:3px;
+    padding:4px 10px;
   }
   .poster-date{
     font-family:var(--serif);
@@ -718,16 +723,14 @@
     color:var(--ink-dim);
     letter-spacing:0.03em;
   }
-  .poster-act{
+  .poster-brand{
     font-family:var(--mono);
-    font-size:0.65rem;
-    letter-spacing:0.12em;
+    font-size:0.58rem;
+    letter-spacing:0.1em;
     text-transform:uppercase;
-    color:var(--rust);
-    border:1px solid var(--rust);
-    border-radius:3px;
-    padding:4px 10px;
-    margin-top:4px;
+    color:var(--ink-dim);
+    margin-top:auto;
+    padding-top:8px;
   }
   .poster-share{
     width:100%;
@@ -1010,11 +1013,11 @@
     <div class="poster-card">
       <button class="poster-close" id="posterClose" type="button" aria-label="Close">&times;</button>
       <div class="poster-visual" id="posterVisual">
-        <div class="poster-eyebrow">Garrett Summers</div>
+        <div class="poster-band" id="posterBand"></div>
         <div class="poster-date" id="posterDate"></div>
         <div class="poster-venue" id="posterVenue"></div>
         <div class="poster-addr" id="posterAddr"></div>
-        <div class="poster-act" id="posterAct"></div>
+        <div class="poster-brand">Garrett Summers</div>
       </div>
       <button class="poster-share" id="posterShareBtn" type="button">Share / Save as JPEG</button>
     </div>
@@ -1114,17 +1117,35 @@
     return String(s == null ? '' : s).replace(/"/g, '&quot;');
   }
 
+  // The poster (shared as a JPEG, meant to outlive the season) always
+  // carries an explicit year, so "SEP 17" reads unambiguously even a
+  // year from now. The compact card in the reel stays as-is ("SEP 17")
+  // since it's always viewed in the context of the current season.
+  function posterDateFor(dateStr){
+    var d = parseDate(dateStr);
+    if(!d) return dateStr; // PENDING -- no year to attach
+    if(/2027/.test(dateStr)) return dateStr; // already carries its own year
+    return dateStr + ' ' + d.getFullYear();
+  }
+
+  // When a venue is promoted, the background gallery pins to a specific
+  // photo instead of continuing to cycle -- add venues here as needed.
+  var VENUE_BG = {
+    'Eagles Lodge': 'images/photo2.jpg'
+  };
+
   var cards = data.map(function(s){
     var past = isPast(s.date);
     var promote = s.act + ' — ' + s.venue.replace(/&mdash;/g,'—').replace(/&middot;/g,'·') + ' — ' + s.addr;
+    var bg = VENUE_BG[s.venue] || '';
     return {
       html:
         '<div class="reel-card' + (past ? ' past' : '') + (s.sample ? ' sample' : '') +
-          '" data-date="' + esc(s.date) + '" data-venue="' + esc(s.venue) + '" data-city="' + esc(s.city) +
+          '" data-date="' + esc(posterDateFor(s.date)) + '" data-venue="' + esc(s.venue) + '" data-city="' + esc(s.city) +
           '" data-addr="' + esc(s.addr) + '" data-act="' + esc(s.act) + '">' +
           (past ? '<div class="past-tag">Past show</div>' : '') +
           '<div class="show-date">' + s.date + '</div>' +
-          '<div class="venue promotable" data-promote="' + esc(promote) + '">' + s.venue + '</div>' +
+          '<div class="venue promotable" data-promote="' + esc(promote) + '"' + (bg ? ' data-bg="' + esc(bg) + '"' : '') + '>' + s.venue + '</div>' +
           '<div class="city">' + s.city + '</div>' +
           '<span class="act-tag">' + s.act + '</span>' +
           '<a class="show-link" href="' + s.linkHref + '" target="_blank" rel="noopener">' + s.linkText + '</a>' +
@@ -1269,6 +1290,7 @@
   if(!header || !h1 || !collage) return;
   var defaultText = h1.textContent;
   var picks = []; // 0, 1 or 2 entries -- see the cycle described above
+  var picksBg = []; // matching background-photo pin for each pick, if any
 
   function render(){
     if(!picks.length){
@@ -1292,16 +1314,22 @@
     }
   }
 
-  function promote(text){
+  function promote(text, bg){
     picks.push(text);
-    if(picks.length > 2) picks = [text]; // 3rd click: reset, newest becomes the heading
+    picksBg.push(bg || '');
+    if(picks.length > 2){ picks = [text]; picksBg = [bg || '']; } // 3rd click: reset, newest becomes the heading
     render();
+    var targetBg = picksBg[picksBg.length - 1];
+    if(targetBg && window.__bgPin) window.__bgPin(targetBg);
+    else if(window.__bgUnpin) window.__bgUnpin();
   }
 
   function resetPromotion(){
     if(!picks.length) return;
     picks = [];
+    picksBg = [];
     render();
+    if(window.__bgUnpin) window.__bgUnpin();
   }
 
   document.addEventListener('click', function(e){
@@ -1311,7 +1339,7 @@
     }
     var el = e.target.closest('.promotable');
     if(!el) return;
-    promote(el.getAttribute('data-promote') || el.textContent.trim());
+    promote(el.getAttribute('data-promote') || el.textContent.trim(), el.getAttribute('data-bg'));
   });
 
   // Swipe left (trackpad or touch), anywhere on the page, returns to vanilla.
@@ -1355,19 +1383,19 @@
   var backdrop = document.getElementById('posterBackdrop');
   var closeBtn = document.getElementById('posterClose');
   var shareBtn = document.getElementById('posterShareBtn');
+  var elBand = document.getElementById('posterBand');
   var elDate = document.getElementById('posterDate');
   var elVenue = document.getElementById('posterVenue');
   var elAddr = document.getElementById('posterAddr');
-  var elAct = document.getElementById('posterAct');
   var canvas = document.getElementById('posterCanvas');
   var current = null;
 
   function open(data){
     current = data;
+    elBand.textContent = data.act;
     elDate.textContent = data.date.replace(/&middot;/g,'·').replace(/&mdash;/g,'—');
     elVenue.textContent = data.venue.replace(/&mdash;/g,'—');
     elAddr.textContent = [data.addr, data.city].filter(Boolean).join(', ');
-    elAct.textContent = data.act;
     modal.classList.add('open');
     modal.setAttribute('aria-hidden', 'false');
   }
@@ -1422,32 +1450,36 @@
     ctx.lineWidth = 8;
     ctx.strokeRect(36, 36, W - 72, H - 72);
 
+    // Order top to bottom: band, date, venue, address.
     ctx.textAlign = 'center';
     ctx.fillStyle = '#c99a4b';
-    ctx.font = '600 32px "Space Mono", Menlo, monospace';
-    ctx.fillText('GARRETT SUMMERS', W / 2, 190);
+    ctx.font = '600 30px "Space Mono", Menlo, monospace';
+    ctx.fillText((data.act || '').toUpperCase(), W / 2, 175);
+    ctx.strokeStyle = '#c99a4b';
+    ctx.lineWidth = 2;
+    var bandWidth = ctx.measureText((data.act || '').toUpperCase()).width;
+    ctx.strokeRect(W / 2 - bandWidth / 2 - 18, 130, bandWidth + 36, 62);
 
     ctx.fillStyle = '#f1ead9';
     ctx.font = '700 92px Georgia, serif';
     var dateText = data.date.replace(/&middot;/g, '·').replace(/&mdash;/g, '—');
-    ctx.fillText(dateText, W / 2, 360);
+    ctx.fillText(dateText, W / 2, 340);
 
     ctx.font = '600 62px Georgia, serif';
     var venueText = data.venue.replace(/&mdash;/g, '—');
-    var afterVenue = wrapText(ctx, venueText, W / 2, 500, W - 200, 70);
+    var afterVenue = wrapText(ctx, venueText, W / 2, 480, W - 200, 70);
 
     ctx.font = '400 34px "Work Sans", -apple-system, sans-serif';
     ctx.fillStyle = '#c9bfa8';
     var addrText = [data.addr, data.city].filter(Boolean).join(', ');
-    ctx.fillText(addrText, W / 2, afterVenue + 110);
+    ctx.fillText(addrText, W / 2, afterVenue + 100);
 
-    ctx.font = '600 30px "Space Mono", Menlo, monospace';
-    ctx.fillStyle = '#a9573a';
-    ctx.fillText((data.act || '').toUpperCase(), W / 2, afterVenue + 180);
-
-    ctx.font = '400 26px "Space Mono", Menlo, monospace';
+    // Site branding sits as a small watermark pinned to the bottom.
+    ctx.font = '600 24px "Space Mono", Menlo, monospace';
     ctx.fillStyle = '#8a8074';
-    ctx.fillText('garrettsummersmusic.com', W / 2, H - 90);
+    ctx.fillText('GARRETT SUMMERS', W / 2, H - 120);
+    ctx.font = '400 22px "Space Mono", Menlo, monospace';
+    ctx.fillText('garrettsummersmusic.com', W / 2, H - 84);
   }
 
   shareBtn.addEventListener('click', function(){
@@ -1487,30 +1519,56 @@
   var slides = Array.prototype.slice.call(document.querySelectorAll('.bg-slide'));
   if(!slides.length) return;
 
-  var STEP = 50;          // px of accumulated motion per slide change -- lower = snappier
+  var STEP = 170;          // px of accumulated motion per slide change -- higher = slower
   var activeIndex = 0;
   var virtual = 0;
   var pending = false;
   var lastGestureAt = 0;
   var lastScrollY = window.scrollY;
+  var pinnedSrc = null; // set while a promoted venue has pinned a specific photo
 
-  function render(){
-    pending = false;
-    var raw = Math.floor(virtual / STEP);
-    var index = ((raw % slides.length) + slides.length) % slides.length;
+  function setActive(index){
     if(index !== activeIndex){
       slides[activeIndex].classList.remove('active');
       slides[index].classList.add('active');
       activeIndex = index;
     }
   }
+  function render(){
+    pending = false;
+    if(pinnedSrc) return; // paused on a specific photo -- see __bgPin below
+    var raw = Math.floor(virtual / STEP);
+    var index = ((raw % slides.length) + slides.length) % slides.length;
+    setActive(index);
+  }
   function schedule(){
     if(!pending){ pending = true; window.requestAnimationFrame(render); }
   }
   function bump(delta){
+    if(pinnedSrc) return; // gallery holds still while pinned
     virtual += delta;
     schedule();
   }
+
+  // Lets the promotable-elements script pin the gallery to one specific
+  // photo (e.g. clicking "Eagles Lodge" always shows that show's photo)
+  // and release it back to normal continuous cycling afterwards.
+  window.__bgPin = function(src){
+    var index = -1;
+    for(var i = 0; i < slides.length; i++){
+      var el = slides[i];
+      var matches = el.tagName === 'IMG'
+        ? el.getAttribute('src') === src
+        : !!el.querySelector('img[src="' + src + '"]');
+      if(matches){ index = i; break; }
+    }
+    if(index === -1) return;
+    pinnedSrc = src;
+    setActive(index);
+  };
+  window.__bgUnpin = function(){
+    pinnedSrc = null;
+  };
 
   // Primary driver: wheel (mouse + trackpad). Always applies, regardless of
   // whether the page itself can still scroll -- this is what makes it feel
