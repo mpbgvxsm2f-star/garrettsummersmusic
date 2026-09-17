@@ -254,73 +254,68 @@
     margin:0 0 14px;
   }
 
-  /* Shows — slot-machine reel */
-  .reel-wrap{
-    position:relative;
-    margin:0 -20px;
-  }
-  .reel-fade{
-    position:absolute;
-    top:0;bottom:0;
-    width:40px;
-    z-index:2;
-    pointer-events:none;
-  }
-  .reel-fade.left{left:0;background:linear-gradient(90deg, var(--ground) 0%, transparent 100%);opacity:0.001;}
-  .reel-fade.right{right:0;background:linear-gradient(270deg, var(--ground) 0%, transparent 100%);}
+  /* Shows — vertical slot-machine reel. Everything scrolls with the page
+     (no nested horizontal scroller) so desktop behaves like mobile. */
   .reel{
     display:flex;
-    align-items:stretch;
-    gap:14px;
-    overflow-x:auto;
-    scroll-snap-type:x proximity;
-    padding:10px 20px 18px;
-    scrollbar-width:none;
-    -webkit-overflow-scrolling:touch;
+    flex-direction:column;
+    gap:10px;
   }
-  .reel::-webkit-scrollbar{display:none;}
   .reel-card{
-    flex:0 0 200px;
-    scroll-snap-align:center;
     background:var(--panel-bg);
     backdrop-filter:blur(10px);
     -webkit-backdrop-filter:blur(10px);
     border:1px solid var(--line);
     border-radius:10px;
-    padding:16px 14px;
-    display:flex;
-    flex-direction:column;
-    gap:6px;
+    padding:14px 18px;
+    display:grid;
+    grid-template-columns:96px 1fr auto;
+    gap:14px;
+    align-items:center;
     opacity:0;
-    transform:translateY(26px) scale(0.95);
-    transition:opacity 0.55s ease, transform 0.55s cubic-bezier(.2,.8,.2,1);
+    transform:translateY(-22px);
+    transition:opacity 0.5s ease, transform 0.5s cubic-bezier(.2,.8,.2,1);
   }
-  .reel-card.in-view{opacity:var(--card-op, 1); transform:translateY(0) scale(1);}
+  @media (max-width:560px){
+    .reel-card{grid-template-columns:1fr; gap:4px;}
+    .reel-card .show-link{justify-self:start; margin-top:8px;}
+  }
+  .reel-card.in-view{opacity:var(--card-op, 1); transform:translateY(0);}
   .reel-card.past{--card-op:0.6; filter:grayscale(0.35);}
+  .reel-card .past-tag{
+    grid-column:1 / -1;
+    font-family:var(--mono);
+    font-size:0.56rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--ink-dim);
+    margin-bottom:-6px;
+  }
   .reel-card .show-date{
     font-family:var(--mono);
-    font-size:1rem;
+    font-size:0.9rem;
     font-weight:700;
     color:var(--brass);
-    letter-spacing:0.04em;
+    white-space:nowrap;
   }
   .reel-card .venue{
     font-family:var(--serif);
-    font-size:1.1rem;
+    font-size:1.15rem;
     font-weight:600;
     line-height:1.15;
   }
   .reel-card .city{
     font-family:var(--mono);
-    font-size:0.66rem;
+    font-size:0.68rem;
     color:var(--ink-dim);
     letter-spacing:0.04em;
     text-transform:uppercase;
+    margin-top:2px;
   }
   .reel-card .act-tag{
     display:inline-block;
     align-self:flex-start;
-    margin-top:2px;
+    margin-top:6px;
     font-family:var(--mono);
     font-size:0.6rem;
     letter-spacing:0.06em;
@@ -331,15 +326,14 @@
     padding:2px 6px;
   }
   .reel-card .show-link{
-    margin-top:auto;
-    padding-top:8px;
     font-family:var(--mono);
     font-size:0.68rem;
     letter-spacing:0.06em;
     text-transform:uppercase;
     text-decoration:none;
     color:var(--brass);
-    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--rust);
+    white-space:nowrap;
   }
   .reel-card.sample .venue::after{
     content:" (sample)";
@@ -349,25 +343,25 @@
     font-weight:400;
   }
   .reel-card.today{
-    flex:0 0 110px;
+    display:flex;
     align-items:center;
     justify-content:center;
+    gap:10px;
     background:var(--brass);
     border-color:var(--brass);
     color:var(--ground);
+    padding:10px 18px;
   }
   .reel-card.today .today-label{
     font-family:var(--mono);
-    font-size:0.7rem;
+    font-size:0.68rem;
     letter-spacing:0.14em;
     text-transform:uppercase;
-    text-align:center;
   }
   .reel-card.today .today-date{
     font-family:var(--serif);
-    font-size:1.3rem;
+    font-size:1.1rem;
     font-weight:600;
-    margin-top:4px;
   }
   .reel-hint{
     font-family:var(--mono);
@@ -376,7 +370,7 @@
     text-transform:uppercase;
     color:var(--ink-dim);
     text-align:center;
-    margin-top:2px;
+    margin-top:12px;
   }
   .shows-empty-tag{
     font-family:var(--mono);
@@ -694,12 +688,8 @@
   }
 ]
     </script>
-    <div class="reel-wrap">
-      <div class="reel-fade left"></div>
-      <div class="reel-fade right"></div>
-      <div class="reel" id="showsReel"></div>
-    </div>
-    <div class="reel-hint">&larr; scroll back for past shows &nbsp;&middot;&nbsp; upcoming dates &rarr;</div>
+    <div class="reel" id="showsReel"></div>
+    <div class="reel-hint">Scroll up for past shows &nbsp;&middot;&nbsp; keep scrolling down for what's next</div>
     <div class="shows-empty-tag">Early dates are placeholders &mdash; send me the real show history and I'll swap them in. Tour dates are in active booking across all three acts.</div>
   </section>
 
@@ -804,26 +794,43 @@
   var today = new Date();
   today.setHours(0,0,0,0);
 
-  function isPast(dateStr){
+  function parseDate(dateStr){
     var m = /^([A-Z]{3})\s+(\d{1,2})$/.exec(dateStr);
-    if(!m || !(m[1] in MONTHS)) return false;
-    var d = new Date(today.getFullYear(), MONTHS[m[1]], parseInt(m[2],10));
-    // shows dated Nov/Dec that are "past" relative to a Jan/Feb "today" would be wrong,
-    // but within the same booking season this simple same-year compare is correct.
-    return d < today;
+    if(m && m[1] in MONTHS){
+      return new Date(today.getFullYear(), MONTHS[m[1]], parseInt(m[2],10));
+    }
+    if(/2027/.test(dateStr)) return new Date(2027,0,1);
+    return null; // PENDING / anything undated -- sorts last, never "past"
   }
 
+  function isPast(dateStr){
+    var d = parseDate(dateStr);
+    return !!d && d < today;
+  }
+
+  // Chronological order, always -- sorted here rather than trusted from the
+  // JSON, so editing dates by hand can never leave the reel out of order.
+  data.sort(function(a, b){
+    var da = parseDate(a.date), db = parseDate(b.date);
+    if(!da && !db) return 0;
+    if(!da) return 1;
+    if(!db) return -1;
+    return da - db;
+  });
+
   var cards = data.map(function(s){
+    var past = isPast(s.date);
     return {
       html:
-        '<div class="reel-card' + (isPast(s.date) ? ' past' : '') + (s.sample ? ' sample' : '') + '">' +
+        '<div class="reel-card' + (past ? ' past' : '') + (s.sample ? ' sample' : '') + '">' +
+          (past ? '<div class="past-tag">Past show</div>' : '') +
           '<div class="show-date">' + s.date + '</div>' +
           '<div class="venue">' + s.venue + '</div>' +
           '<div class="city">' + s.city + '</div>' +
           '<span class="act-tag">' + s.act + '</span>' +
           '<a class="show-link" href="' + s.linkHref + '" target="_blank" rel="noopener">' + s.linkText + '</a>' +
         '</div>',
-      past: isPast(s.date)
+      past: past
     };
   });
 
@@ -834,20 +841,15 @@
 
   reel.innerHTML = pastHtml + todayHtml + upcomingHtml;
 
-  // Center on "today" so past shows are one scroll-back away, upcoming one scroll-forward.
-  var marker = document.getElementById('todayMarker');
-  if(marker){
-    reel.scrollLeft = marker.offsetLeft - (reel.clientWidth / 2) + (marker.clientWidth / 2);
-  }
-
-  // Slot-machine entrance: reveal each card as it scrolls into view.
+  // Slot-machine entrance: each row tumbles into place as the page scrolls
+  // past it, vertically, same as any other scroll-triggered reveal.
   var cardEls = Array.prototype.slice.call(reel.querySelectorAll('.reel-card'));
   if('IntersectionObserver' in window){
     var io = new IntersectionObserver(function(entries){
       entries.forEach(function(entry){
         if(entry.isIntersecting) entry.target.classList.add('in-view');
       });
-    }, {root: reel, threshold: 0.4});
+    }, {threshold: 0.3, rootMargin: '0px 0px -10% 0px'});
     cardEls.forEach(function(el){ io.observe(el); });
   } else {
     cardEls.forEach(function(el){ el.classList.add('in-view'); });
@@ -855,20 +857,21 @@
 })();
 </script>
 
-<!-- Background gallery: infinite, loops forever, mixes in photo collages -->
+<!-- Background gallery: infinite, loops forever, mixes in photo collages.
+     Every scroll gesture (wheel, touch, trackpad) drives it directly and
+     continuously -- it is NOT tied to the page's scroll position, so it
+     never stops just because you hit the top or bottom of the page. -->
 <script>
 (function(){
   var slides = Array.prototype.slice.call(document.querySelectorAll('.bg-slide'));
   if(!slides.length) return;
 
-  var STEP = 160;        // px of accumulated scroll per slide change
+  var STEP = 90;          // px of accumulated motion per slide change -- lower = snappier
   var activeIndex = 0;
   var virtual = 0;
-  var lastScrollY = window.scrollY;
   var pending = false;
-
-  function atTop(){ return window.scrollY <= 0; }
-  function atBottom(){ return (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 2); }
+  var lastGestureAt = 0;
+  var lastScrollY = window.scrollY;
 
   function render(){
     pending = false;
@@ -883,24 +886,20 @@
   function schedule(){
     if(!pending){ pending = true; window.requestAnimationFrame(render); }
   }
-
-  // Normal in-page scrolling drives it directly.
-  window.addEventListener('scroll', function(){
-    var y = window.scrollY;
-    virtual += (y - lastScrollY);
-    lastScrollY = y;
+  function bump(delta){
+    virtual += delta;
     schedule();
-  }, {passive:true});
+  }
 
-  // Once you hit the top or bottom of the page, keep going: wheel/touch
-  // deltas beyond that point keep cycling the background infinitely.
+  // Primary driver: wheel (mouse + trackpad). Always applies, regardless of
+  // whether the page itself can still scroll -- this is what makes it feel
+  // truly infinite instead of stopping at the page edges.
   window.addEventListener('wheel', function(e){
-    if((atBottom() && e.deltaY > 0) || (atTop() && e.deltaY < 0)){
-      virtual += e.deltaY;
-      schedule();
-    }
+    lastGestureAt = Date.now();
+    bump(e.deltaY);
   }, {passive:true});
 
+  // Touch: same idea, drag up/down anywhere on the page.
   var touchY = null;
   window.addEventListener('touchstart', function(e){
     touchY = e.touches[0].clientY;
@@ -908,12 +907,21 @@
   window.addEventListener('touchmove', function(e){
     if(touchY === null) return;
     var y = e.touches[0].clientY;
-    var delta = touchY - y;
-    if((atBottom() && delta > 0) || (atTop() && delta < 0)){
-      virtual += delta;
-      schedule();
-    }
+    lastGestureAt = Date.now();
+    bump(touchY - y);
     touchY = y;
+  }, {passive:true});
+
+  // Fallback for keyboard (PageDown/arrows/space) and scrollbar-drag, which
+  // fire neither wheel nor touch events -- only counted when a wheel/touch
+  // gesture hasn't just driven the same scroll, so motion is never double-counted.
+  window.addEventListener('scroll', function(){
+    var y = window.scrollY;
+    var dy = y - lastScrollY;
+    lastScrollY = y;
+    if(Date.now() - lastGestureAt > 250){
+      bump(dy);
+    }
   }, {passive:true});
 
   render();
