@@ -1008,22 +1008,6 @@
     <div class="shows-empty-tag">Example items &amp; prices &mdash; send real ones and photos and I'll swap them in.</div>
   </section>
 
-  <div class="poster-modal" id="posterModal" aria-hidden="true">
-    <div class="poster-backdrop" id="posterBackdrop"></div>
-    <div class="poster-card">
-      <button class="poster-close" id="posterClose" type="button" aria-label="Close">&times;</button>
-      <div class="poster-visual" id="posterVisual">
-        <div class="poster-band" id="posterBand"></div>
-        <div class="poster-date" id="posterDate"></div>
-        <div class="poster-venue" id="posterVenue"></div>
-        <div class="poster-addr" id="posterAddr"></div>
-        <div class="poster-brand">Garrett Summers</div>
-      </div>
-      <button class="poster-share" id="posterShareBtn" type="button">Share / Save as JPEG</button>
-    </div>
-    <canvas id="posterCanvas" width="1080" height="1350" style="display:none;"></canvas>
-  </div>
-
   <footer class="panel">
     <div>
       <a class="email" href="mailto:booking@garrettsummersmusic.com">booking@garrettsummersmusic.com</a>
@@ -1035,6 +1019,25 @@
     </div>
   </footer>
 
+</div>
+
+<!-- Kept as a direct child of body (outside .wrap and its own stacking
+     context) so this z-index:100 layer is genuinely the top thing on the
+     page, never obstructed by the theme toggle or anything else. -->
+<div class="poster-modal" id="posterModal" aria-hidden="true">
+  <div class="poster-backdrop" id="posterBackdrop"></div>
+  <div class="poster-card">
+    <button class="poster-close" id="posterClose" type="button" aria-label="Close">&times;</button>
+    <div class="poster-visual" id="posterVisual">
+      <div class="poster-band" id="posterBand"></div>
+      <div class="poster-date" id="posterDate"></div>
+      <div class="poster-venue" id="posterVenue"></div>
+      <div class="poster-addr" id="posterAddr"></div>
+      <div class="poster-brand">Garrett Summers</div>
+    </div>
+    <button class="poster-share" id="posterShareBtn" type="button">Share / Save as JPEG</button>
+  </div>
+  <canvas id="posterCanvas" width="1080" height="1350" style="display:none;"></canvas>
 </div>
 
 <script>
