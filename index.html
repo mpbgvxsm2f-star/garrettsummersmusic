@@ -202,7 +202,17 @@
     letter-spacing:-0.01em;
     margin:0;
     text-wrap:balance;
+    cursor:pointer;
   }
+  @keyframes promotePulse{
+    0%{opacity:0.3; transform:translateY(6px);}
+    100%{opacity:1; transform:translateY(0);}
+  }
+  h1.promoted{animation:promotePulse 0.5s ease;}
+
+  /* Anything with this class becomes the page heading when clicked */
+  .promotable{cursor:pointer; transition:color 0.2s ease;}
+  .promotable:hover{color:var(--brass);}
   .tagline{
     font-size:1rem;
     color:var(--ink-dim);
@@ -297,7 +307,10 @@
     font-weight:700;
     color:var(--brass);
     white-space:nowrap;
+    cursor:pointer;
+    transition:opacity 0.15s ease;
   }
+  .reel-card .show-date:hover{opacity:0.7;text-decoration:underline;}
   .reel-card .venue{
     font-family:var(--serif);
     font-size:1.15rem;
@@ -372,6 +385,47 @@
     text-align:center;
     margin-top:12px;
   }
+
+  /* Past shows: collapsed by default, revealed by tap or swipe-up-on-Today */
+  .past-toggle{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    font-family:var(--mono);
+    font-size:0.62rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--ink-dim);
+    background:var(--panel-bg);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:10px 14px;
+    margin-bottom:10px;
+    cursor:pointer;
+    user-select:none;
+    -webkit-user-select:none;
+    touch-action:pan-y;
+  }
+  .past-toggle:hover{color:var(--brass);border-color:var(--brass);}
+  .past-toggle .refresh-icon{
+    display:inline-block;
+    font-size:0.9rem;
+    line-height:1;
+    transform:rotate(0deg);
+    transition:transform 0.25s ease;
+    color:var(--brass);
+  }
+  .past-toggle.expanded .refresh-icon{transform:rotate(180deg);}
+  .past-collapse{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height 0.45s ease;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .past-collapse.expanded{max-height:4000px;}
   .shows-empty-tag{
     font-family:var(--mono);
     font-size:0.65rem;
@@ -489,6 +543,116 @@
     text-transform:uppercase;
     color:var(--ink-dim);
   }
+
+  /* Poster share modal */
+  .poster-modal{
+    position:fixed;
+    inset:0;
+    z-index:100;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+  }
+  .poster-modal.open{display:flex;}
+  .poster-backdrop{
+    position:absolute;
+    inset:0;
+    background:rgba(10,8,7,0.78);
+    backdrop-filter:blur(4px);
+    -webkit-backdrop-filter:blur(4px);
+  }
+  .poster-card{
+    position:relative;
+    z-index:1;
+    width:min(360px, 100%);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:16px;
+  }
+  .poster-close{
+    position:absolute;
+    top:-14px;
+    right:-8px;
+    z-index:2;
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    border:1px solid var(--line);
+    background:var(--ground-raised);
+    color:var(--ink);
+    font-size:1.3rem;
+    line-height:1;
+    cursor:pointer;
+  }
+  .poster-visual{
+    width:100%;
+    aspect-ratio:4/5;
+    border:2px solid var(--brass);
+    border-radius:14px;
+    background:linear-gradient(165deg, var(--ground-raised), var(--ground));
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:28px 20px;
+    gap:14px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.45);
+  }
+  .poster-eyebrow{
+    font-family:var(--mono);
+    font-size:0.68rem;
+    letter-spacing:0.16em;
+    text-transform:uppercase;
+    color:var(--brass);
+  }
+  .poster-date{
+    font-family:var(--serif);
+    font-weight:700;
+    font-size:clamp(2.2rem, 9vw, 2.8rem);
+    line-height:1;
+  }
+  .poster-venue{
+    font-family:var(--serif);
+    font-weight:600;
+    font-size:1.3rem;
+    line-height:1.2;
+  }
+  .poster-addr{
+    font-family:var(--mono);
+    font-size:0.75rem;
+    color:var(--ink-dim);
+    letter-spacing:0.03em;
+  }
+  .poster-act{
+    font-family:var(--mono);
+    font-size:0.65rem;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--rust);
+    border:1px solid var(--rust);
+    border-radius:3px;
+    padding:4px 10px;
+    margin-top:4px;
+  }
+  .poster-share{
+    width:100%;
+    font-family:var(--mono);
+    font-size:0.78rem;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--ground);
+    background:var(--brass);
+    border:none;
+    border-radius:8px;
+    padding:14px 16px;
+    cursor:pointer;
+  }
+  .poster-share:hover{opacity:0.9;}
+  .poster-share:active{transform:translateY(1px);}
+  .poster-share[data-state="working"]{opacity:0.6; pointer-events:none;}
 </style>
 </head>
 <body>
@@ -551,13 +715,14 @@
   </header>
 
   <section id="shows">
-    <h2>Shows</h2>
+    <h2 class="promotable">Shows</h2>
     <script id="shows-data" type="application/json">
 [
   {
     "date": "MAY 03",
     "venue": "Eagles Lodge",
     "city": "Bozeman, MT",
+    "addr": "316 E Main St",
     "act": "Willy on the Wire",
     "linkHref": "https://maps.google.com/?q=316+E+Main+St,+Bozeman,+MT+59715",
     "linkText": "Map",
@@ -567,6 +732,7 @@
     "date": "JUN 14",
     "venue": "The Jump",
     "city": "Bozeman, MT",
+    "addr": "75770 Gallatin Rd",
     "act": "Rob Wolf",
     "linkHref": "https://maps.google.com/?q=75770+Gallatin+Rd,+Bozeman,+MT",
     "linkText": "Map",
@@ -576,6 +742,7 @@
     "date": "JUL 04",
     "venue": "Tune Up Bar",
     "city": "Bozeman, MT",
+    "addr": "24 W Mendenhall St",
     "act": "Rob Wolf",
     "linkHref": "https://maps.google.com/?q=24+W+Mendenhall+St,+Bozeman,+MT+59715",
     "linkText": "Map",
@@ -585,6 +752,7 @@
     "date": "JUL 26",
     "venue": "Eagles Lodge",
     "city": "Bozeman, MT",
+    "addr": "316 E Main St",
     "act": "Willy on the Wire",
     "linkHref": "https://maps.google.com/?q=316+E+Main+St,+Bozeman,+MT+59715",
     "linkText": "Map",
@@ -594,6 +762,7 @@
     "date": "AUG 08",
     "venue": "Eagles Lodge",
     "city": "Bozeman, MT",
+    "addr": "316 E Main St",
     "act": "Willy on the Wire",
     "linkHref": "https://maps.google.com/?q=316+E+Main+St,+Bozeman,+MT+59715",
     "linkText": "Map"
@@ -602,6 +771,7 @@
     "date": "SEP 18",
     "venue": "Eagles Lodge",
     "city": "Bozeman, MT",
+    "addr": "316 E Main St",
     "act": "Willy on the Wire",
     "linkHref": "https://maps.google.com/?q=316+E+Main+St,+Bozeman,+MT+59715",
     "linkText": "Map"
@@ -610,6 +780,7 @@
     "date": "SEP 19",
     "venue": "Eagles Lodge",
     "city": "Bozeman, MT",
+    "addr": "316 E Main St",
     "act": "Willy on the Wire",
     "linkHref": "https://maps.google.com/?q=316+E+Main+St,+Bozeman,+MT+59715",
     "linkText": "Map"
@@ -618,6 +789,7 @@
     "date": "OCT 09",
     "venue": "Tune Up Bar",
     "city": "Bozeman, MT",
+    "addr": "24 W Mendenhall St",
     "act": "Rob Wolf",
     "linkHref": "https://maps.google.com/?q=24+W+Mendenhall+St,+Bozeman,+MT+59715",
     "linkText": "Map"
@@ -626,6 +798,7 @@
     "date": "OCT 16",
     "venue": "The Jump",
     "city": "Bozeman, MT",
+    "addr": "75770 Gallatin Rd",
     "act": "Rob Wolf",
     "linkHref": "https://maps.google.com/?q=75770+Gallatin+Rd,+Bozeman,+MT",
     "linkText": "Map"
@@ -634,6 +807,7 @@
     "date": "NOV 07",
     "venue": "Tune Up Bar",
     "city": "Bozeman, MT",
+    "addr": "24 W Mendenhall St",
     "act": "Rob Wolf",
     "linkHref": "https://maps.google.com/?q=24+W+Mendenhall+St,+Bozeman,+MT+59715",
     "linkText": "Map"
@@ -642,6 +816,7 @@
     "date": "NOV 20",
     "venue": "The Jump",
     "city": "Bozeman, MT",
+    "addr": "75770 Gallatin Rd",
     "act": "Rob Wolf",
     "linkHref": "https://maps.google.com/?q=75770+Gallatin+Rd,+Bozeman,+MT",
     "linkText": "Map"
@@ -650,6 +825,7 @@
     "date": "DEC 18",
     "venue": "The Jump",
     "city": "Bozeman, MT",
+    "addr": "75770 Gallatin Rd",
     "act": "Rob Wolf",
     "linkHref": "https://maps.google.com/?q=75770+Gallatin+Rd,+Bozeman,+MT",
     "linkText": "Map"
@@ -658,6 +834,7 @@
     "date": "2027 &middot; TBD",
     "venue": "Sweet Pea Festival 50th Anniversary &mdash; Main Stage",
     "city": "Lindley Park, Bozeman, MT",
+    "addr": "Lindley Park",
     "act": "Willy on the Wire",
     "linkHref": "https://maps.google.com/?q=Lindley+Park,+Bozeman,+MT",
     "linkText": "Map"
@@ -666,6 +843,7 @@
     "date": "PENDING",
     "venue": "Tour Dates &mdash; Willy on the Wire",
     "city": "Venues TBD",
+    "addr": "TBD",
     "act": "Willy on the Wire",
     "linkHref": "#closet",
     "linkText": "More"
@@ -674,6 +852,7 @@
     "date": "PENDING",
     "venue": "Tour Dates &mdash; Rob Wolf",
     "city": "Venues TBD",
+    "addr": "TBD",
     "act": "Rob Wolf",
     "linkHref": "#closet",
     "linkText": "More"
@@ -682,6 +861,7 @@
     "date": "PENDING",
     "venue": "Tour Dates &mdash; Other Artists",
     "city": "Venues TBD",
+    "addr": "TBD",
     "act": "Guest Sets",
     "linkHref": "#closet",
     "linkText": "More"
@@ -689,19 +869,19 @@
 ]
     </script>
     <div class="reel" id="showsReel"></div>
-    <div class="reel-hint">Scroll up for past shows &nbsp;&middot;&nbsp; keep scrolling down for what's next</div>
+    <div class="reel-hint" id="reelHint">Tap a date for a share-ready poster &nbsp;&middot;&nbsp; keep scrolling down for what's next</div>
     <div class="shows-empty-tag">Early dates are placeholders &mdash; send me the real show history and I'll swap them in. Tour dates are in active booking across all three acts.</div>
   </section>
 
   <section id="closet" class="panel">
-    <h2>Closet</h2>
+    <h2 class="promotable">Closet</h2>
     <p class="closet-note">Stage &amp; tour pieces, up for bid. Tap an item to send your bid, highest offer by the end of the month wins &mdash; I'll follow up directly to arrange payment and shipping.</p>
     <div class="closet">
 
       <div class="item">
         <div class="frame">Add photo</div>
         <div class="item-info">
-          <div class="item-name">Denim Jacket</div>
+          <div class="item-name promotable">Denim Jacket</div>
           <div class="item-start">Starting at <b>$40</b></div>
           <a class="bid-btn" href="mailto:booking@garrettsummersmusic.com?subject=Bid%20%E2%80%94%20Denim%20Jacket&amp;body=My%20bid%3A%20%24">Place a bid</a>
         </div>
@@ -710,7 +890,7 @@
       <div class="item">
         <div class="frame">Add photo</div>
         <div class="item-info">
-          <div class="item-name">Stage Boots</div>
+          <div class="item-name promotable">Stage Boots</div>
           <div class="item-start">Starting at <b>$60</b></div>
           <a class="bid-btn" href="mailto:booking@garrettsummersmusic.com?subject=Bid%20%E2%80%94%20Stage%20Boots&amp;body=My%20bid%3A%20%24">Place a bid</a>
         </div>
@@ -719,7 +899,7 @@
       <div class="item">
         <div class="frame">Add photo</div>
         <div class="item-info">
-          <div class="item-name">Tour Flannel</div>
+          <div class="item-name promotable">Tour Flannel</div>
           <div class="item-start">Starting at <b>$25</b></div>
           <a class="bid-btn" href="mailto:booking@garrettsummersmusic.com?subject=Bid%20%E2%80%94%20Tour%20Flannel&amp;body=My%20bid%3A%20%24">Place a bid</a>
         </div>
@@ -728,6 +908,22 @@
     </div>
     <div class="shows-empty-tag">Example items &amp; prices &mdash; send real ones and photos and I'll swap them in.</div>
   </section>
+
+  <div class="poster-modal" id="posterModal" aria-hidden="true">
+    <div class="poster-backdrop" id="posterBackdrop"></div>
+    <div class="poster-card">
+      <button class="poster-close" id="posterClose" type="button" aria-label="Close">&times;</button>
+      <div class="poster-visual" id="posterVisual">
+        <div class="poster-eyebrow">Garrett Summers</div>
+        <div class="poster-date" id="posterDate"></div>
+        <div class="poster-venue" id="posterVenue"></div>
+        <div class="poster-addr" id="posterAddr"></div>
+        <div class="poster-act" id="posterAct"></div>
+      </div>
+      <button class="poster-share" id="posterShareBtn" type="button">Share / Save as JPEG</button>
+    </div>
+    <canvas id="posterCanvas" width="1080" height="1350" style="display:none;"></canvas>
+  </div>
 
   <footer class="panel">
     <div>
@@ -818,14 +1014,21 @@
     return da - db;
   });
 
+  function esc(s){
+    return String(s == null ? '' : s).replace(/"/g, '&quot;');
+  }
+
   var cards = data.map(function(s){
     var past = isPast(s.date);
+    var promote = s.act + ' — ' + s.venue.replace(/&mdash;/g,'—').replace(/&middot;/g,'·') + ' — ' + s.addr;
     return {
       html:
-        '<div class="reel-card' + (past ? ' past' : '') + (s.sample ? ' sample' : '') + '">' +
+        '<div class="reel-card' + (past ? ' past' : '') + (s.sample ? ' sample' : '') +
+          '" data-date="' + esc(s.date) + '" data-venue="' + esc(s.venue) + '" data-city="' + esc(s.city) +
+          '" data-addr="' + esc(s.addr) + '" data-act="' + esc(s.act) + '">' +
           (past ? '<div class="past-tag">Past show</div>' : '') +
           '<div class="show-date">' + s.date + '</div>' +
-          '<div class="venue">' + s.venue + '</div>' +
+          '<div class="venue promotable" data-promote="' + esc(promote) + '">' + s.venue + '</div>' +
           '<div class="city">' + s.city + '</div>' +
           '<span class="act-tag">' + s.act + '</span>' +
           '<a class="show-link" href="' + s.linkHref + '" target="_blank" rel="noopener">' + s.linkText + '</a>' +
@@ -834,12 +1037,25 @@
     };
   });
 
-  var pastHtml = cards.filter(function(c){ return c.past; }).map(function(c){ return c.html; }).join('');
+  var pastCards = cards.filter(function(c){ return c.past; });
+  var pastHtml = pastCards.map(function(c){ return c.html; }).join('');
   var upcomingHtml = cards.filter(function(c){ return !c.past; }).map(function(c){ return c.html; }).join('');
-  var todayHtml = '<div class="reel-card today" id="todayMarker"><div class="today-label">Today</div><div class="today-date">' +
-    today.toLocaleDateString('en-US', {month:'short', day:'2-digit'}).toUpperCase() + '</div></div>';
+  var todayLabel = today.toLocaleDateString('en-US', {month:'short', day:'2-digit'}).toUpperCase();
+  var todayHtml = '<div class="reel-card today" id="todayMarker">' +
+    '<div class="today-label promotable" data-promote="Today — ' + esc(todayLabel) + '">Today</div>' +
+    '<div class="today-date">' + todayLabel + '</div></div>';
 
-  reel.innerHTML = pastHtml + todayHtml + upcomingHtml;
+  var pastBlockHtml = '';
+  if(pastCards.length){
+    pastBlockHtml =
+      '<div class="past-toggle" id="pastToggle" role="button" tabindex="0" aria-expanded="false">' +
+        '<span class="refresh-icon" id="pastRefreshIcon">&#8635;</span>' +
+        '<span id="pastToggleLabel">' + pastCards.length + ' past show' + (pastCards.length === 1 ? '' : 's') + ' &mdash; swipe up on Today or tap to view</span>' +
+      '</div>' +
+      '<div class="past-collapse" id="pastCollapse">' + pastHtml + '</div>';
+  }
+
+  reel.innerHTML = pastBlockHtml + todayHtml + upcomingHtml;
 
   // Slot-machine entrance: each row tumbles into place as the page scrolls
   // past it, vertically, same as any other scroll-triggered reveal.
@@ -854,6 +1070,249 @@
   } else {
     cardEls.forEach(function(el){ el.classList.add('in-view'); });
   }
+
+  // Past shows: collapsed by default. Tap the pill to toggle; on touch,
+  // a deliberate slow drag upward starting on the Today card also reveals
+  // them (a normal fast flick/scroll is left completely alone).
+  var pastToggle = document.getElementById('pastToggle');
+  var pastCollapse = document.getElementById('pastCollapse');
+  var refreshIcon = document.getElementById('pastRefreshIcon');
+  var todayMarker = document.getElementById('todayMarker');
+
+  function setPastExpanded(expanded){
+    if(!pastToggle || !pastCollapse) return;
+    pastToggle.classList.toggle('expanded', expanded);
+    pastCollapse.classList.toggle('expanded', expanded);
+    pastToggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+  }
+  function togglePast(){
+    if(!pastToggle) return;
+    setPastExpanded(!pastToggle.classList.contains('expanded'));
+  }
+
+  if(pastToggle){
+    pastToggle.addEventListener('click', togglePast);
+    pastToggle.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); togglePast(); }
+    });
+  }
+
+  if(todayMarker && pastToggle){
+    var ACTIVATE = 12;   // px of upward drag before we start showing feedback
+    var TRIGGER = 70;    // px of upward drag that fully reveals past shows
+    var MAX_VELOCITY = 0.55; // px/ms -- faster than this reads as a flick, not a drag
+    var gesture = null;
+
+    function resetIcon(){
+      if(refreshIcon) refreshIcon.style.transform = 'rotate(0deg)';
+      if(pastToggle) pastToggle.style.opacity = '';
+    }
+
+    todayMarker.addEventListener('touchstart', function(e){
+      gesture = {
+        startY: e.touches[0].clientY,
+        startT: Date.now(),
+        captured: false,
+        lastDy: 0
+      };
+    }, {passive:true});
+
+    window.addEventListener('touchmove', function(e){
+      if(!gesture) return;
+      var y = e.touches[0].clientY;
+      var dy = gesture.startY - y; // positive = finger moving up
+      var dt = Math.max(1, Date.now() - gesture.startT);
+
+      if(!gesture.captured){
+        if(dy > ACTIVATE){
+          var velocity = dy / dt;
+          if(velocity <= MAX_VELOCITY){
+            gesture.captured = true;
+          } else {
+            gesture = null; // fast flick -- leave scrolling completely alone
+            return;
+          }
+        } else {
+          return; // not enough movement yet; don't touch the scroll
+        }
+      }
+
+      gesture.lastDy = dy;
+      e.preventDefault();
+      var progress = Math.max(0, Math.min(1, (dy - ACTIVATE) / (TRIGGER - ACTIVATE)));
+      if(refreshIcon) refreshIcon.style.transform = 'rotate(' + (progress * 220) + 'deg)';
+      if(pastToggle) pastToggle.style.opacity = String(0.6 + progress * 0.4);
+    }, {passive:false});
+
+    window.addEventListener('touchend', function(){
+      if(gesture && gesture.captured && gesture.lastDy >= TRIGGER){
+        setPastExpanded(true);
+      }
+      resetIcon();
+      gesture = null;
+    }, {passive:true});
+  }
+})();
+</script>
+
+<!-- Every element with .promotable becomes the page's H1 heading when clicked;
+     clicking the H1 itself resets it back to the default title. -->
+<script>
+(function(){
+  var h1 = document.querySelector('header.hero h1');
+  if(!h1) return;
+  var defaultText = h1.textContent;
+
+  function promote(text){
+    h1.textContent = text;
+    h1.classList.remove('promoted');
+    void h1.offsetWidth; // restart the pulse animation on repeat clicks
+    h1.classList.add('promoted');
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  document.addEventListener('click', function(e){
+    if(e.target === h1 || h1.contains(e.target)){
+      promote(defaultText);
+      return;
+    }
+    var el = e.target.closest('.promotable');
+    if(!el) return;
+    var text = el.getAttribute('data-promote') || el.textContent.trim();
+    promote(text);
+  });
+})();
+</script>
+
+<!-- Poster share: tap a show date, get an Instagram-ready poster with a
+     one-tap share/save button that exports a JPEG built on canvas. -->
+<script>
+(function(){
+  var modal = document.getElementById('posterModal');
+  if(!modal) return;
+  var backdrop = document.getElementById('posterBackdrop');
+  var closeBtn = document.getElementById('posterClose');
+  var shareBtn = document.getElementById('posterShareBtn');
+  var elDate = document.getElementById('posterDate');
+  var elVenue = document.getElementById('posterVenue');
+  var elAddr = document.getElementById('posterAddr');
+  var elAct = document.getElementById('posterAct');
+  var canvas = document.getElementById('posterCanvas');
+  var current = null;
+
+  function open(data){
+    current = data;
+    elDate.textContent = data.date.replace(/&middot;/g,'·').replace(/&mdash;/g,'—');
+    elVenue.textContent = data.venue.replace(/&mdash;/g,'—');
+    elAddr.textContent = [data.addr, data.city].filter(Boolean).join(', ');
+    elAct.textContent = data.act;
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+  }
+  function close(){
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+  }
+
+  document.addEventListener('click', function(e){
+    var dateEl = e.target.closest('.show-date');
+    if(dateEl){
+      var card = dateEl.closest('.reel-card');
+      if(card && card.dataset && card.dataset.date){
+        open(card.dataset);
+      }
+    }
+  });
+  backdrop.addEventListener('click', close);
+  closeBtn.addEventListener('click', close);
+
+  function wrapText(ctx, text, cx, y, maxWidth, lineHeight){
+    var words = text.split(' ');
+    var line = '';
+    var lines = [];
+    for(var i = 0; i < words.length; i++){
+      var test = line ? line + ' ' + words[i] : words[i];
+      if(ctx.measureText(test).width > maxWidth && line){
+        lines.push(line);
+        line = words[i];
+      } else {
+        line = test;
+      }
+    }
+    if(line) lines.push(line);
+    var startY = y - ((lines.length - 1) * lineHeight) / 2;
+    for(var j = 0; j < lines.length; j++){
+      ctx.fillText(lines[j], cx, startY + j * lineHeight);
+    }
+    return startY + (lines.length - 1) * lineHeight;
+  }
+
+  function drawPoster(data){
+    var ctx = canvas.getContext('2d');
+    var W = canvas.width, H = canvas.height;
+    var grad = ctx.createLinearGradient(0, 0, 0, H);
+    grad.addColorStop(0, '#241f1b');
+    grad.addColorStop(1, '#161311');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
+
+    ctx.strokeStyle = '#c99a4b';
+    ctx.lineWidth = 8;
+    ctx.strokeRect(36, 36, W - 72, H - 72);
+
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#c99a4b';
+    ctx.font = '600 32px "Space Mono", Menlo, monospace';
+    ctx.fillText('GARRETT SUMMERS', W / 2, 190);
+
+    ctx.fillStyle = '#f1ead9';
+    ctx.font = '700 92px Georgia, serif';
+    var dateText = data.date.replace(/&middot;/g, '·').replace(/&mdash;/g, '—');
+    ctx.fillText(dateText, W / 2, 360);
+
+    ctx.font = '600 62px Georgia, serif';
+    var venueText = data.venue.replace(/&mdash;/g, '—');
+    var afterVenue = wrapText(ctx, venueText, W / 2, 500, W - 200, 70);
+
+    ctx.font = '400 34px "Work Sans", -apple-system, sans-serif';
+    ctx.fillStyle = '#c9bfa8';
+    var addrText = [data.addr, data.city].filter(Boolean).join(', ');
+    ctx.fillText(addrText, W / 2, afterVenue + 110);
+
+    ctx.font = '600 30px "Space Mono", Menlo, monospace';
+    ctx.fillStyle = '#a9573a';
+    ctx.fillText((data.act || '').toUpperCase(), W / 2, afterVenue + 180);
+
+    ctx.font = '400 26px "Space Mono", Menlo, monospace';
+    ctx.fillStyle = '#8a8074';
+    ctx.fillText('garrettsummersmusic.com', W / 2, H - 90);
+  }
+
+  shareBtn.addEventListener('click', function(){
+    if(!current) return;
+    shareBtn.setAttribute('data-state', 'working');
+    drawPoster(current);
+    canvas.toBlob(function(blob){
+      shareBtn.removeAttribute('data-state');
+      if(!blob) return;
+      var filename = (current.venue || 'show').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') + '.jpg';
+      var file;
+      try { file = new File([blob], filename, {type: 'image/jpeg'}); } catch(err){ file = null; }
+
+      if(file && navigator.canShare && navigator.canShare({files: [file]})){
+        navigator.share({files: [file], title: current.venue, text: current.venue + ' — ' + current.date}).catch(function(){});
+        return;
+      }
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
+    }, 'image/jpeg', 0.92);
+  });
 })();
 </script>
 
@@ -866,7 +1325,7 @@
   var slides = Array.prototype.slice.call(document.querySelectorAll('.bg-slide'));
   if(!slides.length) return;
 
-  var STEP = 90;          // px of accumulated motion per slide change -- lower = snappier
+  var STEP = 50;          // px of accumulated motion per slide change -- lower = snappier
   var activeIndex = 0;
   var virtual = 0;
   var pending = false;
