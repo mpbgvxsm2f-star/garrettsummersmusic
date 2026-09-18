@@ -37,8 +37,9 @@
     --brass:#c99a4b;
     --rust:#a9573a;
     --line:#413a32;
-    --panel-bg: rgba(20,17,15,0.95);
+    --panel-bg: rgba(20,17,15,0.90);
     --chip-bg: rgba(20,17,15,0.88);
+    --glass-border: rgba(255,255,255,0.09);
     --mono: 'Space Mono', ui-monospace, monospace;
     --serif: 'Fraunces', Georgia, serif;
     --sans: 'Work Sans', -apple-system, sans-serif;
@@ -52,8 +53,9 @@
       --brass:#8a5f27;
       --rust:#96492f;
       --line:#d8cbae;
-      --panel-bg: rgba(236,227,208,0.96);
+      --panel-bg: rgba(236,227,208,0.92);
       --chip-bg: rgba(236,227,208,0.9);
+      --glass-border: rgba(32,27,23,0.1);
     }
   }
   :root[data-theme="light"]{
@@ -64,8 +66,9 @@
     --brass:#8a5f27;
     --rust:#96492f;
     --line:#d8cbae;
-    --panel-bg: rgba(236,227,208,0.96);
+    --panel-bg: rgba(236,227,208,0.92);
     --chip-bg: rgba(236,227,208,0.9);
+    --glass-border: rgba(32,27,23,0.1);
   }
 
   *{box-sizing:border-box;}
@@ -137,6 +140,19 @@
     background:linear-gradient(180deg, var(--ground) 0%, transparent 100%);
     opacity:0.6;
     pointer-events:none;
+  }
+  /* Faint analog-gear grain -- a barely-visible fractal noise texture
+     over everything, mimicking a brushed/textured hardware faceplate
+     instead of a flat digital surface. Subtle enough to be felt more
+     than seen. */
+  .grain-overlay{
+    position:fixed;
+    inset:0;
+    z-index:-1;
+    opacity:0.035;
+    mix-blend-mode:overlay;
+    pointer-events:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
   /* Hero text now sits on its own solid panel (see header.hero), so it
      no longer needs a shadow to read over the photo -- a leftover shadow
@@ -386,9 +402,9 @@
      anywhere on it opens that show's poster. See the poster script. */
   .reel-card{
     background:var(--panel-bg);
-    backdrop-filter:blur(10px);
-    -webkit-backdrop-filter:blur(10px);
-    border:1px solid var(--line);
+    backdrop-filter:blur(16px);
+    -webkit-backdrop-filter:blur(16px);
+    border:1px solid var(--glass-border);
     border-radius:10px;
     padding:14px 18px;
     display:grid;
@@ -398,10 +414,21 @@
     opacity:0;
     transform:translateY(-22px);
     cursor:pointer;
-    transition:opacity 0.5s ease, transform 0.5s cubic-bezier(.2,.8,.2,1), border-color 0.15s ease, background 0.15s ease;
+    transition:opacity 0.5s ease, transform 0.5s cubic-bezier(.2,.8,.2,1), border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
   }
   .reel-card:hover{border-color:var(--brass);}
-  .reel-card:active{background:rgba(169,87,58,0.1);}
+  /* Tactile "pressed switch" feedback -- a quick amber pilot-light glow
+     and a slight scale-down, using its own faster transition so the tap
+     reads as instant rather than inheriting the card's slower entrance
+     transition. */
+  .reel-card:active,
+  .reel-card.in-view:active{
+    background:rgba(169,87,58,0.1);
+    border-color:var(--brass);
+    box-shadow:0 0 0 1px var(--brass), 0 0 18px rgba(201,154,75,0.28);
+    transform:scale(0.985);
+    transition:transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+  }
   @media (max-width:560px){
     .reel-card{grid-template-columns:1fr; gap:10px;}
     .reel-card .show-link{justify-self:start; margin-top:8px;}
@@ -638,12 +665,20 @@
   }
   @media (max-width:560px){ .closet{grid-template-columns:repeat(2,1fr);} }
   .item{
-    background:var(--ground-raised);
-    border:1px solid var(--line);
+    background:var(--panel-bg);
+    backdrop-filter:blur(16px);
+    -webkit-backdrop-filter:blur(16px);
+    border:1px solid var(--glass-border);
     border-radius:4px;
     overflow:hidden;
     display:flex;
     flex-direction:column;
+    transition:transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+  }
+  .item:active{
+    border-color:var(--brass);
+    box-shadow:0 0 0 1px var(--brass), 0 0 18px rgba(201,154,75,0.28);
+    transform:scale(0.985);
   }
   .item .frame{
     aspect-ratio:1;
@@ -1243,6 +1278,7 @@
 </div>
 <div class="bg-scrim"></div>
 <div class="hero-scrim"></div>
+<div class="grain-overlay"></div>
 
 <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle light and dark mode">
   <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg>
@@ -1272,7 +1308,7 @@
     "city": "Bozeman, MT",
     "addr": "316 E Main St",
     "act": "Willy on the Wire",
-    "linkHref": "https://maps.google.com/?q=316+E+Main+St,+Bozeman,+MT+59715",
+    "linkHref": "https://maps.apple.com/?q=316+E+Main+St,+Bozeman,+MT+59715",
     "linkText": "Map"
   },
   {
@@ -1281,7 +1317,7 @@
     "city": "Bozeman, MT",
     "addr": "316 E Main St",
     "act": "Willy on the Wire",
-    "linkHref": "https://maps.google.com/?q=316+E+Main+St,+Bozeman,+MT+59715",
+    "linkHref": "https://maps.apple.com/?q=316+E+Main+St,+Bozeman,+MT+59715",
     "linkText": "Map"
   },
   {
@@ -1290,7 +1326,7 @@
     "city": "Bozeman, MT",
     "addr": "316 E Main St",
     "act": "Willy on the Wire",
-    "linkHref": "https://maps.google.com/?q=316+E+Main+St,+Bozeman,+MT+59715",
+    "linkHref": "https://maps.apple.com/?q=316+E+Main+St,+Bozeman,+MT+59715",
     "linkText": "Map"
   },
   {
@@ -1299,7 +1335,7 @@
     "city": "Bozeman, MT",
     "addr": "24 W Mendenhall St",
     "act": "Rob Wolf",
-    "linkHref": "https://maps.google.com/?q=24+W+Mendenhall+St,+Bozeman,+MT+59715",
+    "linkHref": "https://maps.apple.com/?q=24+W+Mendenhall+St,+Bozeman,+MT+59715",
     "linkText": "Map"
   },
   {
@@ -1308,7 +1344,7 @@
     "city": "Bozeman, MT",
     "addr": "75770 Gallatin Rd",
     "act": "Rob Wolf",
-    "linkHref": "https://maps.google.com/?q=75770+Gallatin+Rd,+Bozeman,+MT",
+    "linkHref": "https://maps.apple.com/?q=75770+Gallatin+Rd,+Bozeman,+MT",
     "linkText": "Map"
   },
   {
@@ -1317,7 +1353,7 @@
     "city": "Bozeman, MT",
     "addr": "24 W Mendenhall St",
     "act": "Rob Wolf",
-    "linkHref": "https://maps.google.com/?q=24+W+Mendenhall+St,+Bozeman,+MT+59715",
+    "linkHref": "https://maps.apple.com/?q=24+W+Mendenhall+St,+Bozeman,+MT+59715",
     "linkText": "Map"
   },
   {
@@ -1326,7 +1362,7 @@
     "city": "Bozeman, MT",
     "addr": "75770 Gallatin Rd",
     "act": "Rob Wolf",
-    "linkHref": "https://maps.google.com/?q=75770+Gallatin+Rd,+Bozeman,+MT",
+    "linkHref": "https://maps.apple.com/?q=75770+Gallatin+Rd,+Bozeman,+MT",
     "linkText": "Map"
   },
   {
@@ -1335,7 +1371,7 @@
     "city": "Bozeman, MT",
     "addr": "75770 Gallatin Rd",
     "act": "Rob Wolf",
-    "linkHref": "https://maps.google.com/?q=75770+Gallatin+Rd,+Bozeman,+MT",
+    "linkHref": "https://maps.apple.com/?q=75770+Gallatin+Rd,+Bozeman,+MT",
     "linkText": "Map"
   },
   {
@@ -1344,7 +1380,7 @@
     "city": "Lindley Park, Bozeman, MT",
     "addr": "Lindley Park",
     "act": "Willy on the Wire",
-    "linkHref": "https://maps.google.com/?q=Lindley+Park,+Bozeman,+MT",
+    "linkHref": "https://maps.apple.com/?q=Lindley+Park,+Bozeman,+MT",
     "linkText": "Map"
   },
   {
