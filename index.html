@@ -1043,17 +1043,20 @@
     align-items:center;
     gap:16px;
   }
-  /* Ticket-styled poster: dark card, brass foil border, a dashed
-     perforation line with punched half-circle notches separating the
+  /* Ticket-styled poster: a real performance photo fills the card (set
+     per-show via JS, layered under a dark gradient for legibility), with
+     a brass foil border and a dashed perforation line separating the
      main info from a stub carrying a barcode + the site's watermark. */
   .poster-visual{
     width:100%;
-    aspect-ratio:4/5;
+    aspect-ratio:9/16;
     position:relative;
     overflow:hidden;
     border:2px solid var(--brass);
     border-radius:16px;
     background:linear-gradient(165deg, #2a241e, #171310);
+    background-size:cover;
+    background-position:center;
     color:#f1ead9;
     display:flex;
     flex-direction:column;
@@ -1061,6 +1064,31 @@
     text-align:center;
     padding:26px 22px 0;
     box-shadow:0 20px 60px rgba(0,0,0,0.45);
+    transition:aspect-ratio 0.25s ease;
+  }
+  .poster-visual[data-aspect="square"]{aspect-ratio:1/1;}
+  .poster-aspect-toggle{
+    display:flex;
+    gap:8px;
+  }
+  .aspect-btn{
+    font-family:var(--mono);
+    font-size:0.66rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--ink-dim);
+    background:transparent;
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:6px 14px;
+    cursor:pointer;
+    -webkit-appearance:none;
+    appearance:none;
+  }
+  .aspect-btn.active{
+    color:var(--ground);
+    background:var(--brass);
+    border-color:var(--brass);
   }
   .ticket-eyebrow{
     font-family:var(--mono);
@@ -1462,7 +1490,11 @@
 <div class="poster-modal" id="posterModal" aria-hidden="true">
   <div class="poster-backdrop" id="posterBackdrop"></div>
   <div class="poster-card">
-    <div class="poster-visual" id="posterVisual">
+    <div class="poster-aspect-toggle" id="posterAspectToggle">
+      <button type="button" class="aspect-btn active" data-aspect="story">Story</button>
+      <button type="button" class="aspect-btn" data-aspect="square">Square</button>
+    </div>
+    <div class="poster-visual" id="posterVisual" data-aspect="story">
       <div class="ticket-eyebrow">Admit One</div>
       <div class="ticket-info">
         <div class="poster-band" id="posterBand"></div>
@@ -1481,7 +1513,7 @@
     </div>
     <button class="poster-share" id="posterShareBtn" type="button">Share</button>
   </div>
-  <canvas id="posterCanvas" width="1080" height="1350" style="display:none;"></canvas>
+  <canvas id="posterCanvas" width="1080" height="1920" style="display:none;"></canvas>
 </div>
 
 <script>
@@ -1870,9 +1902,38 @@
   var elDate = document.getElementById('posterDate');
   var elVenue = document.getElementById('posterVenue');
   var elAddr = document.getElementById('posterAddr');
+  var visual = document.getElementById('posterVisual');
+  var aspectToggle = document.getElementById('posterAspectToggle');
   var canvas = document.getElementById('posterCanvas');
   var current = null;
   var scrollLockY = 0;
+  var aspect = 'story'; // 'story' (9:16) or 'square' (1:1)
+  var CANVAS_SIZES = {story: {w: 1080, h: 1920}, square: {w: 1080, h: 1080}};
+
+  // A curated set of high-contrast, moody performance shots -- pulled from
+  // the same photo pool as the background gallery, hand-picked for having
+  // enough negative space that overlaid type stays legible. Picked
+  // deterministically per show (seeded off venue+date) so a given show's
+  // poster always uses the same photo instead of changing on every share.
+  var BG_PHOTOS = [
+    'images/photo26.jpg', 'images/photo30.jpg', 'images/photo10.jpg',
+    'images/photo16.jpg', 'images/photo6.jpg', 'images/photo24.jpg',
+    'images/photo14.jpg', 'images/photo9.jpg'
+  ];
+  var bgImageCache = {}; // src -> Image (preloaded so canvas export can draw synchronously)
+  function loadedBgImage(src){
+    if(!bgImageCache[src]){
+      var img = new Image();
+      img.src = src;
+      bgImageCache[src] = img;
+    }
+    return bgImageCache[src];
+  }
+  function pickBgPhoto(seedText){
+    var seed = 0;
+    for(var i = 0; i < seedText.length; i++) seed += seedText.charCodeAt(i) * (i + 1);
+    return BG_PHOTOS[(seed || 0) % BG_PHOTOS.length];
+  }
 
   // Freezes the page behind the poster (so it's genuinely the only thing
   // on screen, nothing scrolls or cycles underneath) and puts the person
@@ -1892,12 +1953,21 @@
     window.scrollTo(0, scrollLockY);
   }
 
+  function applyBgPreview(src){
+    visual.style.backgroundImage =
+      'linear-gradient(180deg, rgba(10,8,6,0.35) 0%, rgba(10,8,6,0.55) 55%, rgba(10,8,6,0.88) 100%), url("' + src + '")';
+  }
+
   function open(data){
     current = data;
     elBand.textContent = data.act;
     elDate.textContent = data.date.replace(/&middot;/g,'·').replace(/&mdash;/g,'—');
     elVenue.textContent = data.venue.replace(/&mdash;/g,'—');
     elAddr.textContent = [data.addr, data.city].filter(Boolean).join(', ');
+    var bgSrc = pickBgPhoto((data.venue || '') + (data.date || ''));
+    loadedBgImage(bgSrc); // start the preload now so it's ready by share-time
+    applyBgPreview(bgSrc);
+    current.bgSrc = bgSrc;
     lockPageScroll();
     modal.classList.add('open');
     modal.setAttribute('aria-hidden', 'false');
@@ -1906,6 +1976,20 @@
     modal.classList.remove('open');
     modal.setAttribute('aria-hidden', 'true');
     unlockPageScroll();
+  }
+
+  // Story / Square toggle -- swaps the live preview's aspect ratio and the
+  // dimensions the exported canvas will use, without reopening the poster.
+  if(aspectToggle){
+    aspectToggle.addEventListener('click', function(e){
+      var btn = e.target.closest('.aspect-btn');
+      if(!btn) return;
+      aspect = btn.dataset.aspect;
+      visual.setAttribute('data-aspect', aspect);
+      Array.prototype.forEach.call(aspectToggle.querySelectorAll('.aspect-btn'), function(b){
+        b.classList.toggle('active', b === btn);
+      });
+    });
   }
 
   // The whole card is the button -- not a specific chip inside it. Any
@@ -1922,10 +2006,12 @@
   });
 
   // No dedicated close button -- tapping anywhere on the poster (the
-  // ticket itself or the space around it) dismisses it. Only the share
-  // button is excluded, so it can't be tapped shut mid-tap.
+  // ticket itself or the space around it) dismisses it. The share button
+  // and the Story/Square toggle are excluded, so neither can be tapped
+  // shut mid-tap.
   modal.addEventListener('click', function(e){
     if(shareBtn.contains(e.target)) return;
+    if(aspectToggle && aspectToggle.contains(e.target)) return;
     close();
   });
 
@@ -1975,8 +2061,31 @@
     }
   }
 
-  function drawPoster(data){
+  // Cover-fit drawImage -- crops (rather than stretches) so the photo
+  // fills the destination rect exactly, same behavior as CSS
+  // background-size:cover / object-fit:cover.
+  function drawCoverImage(ctx, img, x, y, w, h){
+    var ir = img.naturalWidth / img.naturalHeight;
+    var dr = w / h;
+    var sx, sy, sw, sh;
+    if(ir > dr){
+      sh = img.naturalHeight;
+      sw = sh * dr;
+      sx = (img.naturalWidth - sw) / 2;
+      sy = 0;
+    } else {
+      sw = img.naturalWidth;
+      sh = sw / dr;
+      sx = 0;
+      sy = (img.naturalHeight - sh) / 2;
+    }
+    ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
+  }
+
+  function drawPoster(data, size){
     var ctx = canvas.getContext('2d');
+    canvas.width = size.w;
+    canvas.height = size.h;
     var W = canvas.width, H = canvas.height;
 
     // Outer margin -- what a "punched" hole reveals. Kept a fixed light
@@ -1991,77 +2100,98 @@
     var M = 44, R = 26;
     var tx = M, ty = M, tw = W - M * 2, th = H - M * 2;
 
+    // Every vertical offset and font size below is expressed relative to
+    // this scale, so the same ticket layout holds its proportions whether
+    // it's rendered tall (Story) or short (Square) -- REF is the height
+    // the original numbers were tuned against.
+    var REF_TH = 1262;
+    var s = th / REF_TH;
+
     ctx.save();
     roundRect(ctx, tx, ty, tw, th, R);
     ctx.clip();
 
-    var grad = ctx.createLinearGradient(0, ty, 0, ty + th);
-    grad.addColorStop(0, '#2a241e');
-    grad.addColorStop(1, '#171310');
-    ctx.fillStyle = grad;
+    // Real performance photo fills the ticket, darkened with a gradient
+    // so the overlaid type stays legible -- falls back to the old flat
+    // gradient if the photo somehow isn't loaded yet.
+    var bgImg = data.bgSrc ? bgImageCache[data.bgSrc] : null;
+    if(bgImg && bgImg.naturalWidth){
+      drawCoverImage(ctx, bgImg, tx, ty, tw, th);
+    } else {
+      var fallback = ctx.createLinearGradient(0, ty, 0, ty + th);
+      fallback.addColorStop(0, '#2a241e');
+      fallback.addColorStop(1, '#171310');
+      ctx.fillStyle = fallback;
+      ctx.fillRect(tx, ty, tw, th);
+    }
+    var overlay = ctx.createLinearGradient(0, ty, 0, ty + th);
+    overlay.addColorStop(0, 'rgba(10,8,6,0.35)');
+    overlay.addColorStop(0.55, 'rgba(10,8,6,0.55)');
+    overlay.addColorStop(1, 'rgba(10,8,6,0.88)');
+    ctx.fillStyle = overlay;
     ctx.fillRect(tx, ty, tw, th);
 
     ctx.textAlign = 'center';
-    ctx.fillStyle = '#8a8074';
-    ctx.font = '600 24px "Space Mono", Menlo, monospace';
-    ctx.fillText('A D M I T   O N E', W / 2, ty + 62);
+    ctx.fillStyle = '#e8ded0';
+    ctx.font = '600 ' + (24 * s) + 'px "Space Mono", Menlo, monospace';
+    ctx.fillText('A D M I T   O N E', W / 2, ty + 62 * s);
 
     // Order top to bottom: band, date, venue, address.
-    ctx.font = '600 28px "Space Mono", Menlo, monospace';
+    ctx.font = '600 ' + (28 * s) + 'px "Space Mono", Menlo, monospace';
     var bandText = (data.act || '').toUpperCase();
     var bandW = ctx.measureText(bandText).width;
     ctx.strokeStyle = '#c99a4b';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(W / 2 - bandW / 2 - 18, ty + 92, bandW + 36, 58);
+    ctx.lineWidth = 2 * s;
+    ctx.strokeRect(W / 2 - bandW / 2 - 18 * s, ty + 92 * s, bandW + 36 * s, 58 * s);
     ctx.fillStyle = '#c99a4b';
-    ctx.fillText(bandText, W / 2, ty + 129);
+    ctx.fillText(bandText, W / 2, ty + 129 * s);
 
     ctx.fillStyle = '#f1ead9';
-    ctx.font = '700 86px Georgia, serif';
+    ctx.font = '700 ' + (86 * s) + 'px Georgia, serif';
     var dateText = data.date.replace(/&middot;/g, '·').replace(/&mdash;/g, '—');
-    ctx.fillText(dateText, W / 2, ty + 262);
+    ctx.fillText(dateText, W / 2, ty + 262 * s);
 
-    ctx.font = '600 56px Georgia, serif';
+    ctx.font = '600 ' + (56 * s) + 'px Georgia, serif';
     var venueText = data.venue.replace(/&mdash;/g, '—');
-    var afterVenue = wrapText(ctx, venueText, W / 2, ty + 380, tw - 140, 64);
+    var afterVenue = wrapText(ctx, venueText, W / 2, ty + 380 * s, tw - 140, 64 * s);
 
-    ctx.font = '400 32px "Work Sans", -apple-system, sans-serif';
-    ctx.fillStyle = '#c9bfa8';
+    ctx.font = '400 ' + (32 * s) + 'px "Work Sans", -apple-system, sans-serif';
+    ctx.fillStyle = '#e5decf';
     var addrText = [data.addr, data.city].filter(Boolean).join(', ');
-    var afterAddr = wrapText(ctx, addrText, W / 2, afterVenue + 78, tw - 160, 40);
+    var afterAddr = wrapText(ctx, addrText, W / 2, afterVenue + 78 * s, tw - 160, 40 * s);
 
     // Perforation sits a fixed distance below whatever the address ended
     // up at (so a short one-line address doesn't leave a big empty gap
     // above the stub), with a floor so the stub never gets squeezed if
     // the address wraps to two lines.
-    var perfY = Math.max(afterAddr + 90, ty + th * 0.5);
+    var perfY = Math.max(afterAddr + 90 * s, ty + th * 0.62);
 
-    ctx.fillStyle = 'rgba(0,0,0,0.18)';
+    ctx.fillStyle = 'rgba(0,0,0,0.32)';
     ctx.fillRect(tx, perfY, tw, (ty + th) - perfY);
 
     // Perforation: dashed line with punched half-circle notches at each end.
     ctx.strokeStyle = 'rgba(201,154,75,0.55)';
-    ctx.lineWidth = 3;
-    ctx.setLineDash([14, 12]);
+    ctx.lineWidth = 3 * s;
+    ctx.setLineDash([14 * s, 12 * s]);
     ctx.beginPath();
     ctx.moveTo(tx + 30, perfY);
     ctx.lineTo(tx + tw - 30, perfY);
     ctx.stroke();
     ctx.setLineDash([]);
     ctx.fillStyle = outer;
-    ctx.beginPath(); ctx.arc(tx, perfY, 22, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(tx + tw, perfY, 22, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(tx, perfY, 22 * s, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(tx + tw, perfY, 22 * s, 0, Math.PI * 2); ctx.fill();
 
     // Stub: barcode + the site's watermark.
-    var bcW = tw * 0.62, bcH = 56;
+    var bcW = tw * 0.62, bcH = 56 * s;
     var bcX = W / 2 - bcW / 2;
-    var bcY = perfY + ((ty + th - perfY) / 2) - bcH / 2 - 18;
+    var bcY = perfY + ((ty + th - perfY) / 2) - bcH / 2 - 18 * s;
     ctx.fillStyle = '#f1ead9';
     seededBarcode(ctx, (data.venue || '') + (data.date || ''), bcX, bcY, bcW, bcH);
 
-    ctx.font = '600 22px "Space Mono", Menlo, monospace';
-    ctx.fillStyle = '#8a8074';
-    ctx.fillText('GARRETT SUMMERS  ·  GARRETTSUMMERSMUSIC.COM', W / 2, ty + th - 28);
+    ctx.font = '600 ' + (22 * s) + 'px "Space Mono", Menlo, monospace';
+    ctx.fillStyle = '#c9bfa8';
+    ctx.fillText('GARRETT SUMMERS  ·  GARRETTSUMMERSMUSIC.COM', W / 2, ty + th - 28 * s);
 
     ctx.restore();
 
@@ -2087,8 +2217,8 @@
   // a tick later it silently no-ops and falls through to a plain download.
   shareBtn.addEventListener('click', function(){
     if(!current) return;
-    drawPoster(current);
-    var filename = (current.venue || 'show').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') + '.jpg';
+    drawPoster(current, CANVAS_SIZES[aspect] || CANVAS_SIZES.story);
+    var filename = (current.venue || 'show').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') + '-' + aspect + '.jpg';
     var blob = dataUrlToBlob(canvas.toDataURL('image/jpeg', 0.92));
     var file;
     try { file = new File([blob], filename, {type: 'image/jpeg'}); } catch(err){ file = null; }
