@@ -405,6 +405,7 @@
   @media (max-width:560px){
     .reel-card{grid-template-columns:1fr; gap:10px;}
     .reel-card .show-link{justify-self:start; margin-top:8px;}
+    .reel-card .venue-addr{display:block; margin-left:0; margin-top:2px;}
   }
   .reel-card.in-view{opacity:var(--card-op, 1); transform:translateY(0);}
   .reel-card.past{--card-op:0.6; filter:grayscale(0.35);}
@@ -456,6 +457,14 @@
     font-weight:600;
     line-height:1.15;
   }
+  .reel-card .venue-addr{
+    font-family:var(--mono);
+    font-size:0.68rem;
+    font-weight:400;
+    color:var(--ink-dim);
+    letter-spacing:0.01em;
+    margin-left:8px;
+  }
   .reel-card .city{
     font-family:var(--mono);
     font-size:0.74rem;
@@ -487,13 +496,6 @@
     color:var(--brass);
     border-bottom:1px solid var(--rust);
     white-space:nowrap;
-  }
-  .reel-card.sample .venue::after{
-    content:" (sample)";
-    font-family:var(--mono);
-    font-size:0.58rem;
-    color:var(--ink-dim);
-    font-weight:400;
   }
   .reel-card.today{
     display:flex;
@@ -660,6 +662,12 @@
       repeating-linear-gradient(135deg, transparent 0 10px, rgba(255,255,255,0.03) 10px 20px),
       linear-gradient(160deg, var(--ground-raised), var(--ground));
   }
+  .item .frame img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
   .item-info{
     padding:12px;
     display:flex;
@@ -683,6 +691,7 @@
   .bid-btn{
     margin-top:auto;
     display:block;
+    width:100%;
     text-align:center;
     font-family:var(--mono);
     font-size:0.7rem;
@@ -690,11 +699,287 @@
     text-transform:uppercase;
     text-decoration:none;
     color:var(--brass);
+    background:transparent;
     border:1px solid var(--brass);
     border-radius:3px;
     padding:8px 10px;
+    -webkit-appearance:none;
+    appearance:none;
+    cursor:pointer;
   }
   .bid-btn:hover{background:var(--brass);color:var(--ground);}
+  .bid-btn, .item{cursor:pointer;}
+
+  .consign-item{border-style:dashed;}
+  .consign-btn{border-color:var(--rust);color:var(--rust);}
+  .consign-btn:hover{background:var(--rust);color:var(--ground);}
+
+  /* Bid / consign drawer -- a bottom sheet in the same visual language as
+     the ticket poster (opaque-ish backdrop, brass/rust accents, mono
+     labels), used for both placing a bid and offering a consignment. */
+  .drawer-modal{
+    position:fixed;
+    inset:0;
+    z-index:110;
+    display:none;
+    align-items:flex-end;
+    justify-content:center;
+    padding:0;
+  }
+  .drawer-modal.open{display:flex;}
+  .drawer-backdrop{
+    position:absolute;
+    inset:0;
+    background:rgba(10,8,6,0.6);
+    opacity:0;
+    transition:opacity 0.25s ease;
+  }
+  .drawer-modal.open .drawer-backdrop{opacity:1;}
+  .drawer-sheet{
+    position:relative;
+    z-index:1;
+    width:100%;
+    max-width:440px;
+    background:var(--ground-raised);
+    border:1px solid var(--line);
+    border-bottom:none;
+    border-radius:20px 20px 0 0;
+    padding:14px 24px 30px;
+    box-shadow:0 -10px 34px rgba(0,0,0,0.4);
+    transform:translateY(100%);
+    transition:transform 0.32s cubic-bezier(.2,.8,.2,1);
+  }
+  .drawer-modal.open .drawer-sheet{transform:translateY(0);}
+  .drawer-handle{
+    width:36px;
+    height:4px;
+    border-radius:2px;
+    background:var(--line);
+    margin:0 auto 16px;
+  }
+  .drawer-title{
+    font-family:var(--serif);
+    font-size:1.35rem;
+    font-weight:700;
+    color:var(--ink);
+  }
+  .drawer-sub{
+    font-family:var(--mono);
+    font-size:0.7rem;
+    color:var(--ink-dim);
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+    margin-top:3px;
+    margin-bottom:20px;
+  }
+  .drawer-field{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    font-family:var(--mono);
+    font-size:0.66rem;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--ink-dim);
+    margin-bottom:14px;
+  }
+  .drawer-field input, .drawer-field textarea{
+    font-family:var(--sans);
+    font-size:0.95rem;
+    color:var(--ink);
+    background:var(--ground);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:10px 12px;
+    resize:none;
+  }
+  .drawer-field input:focus, .drawer-field textarea:focus{outline:none;border-color:var(--brass);}
+  .drawer-submit{
+    width:100%;
+    border:none;
+    border-radius:8px;
+    padding:13px;
+    margin-top:4px;
+    background:var(--brass);
+    color:var(--ground);
+    font-family:var(--mono);
+    font-size:0.78rem;
+    font-weight:700;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    cursor:pointer;
+  }
+  .drawer-submit:active{transform:scale(0.98);}
+
+  /* Inquire: a text-message-styled conversation. Same bottom-sheet
+     mechanics as the closet drawer, but taller, with a scrolling message
+     thread and an iMessage-style compose bar. The person writes a short
+     inquiry first, sees it land as a sent bubble, then a reply bubble
+     asks for name/phone (email optional) before the whole thing goes out
+     as one pre-filled email -- there's no backend on a static site to
+     actually receive a live chat. */
+  .inquire-modal{
+    position:fixed;
+    inset:0;
+    z-index:110;
+    display:none;
+    align-items:flex-end;
+    justify-content:center;
+    padding:0;
+  }
+  .inquire-modal.open{display:flex;}
+  .inquire-backdrop{
+    position:absolute;
+    inset:0;
+    background:rgba(10,8,6,0.6);
+    opacity:0;
+    transition:opacity 0.25s ease;
+  }
+  .inquire-modal.open .inquire-backdrop{opacity:1;}
+  .inquire-sheet{
+    position:relative;
+    z-index:1;
+    width:100%;
+    max-width:440px;
+    height:min(78vh, 640px);
+    display:flex;
+    flex-direction:column;
+    background:var(--ground-raised);
+    border:1px solid var(--line);
+    border-bottom:none;
+    border-radius:20px 20px 0 0;
+    padding:14px 0 0;
+    box-shadow:0 -10px 34px rgba(0,0,0,0.4);
+    transform:translateY(100%);
+    transition:transform 0.32s cubic-bezier(.2,.8,.2,1);
+    overflow:hidden;
+  }
+  .inquire-modal.open .inquire-sheet{transform:translateY(0);}
+  .inquire-handle{
+    width:36px;
+    height:4px;
+    border-radius:2px;
+    background:var(--line);
+    margin:0 auto 12px;
+    flex:none;
+  }
+  .inquire-header{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:0 22px 12px;
+    border-bottom:1px solid var(--line);
+    flex:none;
+  }
+  .inquire-avatar{
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    background:var(--brass);
+    color:var(--ground);
+    font-family:var(--mono);
+    font-size:0.68rem;
+    font-weight:700;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex:none;
+  }
+  .inquire-title{
+    font-family:var(--serif);
+    font-size:1rem;
+    font-weight:700;
+    color:var(--ink);
+  }
+  .inquire-status{
+    font-family:var(--mono);
+    font-size:0.62rem;
+    color:var(--ink-dim);
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+  }
+  .inquire-thread{
+    flex:1;
+    overflow-y:auto;
+    padding:16px 22px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .msg{
+    max-width:78%;
+    padding:9px 13px;
+    border-radius:16px;
+    font-family:var(--sans);
+    font-size:0.92rem;
+    line-height:1.35;
+    white-space:pre-wrap;
+  }
+  .msg-in{
+    align-self:flex-start;
+    background:var(--line);
+    color:var(--ink);
+    border-bottom-left-radius:4px;
+  }
+  .msg-out{
+    align-self:flex-end;
+    background:var(--brass);
+    color:var(--ground);
+    border-bottom-right-radius:4px;
+  }
+  .inquire-compose-wrap{
+    flex:none;
+    padding:10px 22px 18px;
+    border-top:1px solid var(--line);
+  }
+  .inquire-compose{
+    display:flex;
+    align-items:flex-end;
+    gap:8px;
+  }
+  .inquire-compose textarea{
+    flex:1;
+    resize:none;
+    max-height:96px;
+    font-family:var(--sans);
+    font-size:0.92rem;
+    color:var(--ink);
+    background:var(--ground);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:9px 14px;
+    line-height:1.35;
+  }
+  .inquire-compose textarea:focus{outline:none;border-color:var(--brass);}
+  .inquire-send{
+    flex:none;
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    border:none;
+    background:var(--brass);
+    color:var(--ground);
+    font-size:1rem;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    -webkit-appearance:none;
+    appearance:none;
+  }
+  .inquire-send:disabled{background:var(--line);color:var(--ink-dim);cursor:default;}
+  .inquire-wordcount{
+    font-family:var(--mono);
+    font-size:0.6rem;
+    color:var(--ink-dim);
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+    text-align:right;
+    margin-top:6px;
+  }
+  .inquire-wordcount.limit{color:var(--rust);}
+  .inquire-contact-form .drawer-field{margin-bottom:12px;}
+  .inquire-contact-form{padding-top:2px;}
 
   footer{
     margin-top:32px;
@@ -954,46 +1239,6 @@
     <script id="shows-data" type="application/json">
 [
   {
-    "date": "MAY 03",
-    "venue": "Eagles Lodge",
-    "city": "Bozeman, MT",
-    "addr": "316 E Main St",
-    "act": "Willy on the Wire",
-    "linkHref": "https://maps.google.com/?q=316+E+Main+St,+Bozeman,+MT+59715",
-    "linkText": "Map",
-    "sample": true
-  },
-  {
-    "date": "JUN 14",
-    "venue": "The Jump",
-    "city": "Bozeman, MT",
-    "addr": "75770 Gallatin Rd",
-    "act": "Rob Wolf",
-    "linkHref": "https://maps.google.com/?q=75770+Gallatin+Rd,+Bozeman,+MT",
-    "linkText": "Map",
-    "sample": true
-  },
-  {
-    "date": "JUL 04",
-    "venue": "Tune Up Bar",
-    "city": "Bozeman, MT",
-    "addr": "24 W Mendenhall St",
-    "act": "Rob Wolf",
-    "linkHref": "https://maps.google.com/?q=24+W+Mendenhall+St,+Bozeman,+MT+59715",
-    "linkText": "Map",
-    "sample": true
-  },
-  {
-    "date": "JUL 26",
-    "venue": "Eagles Lodge",
-    "city": "Bozeman, MT",
-    "addr": "316 E Main St",
-    "act": "Willy on the Wire",
-    "linkHref": "https://maps.google.com/?q=316+E+Main+St,+Bozeman,+MT+59715",
-    "linkText": "Map",
-    "sample": true
-  },
-  {
     "date": "AUG 08",
     "venue": "Eagles Lodge",
     "city": "Bozeman, MT",
@@ -1080,8 +1325,8 @@
     "city": "Venues TBD",
     "addr": "TBD",
     "act": "Willy on the Wire",
-    "linkHref": "#closet",
-    "linkText": "More"
+    "linkHref": "mailto:booking@garrettsummersmusic.com?subject=Tour%20dates",
+    "linkText": "Inquire"
   },
   {
     "date": "PENDING",
@@ -1089,8 +1334,8 @@
     "city": "Venues TBD",
     "addr": "TBD",
     "act": "Rob Wolf",
-    "linkHref": "#closet",
-    "linkText": "More"
+    "linkHref": "mailto:booking@garrettsummersmusic.com?subject=Tour%20dates",
+    "linkText": "Inquire"
   },
   {
     "date": "PENDING",
@@ -1098,51 +1343,105 @@
     "city": "Venues TBD",
     "addr": "TBD",
     "act": "Guest Sets",
-    "linkHref": "#closet",
-    "linkText": "More"
+    "linkHref": "mailto:booking@garrettsummersmusic.com?subject=Tour%20dates",
+    "linkText": "Inquire"
   }
 ]
     </script>
     <div class="reel" id="showsReel"></div>
     <div class="reel-hint" id="reelHint">Tap a date for a share-ready poster &nbsp;&middot;&nbsp; keep scrolling down for what's next</div>
-    <div class="shows-empty-tag">Early dates are placeholders &mdash; send me the real show history and I'll swap them in. Tour dates are in active booking across all three acts.</div>
   </section>
 
   <section id="closet" class="panel">
     <h2 class="promotable">Closet</h2>
-    <p class="closet-note">Stage &amp; tour pieces, up for bid. Tap an item to send your bid, highest offer by the end of the month wins &mdash; I'll follow up directly to arrange payment and shipping.</p>
-    <div class="closet">
+    <p class="closet-note">Stage &amp; tour pieces, up for bid &mdash; tap a piece to send your offer.</p>
+    <div class="closet" id="closetGrid">
 
-      <div class="item">
-        <div class="frame">Add photo</div>
+      <div class="item" data-item="Stage-Worn Corduroy Vest" data-start="140">
+        <div class="frame"><img src="images/closet-corduroy-vest.jpg" alt="Corduroy vest worn on stage during a live show" loading="lazy"></div>
         <div class="item-info">
-          <div class="item-name promotable">Denim Jacket</div>
-          <div class="item-start">Starting at <b>$40</b></div>
-          <a class="bid-btn" href="mailto:booking@garrettsummersmusic.com?subject=Bid%20%E2%80%94%20Denim%20Jacket&amp;body=My%20bid%3A%20%24">Place a bid</a>
+          <div class="item-name promotable">Stage-Worn Corduroy Vest</div>
+          <div class="item-start">Starting at <b>$140</b></div>
+          <button type="button" class="bid-btn">Place a bid</button>
         </div>
       </div>
 
-      <div class="item">
-        <div class="frame">Add photo</div>
+      <div class="item consign-item">
+        <div class="frame"><img src="images/closet-talkingheads-tee.jpg" alt="" loading="lazy"></div>
         <div class="item-info">
-          <div class="item-name promotable">Stage Boots</div>
-          <div class="item-start">Starting at <b>$60</b></div>
-          <a class="bid-btn" href="mailto:booking@garrettsummersmusic.com?subject=Bid%20%E2%80%94%20Stage%20Boots&amp;body=My%20bid%3A%20%24">Place a bid</a>
-        </div>
-      </div>
-
-      <div class="item">
-        <div class="frame">Add photo</div>
-        <div class="item-info">
-          <div class="item-name promotable">Tour Flannel</div>
-          <div class="item-start">Starting at <b>$25</b></div>
-          <a class="bid-btn" href="mailto:booking@garrettsummersmusic.com?subject=Bid%20%E2%80%94%20Tour%20Flannel&amp;body=My%20bid%3A%20%24">Place a bid</a>
+          <div class="item-name promotable">Consign With Me</div>
+          <a class="bid-btn consign-btn" href="consign.html" target="_blank" rel="noopener">Consign With Me</a>
         </div>
       </div>
 
     </div>
-    <div class="shows-empty-tag">Example items &amp; prices &mdash; send real ones and photos and I'll swap them in.</div>
   </section>
+
+  <!-- Bid drawer: tap a for-sale item card to place a bid on it. Tap
+       outside (or drag the handle down, visually) to dismiss -- no X
+       button, matching the poster's tap-out-to-close convention. Submitting
+       builds a pre-filled email rather than posting anywhere, since this is
+       a static site with no backend to receive the offer. -->
+  <div class="drawer-modal" id="closetDrawer" aria-hidden="true">
+    <div class="drawer-backdrop"></div>
+    <div class="drawer-sheet" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
+      <div class="drawer-handle"></div>
+      <div class="drawer-title" id="drawerTitle">Place a Bid</div>
+      <div class="drawer-sub" id="drawerSub">Stage-Worn Corduroy Vest &middot; Starting at $140</div>
+      <form id="drawerForm">
+        <label class="drawer-field">
+          <span>Your bid</span>
+          <input type="number" id="drawerAmount" inputmode="decimal" min="0" step="1" placeholder="$">
+        </label>
+        <label class="drawer-field">
+          <span>Your email</span>
+          <input type="email" id="drawerEmail" placeholder="you@email.com" required>
+        </label>
+        <button type="submit" class="drawer-submit" id="drawerSubmit">Send Bid</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Inquire: text-message-styled booking inquiry. Reached from the
+       "Inquire" links on the pending tour-date cards. -->
+  <div class="inquire-modal" id="inquireModal" aria-hidden="true">
+    <div class="inquire-backdrop"></div>
+    <div class="inquire-sheet" role="dialog" aria-modal="true" aria-labelledby="inquireTitle">
+      <div class="inquire-handle"></div>
+      <div class="inquire-header">
+        <div class="inquire-avatar">GS</div>
+        <div>
+          <div class="inquire-title" id="inquireTitle">Garrett Summers</div>
+          <div class="inquire-status">Usually replies within a day</div>
+        </div>
+      </div>
+      <div class="inquire-thread" id="inquireThread"></div>
+      <div class="inquire-compose-wrap" id="inquireComposeWrap">
+        <div class="inquire-compose">
+          <textarea id="inquireText" placeholder="Type a message..." rows="1"></textarea>
+          <button type="button" class="inquire-send" id="inquireSend" aria-label="Send">&#10148;</button>
+        </div>
+        <div class="inquire-wordcount" id="inquireWordCount">50 words left</div>
+      </div>
+      <div class="inquire-compose-wrap" id="inquireContactWrap" style="display:none;">
+        <form class="inquire-contact-form" id="inquireContactForm">
+          <label class="drawer-field">
+            <span>Name</span>
+            <input type="text" id="inquireName" required>
+          </label>
+          <label class="drawer-field">
+            <span>Phone number</span>
+            <input type="tel" id="inquirePhone" required>
+          </label>
+          <label class="drawer-field">
+            <span>Email (optional)</span>
+            <input type="email" id="inquireEmail">
+          </label>
+          <button type="submit" class="drawer-submit" id="inquireSubmit">Send</button>
+        </form>
+      </div>
+    </div>
+  </div>
 
   <footer class="panel">
     <div>
@@ -1308,10 +1607,12 @@
           '" data-addr="' + esc(s.addr) + '" data-act="' + esc(s.act) + '">' +
           (past ? '<div class="past-tag">Past show</div>' : '') +
           '<div class="show-date">' + withYear(s.date) + '</div>' +
-          '<div class="venue">' + s.venue + '</div>' +
+          '<div class="venue">' + s.venue + (s.addr && s.addr !== 'TBD' ? '<span class="venue-addr">' + s.addr + '</span>' : '') + '</div>' +
           '<div class="city">' + s.city + doorsText(s) + '</div>' +
           '<span class="act-tag">' + s.act + '</span>' +
-          '<a class="show-link" href="' + s.linkHref + '" target="_blank" rel="noopener">' + s.linkText + '</a>' +
+          (s.linkText === 'Inquire' ?
+            '<a class="show-link inquire-trigger" href="#" data-act="' + esc(s.act) + '">Inquire</a>' :
+            '<a class="show-link" href="' + s.linkHref + '" target="_blank" rel="noopener">' + s.linkText + '</a>') +
         '</div>'
     };
   });
@@ -1906,6 +2207,256 @@
   }, {passive:true});
 
   render();
+})();
+</script>
+
+<!-- Closet: bid drawer. Tapping an item card (that has a bid, i.e. carries
+     data-item) opens the bottom sheet pre-filled for that item. The
+     Consign card is a real link to its own page (consign.html), not part
+     of this drawer, so it's excluded here. Submitting never posts
+     anywhere (no backend on a static site) -- it builds a pre-filled
+     email and lets the person's own mail app send it, same as every
+     other contact path on this site. -->
+<script>
+(function(){
+  var drawer = document.getElementById('closetDrawer');
+  if(!drawer) return;
+  var backdrop = drawer.querySelector('.drawer-backdrop');
+  var sheet = drawer.querySelector('.drawer-sheet');
+  var title = document.getElementById('drawerTitle');
+  var sub = document.getElementById('drawerSub');
+  var form = document.getElementById('drawerForm');
+  var amountInput = document.getElementById('drawerAmount');
+  var emailInput = document.getElementById('drawerEmail');
+  var currentItem = '';
+  var scrollLockY = 0;
+
+  function lockPageScroll(){
+    scrollLockY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = (-scrollLockY) + 'px';
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+  }
+  function unlockPageScroll(){
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    window.scrollTo(0, scrollLockY);
+  }
+
+  function openBid(item, start){
+    currentItem = item;
+    title.textContent = 'Place a Bid';
+    sub.textContent = item + (start ? ' · Starting at $' + start : '');
+    amountInput.placeholder = start ? '$' + start + '+' : '$';
+    amountInput.value = '';
+    emailInput.value = '';
+    lockPageScroll();
+    drawer.classList.add('open');
+    drawer.setAttribute('aria-hidden', 'false');
+  }
+  function close(){
+    drawer.classList.remove('open');
+    drawer.setAttribute('aria-hidden', 'true');
+    unlockPageScroll();
+  }
+
+  document.addEventListener('click', function(e){
+    if(e.target.closest('a')) return;
+    var item = e.target.closest('.item');
+    if(item && item.dataset && item.dataset.item){
+      openBid(item.dataset.item, item.dataset.start || '');
+    }
+  });
+
+  // Tap outside the sheet (the backdrop, or the empty space around it)
+  // dismisses -- no X button, same convention as the poster.
+  drawer.addEventListener('click', function(e){
+    if(sheet.contains(e.target)) return;
+    close();
+  });
+  backdrop.addEventListener('click', close);
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var email = emailInput.value.trim();
+    var to = 'booking@garrettsummersmusic.com';
+    var subject = 'Bid — ' + currentItem;
+    var body = 'My bid: $' + (amountInput.value || '') + '\nMy email: ' + email;
+    var href = 'mailto:' + to + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+    window.location.href = href;
+    close();
+  });
+})();
+</script>
+
+<!-- Inquire: a text-message-feeling booking inquiry. The person writes a
+     short message first (capped at 50 words, enforced live), sends it,
+     sees it land as a sent bubble, then a reply bubble asks for their
+     name and phone (email optional) before the whole thread goes out as
+     one pre-filled email -- there's no backend on a static site to
+     actually receive a live chat. -->
+<script>
+(function(){
+  var modal = document.getElementById('inquireModal');
+  if(!modal) return;
+  var backdrop = modal.querySelector('.inquire-backdrop');
+  var sheet = modal.querySelector('.inquire-sheet');
+  var thread = document.getElementById('inquireThread');
+  var composeWrap = document.getElementById('inquireComposeWrap');
+  var contactWrap = document.getElementById('inquireContactWrap');
+  var textArea = document.getElementById('inquireText');
+  var sendBtn = document.getElementById('inquireSend');
+  var wordCount = document.getElementById('inquireWordCount');
+  var contactForm = document.getElementById('inquireContactForm');
+  var nameInput = document.getElementById('inquireName');
+  var phoneInput = document.getElementById('inquirePhone');
+  var emailInput = document.getElementById('inquireEmail');
+  var WORD_LIMIT = 50;
+  var currentAct = '';
+  var inquiryText = '';
+  var scrollLockY = 0;
+
+  function lockPageScroll(){
+    scrollLockY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = (-scrollLockY) + 'px';
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+  }
+  function unlockPageScroll(){
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    window.scrollTo(0, scrollLockY);
+  }
+
+  function wordsOf(str){
+    var t = str.trim();
+    return t ? t.split(/\s+/) : [];
+  }
+
+  function updateWordCount(){
+    var n = wordsOf(textArea.value).length;
+    var left = WORD_LIMIT - n;
+    wordCount.textContent = Math.max(left, 0) + ' words left';
+    wordCount.classList.toggle('limit', left <= 0);
+    sendBtn.disabled = n === 0;
+  }
+
+  // Enforce the 50-word cap live rather than only at send -- typing past
+  // it just stops adding new words instead of silently truncating later.
+  textArea.addEventListener('input', function(){
+    var words = wordsOf(textArea.value);
+    if(words.length > WORD_LIMIT){
+      var trimmed = words.slice(0, WORD_LIMIT).join(' ');
+      // Keep a trailing space so a word in progress isn't cut mid-type
+      // when the cap is hit exactly on a space.
+      textArea.value = trimmed;
+    }
+    textArea.style.height = 'auto';
+    textArea.style.height = Math.min(textArea.scrollHeight, 96) + 'px';
+    updateWordCount();
+  });
+  textArea.addEventListener('keydown', function(e){
+    if(e.key === 'Enter' && !e.shiftKey){
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  function addBubble(text, dir){
+    var b = document.createElement('div');
+    b.className = 'msg msg-' + dir;
+    b.textContent = text;
+    thread.appendChild(b);
+    thread.scrollTop = thread.scrollHeight;
+  }
+
+  function openerLineFor(act){
+    if(act === 'Guest Sets'){
+      return 'Hey! Looking to bring in a guest set for a show? Tell me the dates and venue you have in mind.';
+    }
+    return 'Hey! Interested in booking ' + act + '? Tell me the dates, venue, or city you have in mind.';
+  }
+
+  function sendMessage(){
+    var text = textArea.value.trim();
+    if(!text) return;
+    inquiryText = text;
+    addBubble(text, 'out');
+    textArea.value = '';
+    textArea.style.height = 'auto';
+    updateWordCount();
+    composeWrap.style.display = 'none';
+    window.setTimeout(function(){
+      addBubble('Got it — what’s the best way to reach you?', 'in');
+      contactWrap.style.display = '';
+      nameInput.focus();
+    }, 450);
+  }
+  sendBtn.addEventListener('click', sendMessage);
+
+  function resetThread(act){
+    thread.innerHTML = '';
+    addBubble(openerLineFor(act), 'in');
+    textArea.value = '';
+    textArea.style.height = 'auto';
+    updateWordCount();
+    composeWrap.style.display = '';
+    contactWrap.style.display = 'none';
+    contactForm.reset();
+    inquiryText = '';
+  }
+
+  function open(act){
+    currentAct = act || 'a show';
+    resetThread(currentAct);
+    lockPageScroll();
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+    window.setTimeout(function(){ textArea.focus(); }, 350);
+  }
+  function close(){
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+    unlockPageScroll();
+  }
+
+  document.addEventListener('click', function(e){
+    var trigger = e.target.closest('.inquire-trigger');
+    if(!trigger) return;
+    e.preventDefault();
+    open(trigger.dataset.act);
+  });
+
+  modal.addEventListener('click', function(e){
+    if(sheet.contains(e.target)) return;
+    close();
+  });
+  backdrop.addEventListener('click', close);
+
+  contactForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    var name = nameInput.value.trim();
+    var phone = phoneInput.value.trim();
+    var email = emailInput.value.trim();
+    addBubble(name + ' · ' + phone + (email ? ' · ' + email : ''), 'out');
+    var to = 'booking@garrettsummersmusic.com';
+    var subject = 'Inquiry — ' + currentAct;
+    var body = 'Message: ' + inquiryText +
+      '\n\nName: ' + name +
+      '\nPhone: ' + phone +
+      (email ? '\nEmail: ' + email : '');
+    var href = 'mailto:' + to + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+    window.setTimeout(function(){
+      window.location.href = href;
+      close();
+    }, 350);
+  });
 })();
 </script>
 

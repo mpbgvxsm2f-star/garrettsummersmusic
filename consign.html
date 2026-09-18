@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Consign — Garrett Summers</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:,">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Space+Mono:wght@400;700&family=Work+Sans:wght@400;500;600&display=swap');
+
+  :root{
+    color-scheme: dark light;
+    --ink:#f1ead9;
+    --ink-dim:#cfc5b0;
+    --ground:#1c1815;
+    --ground-raised:#27201c;
+    --brass:#c99a4b;
+    --rust:#a9573a;
+    --line:#413a32;
+    --mono: 'Space Mono', ui-monospace, monospace;
+    --serif: 'Fraunces', Georgia, serif;
+    --sans: 'Work Sans', -apple-system, sans-serif;
+  }
+  @media (prefers-color-scheme: light){
+    :root{
+      --ink:#201b17;
+      --ink-dim:#4a4238;
+      --ground:#ece3d0;
+      --ground-raised:#fbf9f4;
+      --brass:#8a5f27;
+      --rust:#96492f;
+      --line:#d8cbae;
+    }
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;}
+  body{
+    background:var(--ground);
+    color:var(--ink);
+    font-family:var(--sans);
+    font-size:16.5px;
+    line-height:1.55;
+    padding-inline:20px;
+  }
+  a{color:var(--brass);}
+  .wrap{max-width:480px;margin:0 auto;padding-block:48px 80px;}
+  .back{
+    display:inline-block;
+    font-family:var(--mono);
+    font-size:0.7rem;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    text-decoration:none;
+    color:var(--ink-dim);
+    margin-bottom:28px;
+  }
+  .back:hover{color:var(--brass);}
+  h1{
+    font-family:var(--serif);
+    font-size:2rem;
+    font-weight:700;
+    margin:0 0 10px;
+  }
+  .lead{
+    font-family:var(--sans);
+    font-size:0.98rem;
+    color:var(--ink-dim);
+    margin:0 0 32px;
+  }
+  form{display:flex;flex-direction:column;}
+  .field{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    font-family:var(--mono);
+    font-size:0.66rem;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--ink-dim);
+    margin-bottom:16px;
+  }
+  .field input, .field textarea{
+    font-family:var(--sans);
+    font-size:0.95rem;
+    color:var(--ink);
+    background:var(--ground-raised);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:11px 13px;
+    resize:none;
+  }
+  .field input:focus, .field textarea:focus{outline:none;border-color:var(--brass);}
+  .submit{
+    width:100%;
+    border:none;
+    border-radius:8px;
+    padding:14px;
+    margin-top:6px;
+    background:var(--brass);
+    color:var(--ground);
+    font-family:var(--mono);
+    font-size:0.78rem;
+    font-weight:700;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    cursor:pointer;
+  }
+  .submit:active{transform:scale(0.98);}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="back" href="index.html">&larr; Garrett Summers</a>
+    <h1>Consign With Me</h1>
+    <p class="lead">Have a piece to sell? I push hard for top dollar on every consignment. Tell me what you've got and I'll follow up directly.</p>
+    <form id="consignForm">
+      <label class="field">
+        <span>Brand / name (optional)</span>
+        <input type="text" id="brand" placeholder="Who's this from?">
+      </label>
+      <label class="field">
+        <span>What do you have?</span>
+        <textarea id="desc" rows="4" placeholder="Item, condition, a few details..."></textarea>
+      </label>
+      <label class="field">
+        <span>Your email</span>
+        <input type="email" id="email" placeholder="you@email.com" required>
+      </label>
+      <button type="submit" class="submit">Send</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('consignForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      var brand = document.getElementById('brand').value.trim();
+      var desc = document.getElementById('desc').value.trim();
+      var email = document.getElementById('email').value.trim();
+      var to = 'booking@garrettsummersmusic.com';
+      var subject = 'Consignment inquiry';
+      var body = 'From: ' + (brand || '(no name given)') +
+        '\nItem: ' + (desc || '(no details given)') +
+        '\nMy email: ' + email;
+      window.location.href = 'mailto:' + to + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+    });
+  </script>
+</body>
+</html>
