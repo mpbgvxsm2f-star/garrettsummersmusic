@@ -4,13 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Garrett Summers</title>
-<meta name="description" content="Garrett Summers — keyboardist/organist with Willy on the Wire, supporting artist for Rob Wolf.">
+<meta name="description" content="Garrett Summers — keys, synths &amp; organ with Willy on the Wire and keys for Rob Wolf.">
 
 <!-- Open Graph / iMessage / Facebook link preview -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Garrett Summers">
 <meta property="og:title" content="Garrett Summers">
-<meta property="og:description" content="Keyboardist/organist with Willy on the Wire, supporting artist for Rob Wolf. Live dates, music, and more.">
+<meta property="og:description" content="Keys, synths &amp; organ with Willy on the Wire and keys for Rob Wolf. Live dates, music, and more.">
 <meta property="og:url" content="https://garrettsummersmusic.com/">
 <meta property="og:image" content="https://garrettsummersmusic.com/og-image.jpg">
 <meta property="og:image:secure_url" content="https://garrettsummersmusic.com/og-image.jpg">
@@ -22,7 +22,7 @@
 <!-- Twitter/X card -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Garrett Summers">
-<meta name="twitter:description" content="Keyboardist/organist with Willy on the Wire, supporting artist for Rob Wolf.">
+<meta name="twitter:description" content="Keys, synths &amp; organ with Willy on the Wire and keys for Rob Wolf.">
 <meta name="twitter:image" content="https://garrettsummersmusic.com/og-image.jpg">
 <link rel="icon" href="data:,">
 <style>
@@ -382,6 +382,8 @@
     flex-direction:column;
     gap:10px;
   }
+  /* The whole card is the button (not a chip inside it) -- clicking
+     anywhere on it opens that show's poster. See the poster script. */
   .reel-card{
     background:var(--panel-bg);
     backdrop-filter:blur(10px);
@@ -395,20 +397,14 @@
     align-items:center;
     opacity:0;
     transform:translateY(-22px);
-    transition:opacity 0.5s ease, transform 0.5s cubic-bezier(.2,.8,.2,1);
+    cursor:pointer;
+    transition:opacity 0.5s ease, transform 0.5s cubic-bezier(.2,.8,.2,1), border-color 0.15s ease, background 0.15s ease;
   }
+  .reel-card:hover{border-color:var(--brass);}
+  .reel-card:active{background:rgba(169,87,58,0.1);}
   @media (max-width:560px){
-    .reel-card{grid-template-columns:1fr; gap:14px;}
+    .reel-card{grid-template-columns:1fr; gap:10px;}
     .reel-card .show-link{justify-self:start; margin-top:8px;}
-    /* Single-column stacking: the negative-margin trick that enlarges
-       click targets without shifting desktop layout (see .promotable)
-       pulls each row toward its neighbor -- with only a few px between
-       stacked rows that made show-date and venue's hit-boxes overlap
-       and steal each other's taps. Kill the vertical pull here; the
-       real 14px row gap above does the spacing instead. */
-    .reel-card .show-date{margin:0 0 0 -10px;}
-    .reel-card .venue.promotable{margin:0 -10px;}
-    .reel-card .past-tag{margin-bottom:0;}
   }
   .reel-card.in-view{opacity:var(--card-op, 1); transform:translateY(0);}
   .reel-card.past{--card-op:0.6; filter:grayscale(0.35);}
@@ -419,7 +415,29 @@
     letter-spacing:0.08em;
     text-transform:uppercase;
     color:var(--ink-dim);
-    margin-bottom:-6px;
+  }
+  /* Spotlights the next upcoming show when today itself isn't a show
+     day (when it is, that show gets its own featured card instead --
+     see .today-show below). */
+  .reel-card.next-show{
+    position:relative;
+    border-color:var(--brass);
+    box-shadow:0 0 0 2px var(--brass) inset;
+  }
+  .reel-card.next-show::before{
+    content:"Next Show";
+    position:absolute;
+    top:-11px;
+    left:14px;
+    background:var(--brass);
+    color:var(--ground);
+    font-family:var(--mono);
+    font-size:0.58rem;
+    font-weight:700;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    padding:3px 10px;
+    border-radius:4px;
   }
   .reel-card .show-date{
     font-family:var(--mono);
@@ -428,16 +446,10 @@
     color:var(--ink);
     background:rgba(169,87,58,0.14);
     white-space:nowrap;
-    cursor:pointer;
     display:inline-block;
-    border:1px solid var(--rust);
     border-radius:6px;
     padding:8px 13px;
-    margin:-8px 0 -8px -10px;
-    transition:background 0.15s ease, color 0.15s ease;
   }
-  .reel-card .show-date:hover{background:rgba(169,87,58,0.24); color:var(--ink);}
-  .reel-card .show-date:active{background:rgba(169,87,58,0.34);}
   .reel-card .venue{
     font-family:var(--serif);
     font-size:1.15rem;
@@ -512,6 +524,44 @@
     font-family:var(--serif);
     font-size:1.1rem;
     font-weight:600;
+  }
+  /* When today itself is a show day, that show takes over the Today
+     slot entirely -- full details, still the brass "spotlight" card,
+     but laid out to carry the extra content instead of just a date. */
+  .reel-card.today-show{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    text-align:left;
+    gap:3px;
+    padding:16px 20px;
+  }
+  .reel-card.today-show .today-label{
+    font-family:var(--mono);
+    font-size:0.62rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    opacity:0.85;
+    margin-bottom:2px;
+  }
+  .reel-card.today-show .today-show-act{
+    font-family:var(--mono);
+    font-size:0.74rem;
+    font-weight:700;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+  }
+  .reel-card.today-show .today-show-venue{
+    font-family:var(--serif);
+    font-size:1.55rem;
+    font-weight:700;
+    line-height:1.1;
+  }
+  .reel-card.today-show .today-show-meta{
+    font-family:var(--mono);
+    font-size:0.76rem;
+    opacity:0.92;
+    margin-top:2px;
   }
   .reel-hint{
     font-family:var(--mono);
@@ -895,7 +945,7 @@
       <div class="promo-tile promo-tile-a" id="promoTileA"></div>
       <div class="promo-tile promo-tile-b" id="promoTileB"></div>
     </div>
-    <p class="tagline">Keyboardist &amp; organist &mdash; <b>Willy on the Wire</b>, supporting <b>Rob Wolf</b>.</p>
+    <p class="tagline">Keys, synths &amp; organ &mdash; <b>Willy on the Wire</b>, keys for <b>Rob Wolf</b>.</p>
     <div class="scroll-cue">Scroll</div>
   </header>
 
@@ -1229,39 +1279,72 @@
     return dateStr + yearSuffix(d);
   }
 
-  // When a venue is promoted, the background gallery pins to a specific
-  // photo instead of continuing to cycle -- add venues here as needed.
-  var VENUE_BG = {
-    'Eagles Lodge': 'images/photo2.jpg'
-  };
+  // Doors are 8pm for every real show except the festival slot and the
+  // still-TBD tour dates, where there's no fixed time to show.
+  function doorsText(s){
+    if(/sweet pea/i.test(s.venue) || s.city === 'Venues TBD') return '';
+    return ' · Doors 8:00 PM';
+  }
 
-  var cards = data.map(function(s){
+  // If a show falls on today's date, it takes over the "Today" slot as
+  // a fully featured header card instead of a plain date marker.
+  var todayShowIdx = -1;
+  for(var ti = 0; ti < data.length; ti++){
+    var td = parseDate(data[ti].date);
+    if(td && td.getTime() === today.getTime()){ todayShowIdx = ti; break; }
+  }
+  var todayShow = todayShowIdx > -1 ? data[todayShowIdx] : null;
+
+  // The whole card is the click target (see the poster script below), so
+  // nothing inside it needs its own .promotable/data-promote wiring.
+  var cards = data.map(function(s, idx){
     var past = isPast(s.date);
-    var promote = s.act + ' — ' + s.venue.replace(/&mdash;/g,'—').replace(/&middot;/g,'·') + ' — ' + s.addr;
-    var bg = VENUE_BG[s.venue] || '';
     return {
+      past: past,
+      isToday: idx === todayShowIdx,
       html:
         '<div class="reel-card' + (past ? ' past' : '') + (s.sample ? ' sample' : '') +
           '" data-date="' + esc(withYear(s.date)) + '" data-venue="' + esc(s.venue) + '" data-city="' + esc(s.city) +
           '" data-addr="' + esc(s.addr) + '" data-act="' + esc(s.act) + '">' +
           (past ? '<div class="past-tag">Past show</div>' : '') +
           '<div class="show-date">' + withYear(s.date) + '</div>' +
-          '<div class="venue promotable" data-promote="' + esc(promote) + '"' + (bg ? ' data-bg="' + esc(bg) + '"' : '') + '>' + s.venue + '</div>' +
-          '<div class="city">' + s.city + '</div>' +
+          '<div class="venue">' + s.venue + '</div>' +
+          '<div class="city">' + s.city + doorsText(s) + '</div>' +
           '<span class="act-tag">' + s.act + '</span>' +
           '<a class="show-link" href="' + s.linkHref + '" target="_blank" rel="noopener">' + s.linkText + '</a>' +
-        '</div>',
-      past: past
+        '</div>'
     };
   });
 
   var pastCards = cards.filter(function(c){ return c.past; });
   var pastHtml = pastCards.map(function(c){ return c.html; }).join('');
-  var upcomingHtml = cards.filter(function(c){ return !c.past; }).map(function(c){ return c.html; }).join('');
+  var upcomingCardsList = cards.filter(function(c){ return !c.past && !c.isToday; });
+
+  // Spotlight: today's own show if there is one (it already gets its own
+  // featured header card below); otherwise the next upcoming show gets a
+  // "Next Show" badge right in the regular list.
+  if(!todayShow && upcomingCardsList.length){
+    upcomingCardsList[0].html = upcomingCardsList[0].html.replace('class="reel-card', 'class="reel-card next-show');
+  }
+  var upcomingHtml = upcomingCardsList.map(function(c){ return c.html; }).join('');
+
   var todayLabel = today.toLocaleDateString('en-US', {month:'short', day:'2-digit'}).toUpperCase() + yearSuffix(today);
-  var todayHtml = '<div class="reel-card today promotable" id="todayMarker" data-promote="Today — ' + esc(todayLabel) + '">' +
-    '<div class="today-label">Today</div>' +
-    '<div class="today-date">' + todayLabel + '</div></div>';
+  var todayHtml;
+  if(todayShow){
+    todayHtml =
+      '<div class="reel-card today today-show" id="todayMarker" data-date="' + esc(withYear(todayShow.date)) +
+        '" data-venue="' + esc(todayShow.venue) + '" data-city="' + esc(todayShow.city) +
+        '" data-addr="' + esc(todayShow.addr) + '" data-act="' + esc(todayShow.act) + '">' +
+        '<div class="today-label">Today&rsquo;s Show</div>' +
+        '<div class="today-show-act">' + todayShow.act + '</div>' +
+        '<div class="today-show-venue">' + todayShow.venue + '</div>' +
+        '<div class="today-show-meta">' + [todayShow.addr, todayShow.city].filter(Boolean).join(', ') + doorsText(todayShow) + '</div>' +
+      '</div>';
+  } else {
+    todayHtml = '<div class="reel-card today promotable" id="todayMarker" data-promote="Today — ' + esc(todayLabel) + '">' +
+      '<div class="today-label">Today</div>' +
+      '<div class="today-date">' + todayLabel + '</div></div>';
+  }
 
   var pastBlockHtml = '';
   if(pastCards.length){
@@ -1524,13 +1607,16 @@
     unlockPageScroll();
   }
 
+  // The whole card is the button -- not a specific chip inside it. Any
+  // card carrying a real show (data-date is only set on those, never on
+  // the plain "Today" date marker) opens its poster on click, wherever
+  // on the card you tap. Real links (the Map anchor) are left alone so
+  // they still navigate instead of also opening the poster.
   document.addEventListener('click', function(e){
-    var dateEl = e.target.closest('.show-date');
-    if(dateEl){
-      var card = dateEl.closest('.reel-card');
-      if(card && card.dataset && card.dataset.date){
-        open(card.dataset);
-      }
+    if(e.target.closest('a')) return;
+    var card = e.target.closest('.reel-card');
+    if(card && card.dataset && card.dataset.date){
+      open(card.dataset);
     }
   });
 
