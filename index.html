@@ -1425,7 +1425,6 @@
 ]
     </script>
     <div class="reel" id="showsReel"></div>
-    <div class="reel-hint" id="reelHint">Tap a date for a share-ready poster &nbsp;&middot;&nbsp; keep scrolling down for what's next</div>
   </section>
 
   <section id="closet" class="panel">
@@ -1599,7 +1598,7 @@
   }
 
   var stored = getStored();
-  var current = stored || (systemPrefersLight() ? 'light' : 'dark');
+  var current = stored || 'dark';
   apply(current);
 
   document.getElementById('themeToggle').addEventListener('click', function(){
