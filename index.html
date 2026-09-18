@@ -1033,6 +1033,18 @@
     text-decoration:none;
     border-bottom:1px solid var(--rust);
   }
+  footer .contact-row{
+    display:flex;
+    align-items:baseline;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  footer a.work-link{
+    font-size:0.72rem;
+    color:var(--ink-dim);
+    border-bottom:1px solid var(--line);
+  }
+  footer a.work-link:hover{color:var(--brass);border-bottom-color:var(--rust);}
   footer .social{
     display:flex;
     gap:14px;
@@ -1509,13 +1521,15 @@
 
   <footer class="panel">
     <div>
-      <a class="email" href="mailto:booking@garrettsummersmusic.com">booking@garrettsummersmusic.com</a>
+      <div class="contact-row">
+        <a class="email" href="mailto:booking@garrettsummersmusic.com">booking@garrettsummersmusic.com</a>
+        <a class="email work-link" href="work.html" target="_blank" rel="noopener">Work With Me</a>
+      </div>
       <div class="photo-credit">Photos: <a href="https://instagram.com/ansel.barclay" target="_blank" rel="noopener" style="color:inherit;">@ansel.barclay</a></div>
     </div>
     <div class="social">
       <a href="https://www.instagram.com/garrett__summers/" target="_blank" rel="noopener">Instagram</a>
       <a href="https://open.spotify.com/artist/3vl6DlT9GTJ4khgn5FyEgI" target="_blank" rel="noopener">Spotify</a>
-      <a href="work.html" target="_blank" rel="noopener">Work With Me</a>
     </div>
   </footer>
 
