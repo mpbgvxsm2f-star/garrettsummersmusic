@@ -31,41 +31,41 @@
   :root{
     color-scheme: dark light;
     --ink:#f1ead9;
-    --ink-dim:#c9bfa8;
-    --ground:#161311;
-    --ground-raised:#211c19;
+    --ink-dim:#cfc5b0;
+    --ground:#1c1815;
+    --ground-raised:#27201c;
     --brass:#c99a4b;
     --rust:#a9573a;
-    --line:#3a332c;
-    --panel-bg: rgba(22,19,17,0.86);
-    --chip-bg: rgba(22,19,17,0.72);
+    --line:#413a32;
+    --panel-bg: rgba(20,17,15,0.95);
+    --chip-bg: rgba(20,17,15,0.88);
     --mono: 'Space Mono', ui-monospace, monospace;
     --serif: 'Fraunces', Georgia, serif;
     --sans: 'Work Sans', -apple-system, sans-serif;
   }
   @media (prefers-color-scheme: light){
     :root:not([data-theme="dark"]){
-      --ink:#211c19;
-      --ink-dim:#5a5147;
-      --ground:#f4efe4;
-      --ground-raised:#ffffff;
-      --brass:#93672c;
-      --rust:#a9573a;
-      --line:#ddd3c1;
-      --panel-bg: rgba(244,239,228,0.88);
-      --chip-bg: rgba(244,239,228,0.78);
+      --ink:#201b17;
+      --ink-dim:#4a4238;
+      --ground:#ece3d0;
+      --ground-raised:#fbf9f4;
+      --brass:#8a5f27;
+      --rust:#96492f;
+      --line:#d8cbae;
+      --panel-bg: rgba(236,227,208,0.96);
+      --chip-bg: rgba(236,227,208,0.9);
     }
   }
   :root[data-theme="light"]{
-    --ink:#211c19;
-    --ink-dim:#5a5147;
-    --ground:#f4efe4;
-    --ground-raised:#ffffff;
-    --brass:#93672c;
-    --rust:#a9573a;
-    --line:#ddd3c1;
-    --panel-bg: rgba(244,239,228,0.88);
-    --chip-bg: rgba(244,239,228,0.78);
+    --ink:#201b17;
+    --ink-dim:#4a4238;
+    --ground:#ece3d0;
+    --ground-raised:#fbf9f4;
+    --brass:#8a5f27;
+    --rust:#96492f;
+    --line:#d8cbae;
+    --panel-bg: rgba(236,227,208,0.96);
+    --chip-bg: rgba(236,227,208,0.9);
   }
 
   *{box-sizing:border-box;}
@@ -74,7 +74,8 @@
     background:var(--ground);
     color:var(--ink);
     font-family:var(--sans);
-    line-height:1.5;
+    font-size:16.5px;
+    line-height:1.55;
     padding-inline:20px;
   }
   img{max-width:100%;}
@@ -137,9 +138,9 @@
     opacity:0.6;
     pointer-events:none;
   }
-  header.hero h1, header.hero .tagline, .eyebrow, .scroll-cue{
-    text-shadow:0 2px 18px rgba(0,0,0,0.5);
-  }
+  /* Hero text now sits on its own solid panel (see header.hero), so it
+     no longer needs a shadow to read over the photo -- a leftover shadow
+     just showed up as a soft blurry halo, especially in light mode. */
 
   .panel{
     background:var(--panel-bg);
@@ -188,11 +189,21 @@
   .theme-toggle:hover{color:var(--brass);border-color:var(--brass);}
   .theme-toggle svg{width:12px;height:12px;display:block;}
 
+  /* Hero text sits directly over the scrolling photo background, so it
+     gets its own solid backing panel at all times (not just once pinned
+     on desktop) -- text-shadow alone wasn't enough contrast, especially
+     for dark ink text in light mode against a bright photo. */
   header.hero{
     margin-top:14px;
     display:flex;
     flex-direction:column;
     gap:10px;
+    background:var(--panel-bg);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:22px clamp(18px,4vw,30px) 24px;
     transition:background 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease;
   }
   h1{
@@ -236,11 +247,8 @@
       top:0;
       z-index:8;
       margin-top:0;
-      padding:16px 0 18px;
-      background:var(--panel-bg);
-      backdrop-filter:blur(10px);
-      -webkit-backdrop-filter:blur(10px);
-      border-bottom:1px solid var(--line);
+      padding:14px clamp(18px,4vw,30px) 16px;
+      border-radius:0 0 14px 14px;
       box-shadow:0 12px 30px rgba(0,0,0,0.25);
     }
   }
@@ -303,7 +311,6 @@
     color:var(--ink);
     transform:translate(0,0) rotate(1.5deg);
     z-index:2;
-    text-shadow:0 2px 18px rgba(0,0,0,0.5);
   }
   .promo-collage::after{
     content:"\2715  tap or swipe left to reset";
@@ -317,8 +324,8 @@
     color:var(--ink-dim);
   }
   .tagline{
-    font-size:1rem;
-    color:var(--ink-dim);
+    font-size:1.05rem;
+    color:var(--ink);
     max-width:46ch;
   }
   .tagline b{color:var(--ink);font-weight:600;}
@@ -416,20 +423,21 @@
   }
   .reel-card .show-date{
     font-family:var(--mono);
-    font-size:0.9rem;
+    font-size:0.92rem;
     font-weight:700;
-    color:var(--brass);
+    color:var(--ink);
+    background:rgba(169,87,58,0.14);
     white-space:nowrap;
     cursor:pointer;
     display:inline-block;
     border:1px solid var(--rust);
     border-radius:6px;
-    padding:6px 10px;
-    margin:-6px 0 -6px -10px;
+    padding:8px 13px;
+    margin:-8px 0 -8px -10px;
     transition:background 0.15s ease, color 0.15s ease;
   }
-  .reel-card .show-date:hover{background:rgba(169,87,58,0.15); color:var(--ink);}
-  .reel-card .show-date:active{background:rgba(169,87,58,0.3);}
+  .reel-card .show-date:hover{background:rgba(169,87,58,0.24); color:var(--ink);}
+  .reel-card .show-date:active{background:rgba(169,87,58,0.34);}
   .reel-card .venue{
     font-family:var(--serif);
     font-size:1.15rem;
@@ -438,24 +446,25 @@
   }
   .reel-card .city{
     font-family:var(--mono);
-    font-size:0.68rem;
+    font-size:0.74rem;
     color:var(--ink-dim);
     letter-spacing:0.04em;
     text-transform:uppercase;
-    margin-top:2px;
+    margin-top:4px;
   }
   .reel-card .act-tag{
     display:inline-block;
     align-self:flex-start;
-    margin-top:6px;
+    margin-top:8px;
     font-family:var(--mono);
-    font-size:0.6rem;
+    font-size:0.64rem;
     letter-spacing:0.06em;
     text-transform:uppercase;
-    color:var(--rust);
+    color:var(--ink);
+    background:rgba(169,87,58,0.14);
     border:1px solid var(--rust);
     border-radius:3px;
-    padding:2px 6px;
+    padding:3px 7px;
   }
   .reel-card .show-link{
     font-family:var(--mono);
@@ -521,14 +530,14 @@
     justify-content:center;
     gap:8px;
     font-family:var(--mono);
-    font-size:0.62rem;
+    font-size:0.68rem;
     letter-spacing:0.08em;
     text-transform:uppercase;
-    color:var(--ink-dim);
+    color:var(--ink);
     background:var(--panel-bg);
     border:1px solid var(--line);
     border-radius:8px;
-    padding:10px 14px;
+    padding:11px 14px;
     margin-bottom:10px;
     cursor:pointer;
     user-select:none;
@@ -879,9 +888,8 @@
 
 <div class="wrap">
 
-  <div class="eyebrow">Bozeman, Montana</div>
-
   <header class="hero">
+    <div class="eyebrow">Bozeman, Montana</div>
     <h1>Garrett Summers</h1>
     <div class="promo-collage" id="promoCollage">
       <div class="promo-tile promo-tile-a" id="promoTileA"></div>
