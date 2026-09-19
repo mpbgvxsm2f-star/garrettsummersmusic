@@ -145,9 +145,14 @@
     <h1>Garrett Summers</h1>
     <p class="tagline">Keyboardist for Willy on the Wire and Rob Wolf. Based in Bozeman, Montana.</p>
 
-    <h2>Rob Wolf &amp; Willy on the Wire</h2>
-    <p>Garrett plays keyboard for both Rob Wolf and Willy on the Wire, two acts that share a core lineup. Recent highlights include being the inaugural band for the Bandwagon Mobile Stage, opening for Eli Young, and playing the MoJan Festival, with the CP Festival booked for summer 2027.</p>
+    <h2>About</h2>
+    <p>Garrett Summers, <span id="ageSpan">22</span>, is a professional keyboardist based in Bozeman, Montana. He started playing piano at age two and trained in both classical and jazz piano before moving into contemporary performance.</p>
 
+    <h2>Things He's Done</h2>
+    <p>Garrett currently plays keyboard for Rob Wolf and Willy on the Wire, two acts sharing a core lineup that has played the Bandwagon Mobile Stage, opened for Eli Young, and performed at the MoJan Festival, with the CP Festival booked for summer 2027.</p>
+    <p>Before that, he founded and fronted Retrograde, releasing the debut album <i>Speed of Sound</i> and headlining shows to crowds in the hundreds, including a featured performance at the Gold Rush Parade. He went on to found Kerosene Record Company, working to support musicians and creative crews across the local scene.</p>
+
+    <h2>Current Lineup</h2>
     <div class="lineup">
       <div class="lineup-row"><span class="lineup-name">Garrett Summers</span><span class="lineup-role">Keyboard</span></div>
       <div class="lineup-row"><span class="lineup-name">Will Sandish</span><span class="lineup-role">Vocals &amp; Rhythm Guitar</span></div>
@@ -157,5 +162,25 @@
       <div class="lineup-row"><span class="lineup-name">K Mita</span><span class="lineup-role">Drums &mdash; Willy on the Wire</span></div>
     </div>
   </div>
+
+  <script>
+  (function(){
+    // Keeps the stated age accurate without manual edits -- recalculated
+    // from the birth date on every page load rather than hardcoded.
+    var BIRTHDATE = '2004-09-06';
+    function currentAge(birthISO){
+      var b = new Date(birthISO + 'T00:00:00');
+      var now = new Date();
+      var age = now.getFullYear() - b.getFullYear();
+      var hasHadBirthdayThisYear =
+        (now.getMonth() > b.getMonth()) ||
+        (now.getMonth() === b.getMonth() && now.getDate() >= b.getDate());
+      if(!hasHadBirthdayThisYear) age--;
+      return age;
+    }
+    var el = document.getElementById('ageSpan');
+    if(el) el.textContent = currentAge(BIRTHDATE);
+  })();
+  </script>
 </body>
 </html>
