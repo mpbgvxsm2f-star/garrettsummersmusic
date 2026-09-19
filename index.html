@@ -167,6 +167,27 @@
     padding:24px clamp(16px,4vw,32px);
   }
 
+  #about-teaser{margin-bottom:20px;}
+  .about-teaser-text{
+    font-family:var(--sans);
+    font-size:0.95rem;
+    line-height:1.6;
+    color:var(--ink);
+    margin:10px 0 14px;
+    max-width:60ch;
+  }
+  .about-teaser-link{
+    display:inline-block;
+    font-family:var(--mono);
+    font-size:0.75rem;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--brass);
+    text-decoration:none;
+    border-bottom:1px solid var(--rust);
+  }
+  .about-teaser-link:hover{color:var(--rust);}
+
   .eyebrow{
     font-family:var(--mono);
     font-size:0.72rem;
@@ -1310,6 +1331,12 @@
     <div class="scroll-cue">Scroll</div>
   </header>
 
+  <section id="about-teaser" class="panel">
+    <h2 class="promotable">About</h2>
+    <p class="about-teaser-text">Garrett Summers is a Bozeman, Montana keyboardist who's been playing piano since age two. He fronted Retrograde before joining Willy on the Wire and Rob Wolf as their keyboard player, and has played everything from house-party stages to the Gold Rush Parade.</p>
+    <a class="about-teaser-link" href="about.html" target="_blank" rel="noopener">Read the full story &rarr;</a>
+  </section>
+
   <section id="shows">
     <h2 class="promotable">Shows</h2>
     <script id="shows-data" type="application/json">
@@ -1444,8 +1471,8 @@
       <div class="item consign-item">
         <div class="frame"><img src="images/closet-talkingheads-tee.jpg" alt="" loading="lazy"></div>
         <div class="item-info">
-          <div class="item-name promotable">Consign With Me</div>
-          <a class="bid-btn consign-btn" href="consign.html" target="_blank" rel="noopener">Consign With Me</a>
+          <div class="item-name promotable">Consign With Garrett</div>
+          <a class="bid-btn consign-btn" href="consign.html" target="_blank" rel="noopener">Consign With Garrett</a>
         </div>
       </div>
 
