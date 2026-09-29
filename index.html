@@ -1351,6 +1351,14 @@
     "linkText": "Map"
   },
   {
+    "date": "OCT 10",
+    "venue": "Private Charity Event",
+    "city": "Details private",
+    "addr": "",
+    "act": "Rob Wolf",
+    "private": true
+  },
+  {
     "date": "OCT 16",
     "venue": "The Jump",
     "city": "Bozeman, MT",
@@ -1672,7 +1680,7 @@
   // Doors are 8pm for every real show except the festival slot and the
   // still-TBD tour dates, where there's no fixed time to show.
   function doorsText(s){
-    if(/sweet pea/i.test(s.venue) || s.city === 'Venues TBD') return '';
+    if(s.private || /sweet pea/i.test(s.venue) || s.city === 'Venues TBD') return '';
     return ' · Doors 8:00 PM';
   }
 
@@ -1701,7 +1709,8 @@
           '<div class="venue">' + s.venue + (s.addr && s.addr !== 'TBD' ? '<span class="venue-addr">' + s.addr + '</span>' : '') + '</div>' +
           '<div class="city">' + s.city + doorsText(s) + '</div>' +
           '<span class="act-tag">' + s.act + '</span>' +
-          (s.linkText === 'Inquire' ?
+          (!s.linkText ? '' :
+           s.linkText === 'Inquire' ?
             '<a class="show-link inquire-trigger" href="#" data-act="' + esc(s.act) + '">Inquire</a>' :
             '<a class="show-link" href="' + s.linkHref + '" target="_blank" rel="noopener">' + s.linkText + '</a>') +
         '</div>'
