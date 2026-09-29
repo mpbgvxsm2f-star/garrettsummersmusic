@@ -1618,12 +1618,22 @@
   var today = new Date();
   today.setHours(0,0,0,0);
 
+  // Dates are "MON DD" (read as SEASON_YEAR) or "MON DD YYYY". Never infer
+  // the year from today's date, or every past show flips back to
+  // "upcoming" on Jan 1.
+  var SEASON_YEAR = 2026;
+  var DATE_RE = /^([A-Z]{3})\s+(\d{1,2})(?:\s+(\d{4}))?$/;
+
   function parseDate(dateStr){
-    var m = /^([A-Z]{3})\s+(\d{1,2})$/.exec(dateStr);
+    var m = DATE_RE.exec(dateStr);
     if(m && m[1] in MONTHS){
-      return new Date(today.getFullYear(), MONTHS[m[1]], parseInt(m[2],10));
+      var year = m[3] ? parseInt(m[3],10) : SEASON_YEAR;
+      return new Date(year, MONTHS[m[1]], parseInt(m[2],10));
     }
-    if(/2027/.test(dateStr)) return new Date(2027,0,1);
+    // Year-only ("2027 · TBD"): sort after dated shows that year, and don't
+    // count as past until the year is over.
+    var y = /\b(\d{4})\b/.exec(dateStr);
+    if(y) return new Date(parseInt(y[1],10), 11, 31);
     return null; // PENDING / anything undated -- sorts last, never "past"
   }
 
@@ -1654,10 +1664,9 @@
     return " '" + String(d.getFullYear()).slice(-2);
   }
   function withYear(dateStr){
-    var d = parseDate(dateStr);
-    if(!d) return dateStr;
-    if(/2027/.test(dateStr)) return dateStr;
-    return dateStr + yearSuffix(d);
+    var m = DATE_RE.exec(dateStr);
+    if(!m) return dateStr;
+    return m[1] + ' ' + m[2] + yearSuffix(parseDate(dateStr));
   }
 
   // Doors are 8pm for every real show except the festival slot and the
