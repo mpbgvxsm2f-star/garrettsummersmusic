@@ -2,6 +2,34 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<!-- Google Analytics 4. Paste your Measurement ID (looks like G-XXXXXXXXXX) into GA_ID to turn it on. -->
+<script>
+  window.GA_ID = '';
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  window.track = function (name, params) { try { if (window.GA_ID) gtag('event', name, params || {}); } catch (e) {} };
+  if (window.GA_ID) {
+    var ga = document.createElement('script'); ga.async = true; ga.src = 'https://www.googletagmanager.com/gtag/js?id=' + window.GA_ID;
+    document.head.appendChild(ga);
+    gtag('js', new Date()); gtag('config', window.GA_ID);
+  }
+  // Every link click gets a named event, so GA4 shows which ones people actually use.
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a');
+    if (!a) return;
+    var href = a.getAttribute('href') || '';
+    var name = /^mailto:/.test(href) ? (/Tour/i.test(href) ? 'tour_inquiry' : 'booking_email')
+      : /spotify\.com/.test(href) ? 'spotify_open'
+      : /instagram\.com\/garrett/.test(href) ? 'instagram_open'
+      : /maps\.apple\.com/.test(href) ? 'show_map_open'
+      : /work\.html/.test(href) ? 'jobs_open'
+      : /consign\.html/.test(href) ? 'consign_open'
+      : /runforsomething\.us/.test(href) ? 'games_site_open'
+      : a.classList.contains('inquire-trigger') ? 'tour_inquiry'
+      : null;
+    if (name) track(name, { link_text: (a.textContent || '').trim().slice(0, 40) });
+  }, true);
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Consign — Garrett Summers</title>
 <meta name="robots" content="noindex">
@@ -143,6 +171,7 @@
       var body = 'From: ' + (brand || '(no name given)') +
         '\nItem: ' + (desc || '(no details given)') +
         '\nMy email: ' + email;
+      track('consign_sent');
       window.location.href = 'mailto:' + to + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
     });
   </script>
