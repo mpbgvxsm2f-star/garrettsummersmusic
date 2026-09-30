@@ -407,7 +407,7 @@
     padding-bottom:10px;
     border-bottom:1px solid var(--line);
   }
-  #shows h2, #closet h2{
+  #shows h2, #closet h2, #listen h2, #book h2{
     display:inline-block;
     background:var(--chip-bg);
     backdrop-filter:blur(10px);
@@ -1273,6 +1273,29 @@
   }
   .poster-share:hover{opacity:0.9;}
   .poster-share:active{transform:translateY(1px);}
+
+  /* Money: hero buttons, Listen (Spotify + tips), Book (booking form), Closet buy-now */
+  .hero-ctas{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px;}
+  .cta{font-family:var(--mono);font-size:0.74rem;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;border-radius:4px;padding:11px 16px;border:1px solid var(--brass);}
+  .cta.primary{background:var(--brass);color:var(--ground);font-weight:700;}
+  .cta.primary:hover{background:var(--ink);border-color:var(--ink);}
+  .cta.ghost{color:var(--brass);background:var(--chip-bg);}
+  .cta.ghost:hover{color:var(--ink);border-color:var(--ink);}
+  .listen-note, .book-note{font-family:var(--mono);font-size:0.72rem;color:var(--ink-dim);margin:-8px 0 16px;}
+  .spotify{width:100%;height:152px;border:0;border-radius:12px;display:block;}
+  .tip-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;align-items:center;}
+  .tip-row[hidden]{display:none;}
+  .tip-row small{font-family:var(--mono);font-size:0.68rem;color:var(--ink-dim);}
+  .book-form{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  @media (max-width:560px){.book-form{grid-template-columns:1fr;}}
+  .book-form label{display:grid;gap:5px;font-family:var(--mono);font-size:0.66rem;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-dim);}
+  .book-form .wide{grid-column:1 / -1;}
+  .book-form input, .book-form select, .book-form textarea{font:inherit;font-family:var(--sans);font-size:0.95rem;text-transform:none;letter-spacing:0;color:var(--ink);background:var(--ground-raised);border:1px solid var(--line);border-radius:4px;padding:10px 11px;min-width:0;}
+  .book-form input:focus, .book-form select:focus, .book-form textarea:focus{outline:2px solid var(--brass);outline-offset:1px;border-color:transparent;}
+  .book-form textarea{min-height:90px;resize:vertical;}
+  .book-form button{grid-column:1 / -1;justify-self:start;cursor:pointer;}
+  .buy-btn{background:var(--brass) !important;color:var(--ground) !important;font-weight:700;margin-bottom:8px;}
+  .buy-btn[hidden]{display:none;}
 </style>
 </head>
 <body>
@@ -1335,6 +1358,10 @@
       <div class="promo-tile promo-tile-b" id="promoTileB"></div>
     </div>
     <p class="tagline">Keyboards, synthesizers &amp; organs &mdash; <b>Willy on the Wire</b>, keys for <b>Rob Wolf</b>.</p>
+    <div class="hero-ctas">
+      <a class="cta primary" href="#book">Book Garrett</a>
+      <a class="cta ghost" href="#listen">Listen</a>
+    </div>
     <div class="scroll-cue">Scroll</div>
   </header>
 
@@ -1463,6 +1490,16 @@
     <div class="reel" id="showsReel"></div>
   </section>
 
+  <section id="listen" class="panel">
+    <h2>Listen</h2>
+    <p class="listen-note">Stream it, follow it, share it &mdash; every play helps.</p>
+    <iframe class="spotify" title="Garrett Summers on Spotify" src="https://open.spotify.com/embed/artist/3vl6DlT9GTJ4khgn5FyEgI?utm_source=generator&amp;theme=0" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+    <div class="tip-row" id="tipRow" hidden>
+      <a class="cta primary" id="tipBtn" href="#" target="_blank" rel="noopener">Buy Garrett a drink &#127866;</a>
+      <small>Tips keep the organ in the van.</small>
+    </div>
+  </section>
+
   <section id="closet" class="panel">
     <h2 class="promotable">Closet</h2>
     <p class="closet-note">Stage &amp; tour pieces, up for bid &mdash; tap a piece to send your offer.</p>
@@ -1473,6 +1510,7 @@
         <div class="item-info">
           <div class="item-name promotable">Stage-Worn Corduroy Vest</div>
           <div class="item-start">Starting at <b>$140</b></div>
+          <a class="bid-btn buy-btn" hidden target="_blank" rel="noopener">Buy now</a>
           <button type="button" class="bid-btn">Place a bid</button>
         </div>
       </div>
@@ -1553,6 +1591,29 @@
       </div>
     </div>
   </div>
+
+  <section id="book" class="panel">
+    <h2>Book</h2>
+    <p class="book-note">Bars, private parties, weddings, festivals, studio sessions. Tell me about the gig and I&rsquo;ll get back to you.</p>
+    <form class="book-form" id="bookForm">
+      <label>Your name<input name="name" autocomplete="name" required></label>
+      <label>Your email<input name="email" type="email" autocomplete="email" required></label>
+      <label>Date<input name="date" type="date" required></label>
+      <label>City &amp; venue<input name="venue" placeholder="Bozeman &middot; The Filling Station"></label>
+      <label>Type of gig<select name="type">
+        <option>Bar / club show</option><option>Private party</option><option>Wedding</option><option>Festival</option><option>Corporate event</option><option>Studio session</option><option>Other</option>
+      </select></label>
+      <label>Who you want<select name="act">
+        <option>Willy on the Wire</option><option>Rob Wolf (with Garrett on keys)</option><option>Garrett solo keys</option><option>Not sure yet</option>
+      </select></label>
+      <label>Budget<select name="budget">
+        <option>Let&rsquo;s talk</option><option>Under $300</option><option>$300&ndash;$750</option><option>$750&ndash;$1,500</option><option>$1,500+</option>
+      </select></label>
+      <label>Crowd size<input name="crowd" inputmode="numeric" placeholder="e.g. 150"></label>
+      <label class="wide">Anything else<textarea name="notes" placeholder="Set length, load-in time, sound system, the vibe&hellip;"></textarea></label>
+      <button type="submit" class="cta primary">Send booking request</button>
+    </form>
+  </section>
 
   <footer class="panel">
     <div>
@@ -2688,5 +2749,45 @@
 })();
 </script>
 
+<script>
+/* ---- Money settings. Paste links here to switch things on. ----
+   tipUrl:    a Venmo / Cash App / Ko-fi / Buy Me a Coffee link. Empty = tip button hidden.
+   closetBuy: per Closet item, a Stripe Payment Link and price. Empty url = only "Place a bid" shows. */
+var MONEY = {
+  tipUrl: '',
+  closetBuy: {
+    'Stage-Worn Corduroy Vest': { price: 140, url: '' }
+  }
+};
+(function () {
+  var track = window.track || function () {};
+  // tip button
+  if (MONEY.tipUrl) {
+    var row = document.getElementById('tipRow'), btn = document.getElementById('tipBtn');
+    btn.href = MONEY.tipUrl; row.hidden = false;
+    btn.addEventListener('click', function () { track('tip_click'); });
+  }
+  // closet buy-now buttons
+  document.querySelectorAll('.item[data-item]').forEach(function (item) {
+    var cfg = MONEY.closetBuy[item.dataset.item], b = item.querySelector('.buy-btn');
+    if (!cfg || !cfg.url || !b) return;
+    b.href = cfg.url; b.textContent = 'Buy now' + (cfg.price ? ' $' + cfg.price : ''); b.hidden = false;
+    b.addEventListener('click', function () { track('closet_buy_click', { item: item.dataset.item, value: cfg.price || 0, currency: 'USD' }); });
+  });
+  // booking form -> a filled-in email to booking@
+  var form = document.getElementById('bookForm');
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var f = form.elements, v = function (n) { return (f[n].value || '').trim(); };
+    var subject = 'Booking request: ' + v('act') + ' \u2014 ' + v('date') + (v('venue') ? ' \u2014 ' + v('venue') : '');
+    var body = [
+      'Name: ' + v('name'), 'Email: ' + v('email'), 'Date: ' + v('date'), 'City & venue: ' + v('venue'),
+      'Type of gig: ' + v('type'), 'Act: ' + v('act'), 'Budget: ' + v('budget'), 'Crowd size: ' + v('crowd'), '', v('notes')
+    ].join('\n');
+    track('booking_request', { act: v('act'), gig_type: v('type'), budget: v('budget') });
+    window.location.href = 'mailto:booking@garrettsummersmusic.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+  });
+})();
+</script>
 </body>
 </html>
