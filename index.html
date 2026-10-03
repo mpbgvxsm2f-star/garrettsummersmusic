@@ -1512,16 +1512,15 @@
 
   <section id="closet" class="panel">
     <h2 class="promotable">Closet</h2>
-    <p class="closet-note">Stage &amp; tour pieces, up for bid &mdash; tap a piece to send your offer.</p>
+    <p class="closet-note">Stage &amp; tour pieces &mdash; one of each.</p>
     <div class="closet" id="closetGrid">
 
       <div class="item" data-item="Stage-Worn Corduroy Vest" data-start="140">
         <div class="frame"><img src="images/closet-corduroy-vest.jpg" alt="Corduroy vest worn on stage during a live show" loading="lazy"></div>
         <div class="item-info">
           <div class="item-name promotable">Stage-Worn Corduroy Vest</div>
-          <div class="item-start">Starting at <b>$140</b></div>
+          <div class="item-start"><b>$140</b></div>
           <a class="bid-btn buy-btn" hidden target="_blank" rel="noopener">Buy now</a>
-          <button type="button" class="bid-btn">Place a bid</button>
         </div>
       </div>
 
@@ -2568,9 +2567,9 @@
   document.addEventListener('click', function(e){
     if(e.target.closest('a')) return;
     var item = e.target.closest('.item');
-    if(item && item.dataset && item.dataset.item){
-      openBid(item.dataset.item, item.dataset.start || '');
-    }
+    // Bidding removed: tapping a for-sale card now acts like its Buy now button.
+    var buy = item && item.querySelector('.buy-btn');
+    if(buy && !buy.hidden) buy.click();
   });
 
   // Tap outside the sheet (the backdrop, or the empty space around it)
@@ -2766,7 +2765,7 @@
 <script>
 /* ---- Money settings. Paste links here to switch things on. ----
    tipUrl:    a Venmo / Cash App / Ko-fi / Buy Me a Coffee link. Empty = tip button hidden.
-   closetBuy: per Closet item, a Stripe Payment Link and price. Empty url = only "Place a bid" shows. */
+   closetBuy: per Closet item, a Stripe Payment Link and price. Empty url = Buy now emails booking@. */
 var MONEY = {
   tipUrl: 'https://venmo.com/u/grsummers',
   closetBuy: {
@@ -2784,8 +2783,10 @@ var MONEY = {
   // closet buy-now buttons
   document.querySelectorAll('.item[data-item]').forEach(function (item) {
     var cfg = MONEY.closetBuy[item.dataset.item], b = item.querySelector('.buy-btn');
-    if (!cfg || !cfg.url || !b) return;
-    b.href = cfg.url; b.textContent = 'Buy now' + (cfg.price ? ' $' + cfg.price : ''); b.hidden = false;
+    if (!cfg || !b) return;
+    // No Stripe link yet: Buy now opens an email to booking@ instead.
+    b.href = cfg.url || 'mailto:booking@garrettsummersmusic.com?subject=' + encodeURIComponent('Buy: ' + item.dataset.item);
+    if (!cfg.url) b.removeAttribute('target'); b.textContent = 'Buy now' + (cfg.price ? ' $' + cfg.price : ''); b.hidden = false;
     b.addEventListener('click', function () { track('closet_buy_click', { item: item.dataset.item, value: cfg.price || 0, currency: 'USD' }); });
   });
   // booking form -> a filled-in email to booking@
