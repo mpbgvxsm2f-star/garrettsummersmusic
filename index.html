@@ -1102,6 +1102,26 @@
     padding:24px;
   }
   .poster-modal.open{display:flex;}
+  .poster-modal{align-items:flex-start;overflow-y:auto;}
+  .poster-card{margin:auto;flex-shrink:0;}
+  .poster-visual{flex-shrink:0;}
+  .modal-close{
+    flex:none; margin-left:auto; border:1px solid var(--line); border-radius:20px;
+    background:var(--ground-raised); color:var(--ink); padding:8px 12px; cursor:pointer;
+    font-family:var(--mono); font-size:0.7rem;
+  }
+  .poster-controls{display:flex;align-items:center;gap:12px;width:100%;}
+  .reel-card:focus-visible,.modal-close:focus-visible{outline:2px solid var(--brass);outline-offset:3px;}
+  .reel-card.today .show-link{color:inherit;}
+  .email-note{font-family:var(--sans);font-size:0.85rem;line-height:1.5;color:var(--ink-dim);}
+  .email-note a{color:inherit;}
+  .book-form .email-note{grid-column:1 / -1;}
+  .inquire-sheet .email-note{margin:12px 22px;}
+  @media (max-height:520px){
+    .inquire-sheet{height:90vh;overflow-y:auto;}
+    .inquire-thread{flex:none;min-height:80px;max-height:140px;}
+    .inquire-sheet .email-note{flex:none;}
+  }
   /* Fully opaque -- the poster is the only thing on screen while open,
      nothing from the rest of the page shows through. */
   .poster-backdrop{
@@ -1574,12 +1594,14 @@
           <div class="inquire-title" id="inquireTitle">Garrett Summers</div>
           <div class="inquire-status">Usually replies within a day</div>
         </div>
+        <button type="button" class="modal-close" aria-label="Close inquiry">Close</button>
       </div>
+      <p class="email-note">This creates an email draft. Press Send in your email app to send it to <a href="mailto:booking@garrettsummersmusic.com">booking@garrettsummersmusic.com</a>.</p>
       <div class="inquire-thread" id="inquireThread"></div>
       <div class="inquire-compose-wrap" id="inquireComposeWrap">
         <div class="inquire-compose">
-          <textarea id="inquireText" placeholder="Type a message..." rows="1"></textarea>
-          <button type="button" class="inquire-send" id="inquireSend" aria-label="Send">&#10148;</button>
+          <textarea id="inquireText" aria-label="Inquiry message" placeholder="Type a message..." rows="1"></textarea>
+          <button type="button" class="inquire-send" id="inquireSend" aria-label="Continue">&#10148;</button>
         </div>
         <div class="inquire-wordcount" id="inquireWordCount">50 words left</div>
       </div>
@@ -1597,7 +1619,7 @@
             <span>Email (optional)</span>
             <input type="email" id="inquireEmail">
           </label>
-          <button type="submit" class="drawer-submit" id="inquireSubmit">Send</button>
+          <button type="submit" class="drawer-submit" id="inquireSubmit">Open email draft</button>
         </form>
       </div>
     </div>
@@ -1625,6 +1647,7 @@
       </select></label>
       <label class="wide">Anything else<textarea name="notes" placeholder="Set length, load-in time, sound system, the vibe&hellip;"></textarea></label>
       <label class="hp" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
+      <p class="email-note" id="bookingEmailNote">This opens an email draft. Press Send in your email app, or email <a href="mailto:booking@garrettsummersmusic.com">booking@garrettsummersmusic.com</a> directly.</p>
       <p class="book-status" id="bookStatus" role="status" aria-live="polite"></p>
       <button type="submit" class="cta primary">Send booking request</button>
     </form>
@@ -1652,10 +1675,13 @@
      page, never obstructed by the theme toggle or anything else. -->
 <div class="poster-modal" id="posterModal" aria-hidden="true">
   <div class="poster-backdrop" id="posterBackdrop"></div>
-  <div class="poster-card">
+  <div class="poster-card" role="dialog" aria-modal="true" aria-label="Show poster">
+    <div class="poster-controls">
     <div class="poster-aspect-toggle" id="posterAspectToggle">
       <button type="button" class="aspect-btn active" data-aspect="story">Story</button>
       <button type="button" class="aspect-btn" data-aspect="square">Square</button>
+    </div>
+    <button type="button" class="modal-close" aria-label="Close poster">Close</button>
     </div>
     <div class="poster-visual" id="posterVisual" data-aspect="story">
       <div class="ticket-eyebrow">Admit One</div>
@@ -1678,6 +1704,38 @@
   </div>
   <canvas id="posterCanvas" width="1080" height="1920" style="display:none;"></canvas>
 </div>
+
+<script>
+window.bindDialog = function (modal, onClose) {
+  var returnFocus = null;
+  modal.querySelector('.modal-close').addEventListener('click', onClose);
+  function focusables() {
+    return Array.prototype.filter.call(modal.querySelectorAll('a[href], button, input, select, textarea, [tabindex="0"]'), function (el) {
+      return !el.disabled && el.getClientRects().length > 0;
+    });
+  }
+  document.addEventListener('keydown', function (e) {
+    if (!modal.classList.contains('open')) return;
+    if (e.key === 'Escape') { e.preventDefault(); onClose(); return; }
+    if (e.key !== 'Tab') return;
+    var items = focusables(), first = items[0], last = items[items.length - 1];
+    if (!first) { e.preventDefault(); return; }
+    if (!modal.contains(document.activeElement) || (e.shiftKey && document.activeElement === first) || (!e.shiftKey && document.activeElement === last)) {
+      e.preventDefault(); (e.shiftKey ? last : first).focus({preventScroll:true});
+    }
+  });
+  return {
+    open: function (initialFocus, trigger) {
+      returnFocus = trigger || document.activeElement;
+      (initialFocus || focusables()[0]).focus({preventScroll:true});
+    },
+    closed: function () {
+      if (returnFocus && returnFocus.isConnected) returnFocus.focus({preventScroll:true});
+      returnFocus = null;
+    }
+  };
+};
+</script>
 
 <script>
 (function(){
@@ -1809,7 +1867,7 @@
       isToday: idx === todayShowIdx,
       html:
         '<div class="reel-card' + (past ? ' past' : '') + (s.sample ? ' sample' : '') +
-          '" data-date="' + esc(withYear(s.date)) + '" data-venue="' + esc(s.venue) + '" data-city="' + esc(s.city) +
+          '" role="button" tabindex="0" aria-label="Show poster for ' + esc(s.act) + ' at ' + esc(s.venue) + ' on ' + esc(withYear(s.date)) + '" data-date="' + esc(withYear(s.date)) + '" data-venue="' + esc(s.venue) + '" data-city="' + esc(s.city) +
           '" data-addr="' + esc(s.addr) + '" data-act="' + esc(s.act) + '">' +
           (past ? '<div class="past-tag">Past show</div>' : '') +
           '<div class="show-date">' + withYear(s.date) + '</div>' +
@@ -1840,13 +1898,14 @@
   var todayHtml;
   if(todayShow){
     todayHtml =
-      '<div class="reel-card today today-show" id="todayMarker" data-date="' + esc(withYear(todayShow.date)) +
+      '<div class="reel-card today today-show" id="todayMarker" role="button" tabindex="0" aria-label="Show poster for today’s show" data-date="' + esc(withYear(todayShow.date)) +
         '" data-venue="' + esc(todayShow.venue) + '" data-city="' + esc(todayShow.city) +
         '" data-addr="' + esc(todayShow.addr) + '" data-act="' + esc(todayShow.act) + '">' +
         '<div class="today-label">Today&rsquo;s Show</div>' +
         '<div class="today-show-act">' + todayShow.act + '</div>' +
         '<div class="today-show-venue">' + todayShow.venue + '</div>' +
         '<div class="today-show-meta">' + [todayShow.addr, todayShow.city].filter(Boolean).join(', ') + doorsText(todayShow) + '</div>' +
+        (todayShow.linkHref && todayShow.linkText ? '<a class="show-link" href="' + esc(todayShow.linkHref) + '" target="_blank" rel="noopener">' + todayShow.linkText + '</a>' : '') +
       '</div>';
   } else {
     todayHtml = '<div class="reel-card today promotable" id="todayMarker" data-promote="Today — ' + esc(todayLabel) + '">' +
@@ -1857,11 +1916,11 @@
   var pastBlockHtml = '';
   if(pastCards.length){
     pastBlockHtml =
-      '<div class="past-toggle" id="pastToggle" role="button" tabindex="0" aria-expanded="false">' +
+      '<div class="past-toggle" id="pastToggle" role="button" tabindex="0" aria-expanded="false" aria-controls="pastCollapse">' +
         '<span class="refresh-icon" id="pastRefreshIcon">&#8635;</span>' +
         '<span id="pastToggleLabel">' + pastCards.length + ' past show' + (pastCards.length === 1 ? '' : 's') + ' &mdash; swipe up on Today or tap to view</span>' +
       '</div>' +
-      '<div class="past-collapse" id="pastCollapse">' + pastHtml + '</div>';
+      '<div class="past-collapse" id="pastCollapse" inert aria-hidden="true">' + pastHtml + '</div>';
   }
 
   reel.innerHTML = pastBlockHtml + todayHtml + upcomingHtml;
@@ -1892,6 +1951,8 @@
     if(!pastToggle || !pastCollapse) return;
     pastToggle.classList.toggle('expanded', expanded);
     pastCollapse.classList.toggle('expanded', expanded);
+    pastCollapse.inert = !expanded;
+    pastCollapse.setAttribute('aria-hidden', expanded ? 'false' : 'true');
     pastToggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
   }
   function togglePast(){
@@ -2080,6 +2141,7 @@
   var visual = document.getElementById('posterVisual');
   var aspectToggle = document.getElementById('posterAspectToggle');
   var canvas = document.getElementById('posterCanvas');
+  var dialog = window.bindDialog(modal, close);
   var current = null;
   var scrollLockY = 0;
   var aspect = 'story'; // 'story' (9:16) or 'square' (1:1)
@@ -2133,7 +2195,7 @@
       'linear-gradient(180deg, rgba(10,8,6,0.35) 0%, rgba(10,8,6,0.55) 55%, rgba(10,8,6,0.88) 100%), url("' + src + '")';
   }
 
-  function open(data){
+  function open(data, trigger){
     current = data;
     elBand.textContent = data.act;
     elDate.textContent = data.date.replace(/&middot;/g,'·').replace(/&mdash;/g,'—');
@@ -2146,11 +2208,15 @@
     lockPageScroll();
     modal.classList.add('open');
     modal.setAttribute('aria-hidden', 'false');
+    modal.scrollTop = 0;
+    dialog.open(modal.querySelector('.modal-close'), trigger);
   }
   function close(){
+    if(!modal.classList.contains('open')) return;
     modal.classList.remove('open');
     modal.setAttribute('aria-hidden', 'true');
     unlockPageScroll();
+    dialog.closed();
   }
 
   // Story / Square toggle -- swaps the live preview's aspect ratio and the
@@ -2176,11 +2242,18 @@
     if(e.target.closest('a')) return;
     var card = e.target.closest('.reel-card');
     if(card && card.dataset && card.dataset.date){
-      open(card.dataset);
+      open(card.dataset, card);
     }
   });
 
-  // No dedicated close button -- tapping anywhere on the poster (the
+  document.addEventListener('keydown', function(e){
+    if(e.key !== 'Enter' && e.key !== ' ') return;
+    var card = e.target.closest('.reel-card[data-date]');
+    if(!card || e.target !== card) return;
+    e.preventDefault(); open(card.dataset, card);
+  });
+
+  // Tapping anywhere on the poster (the
   // ticket itself or the space around it) dismisses it. The share button
   // and the Story/Square toggle are excluded, so neither can be tapped
   // shut mid-tap.
@@ -2620,6 +2693,8 @@
   var nameInput = document.getElementById('inquireName');
   var phoneInput = document.getElementById('inquirePhone');
   var emailInput = document.getElementById('inquireEmail');
+  var dialog = window.bindDialog(modal, close);
+  var replyTimer = null;
   var WORD_LIMIT = 50;
   var currentAct = '';
   var inquiryText = '';
@@ -2691,15 +2766,17 @@
 
   function sendMessage(){
     var text = textArea.value.trim();
-    if(!text) return;
+    if(!text || composeWrap.style.display === 'none') return;
     inquiryText = text;
     addBubble(text, 'out');
     textArea.value = '';
     textArea.style.height = 'auto';
     updateWordCount();
     composeWrap.style.display = 'none';
-    window.setTimeout(function(){
-      addBubble('Got it — what’s the best way to reach you?', 'in');
+    replyTimer = window.setTimeout(function(){
+      replyTimer = null;
+      if(!modal.classList.contains('open')) return;
+      addBubble('Next, add your contact details to the email draft.', 'in');
       contactWrap.style.display = '';
       nameInput.focus();
     }, 450);
@@ -2707,6 +2784,7 @@
   sendBtn.addEventListener('click', sendMessage);
 
   function resetThread(act){
+    window.clearTimeout(replyTimer); replyTimer = null;
     thread.innerHTML = '';
     addBubble(openerLineFor(act), 'in');
     textArea.value = '';
@@ -2718,25 +2796,29 @@
     inquiryText = '';
   }
 
-  function open(act){
+  function open(act, trigger){
     currentAct = act || 'a show';
     resetThread(currentAct);
     lockPageScroll();
     modal.classList.add('open');
     modal.setAttribute('aria-hidden', 'false');
-    window.setTimeout(function(){ textArea.focus(); }, 350);
+    sheet.scrollTop = 0;
+    dialog.open(textArea, trigger);
   }
   function close(){
+    window.clearTimeout(replyTimer); replyTimer = null;
+    if(!modal.classList.contains('open')) return;
     modal.classList.remove('open');
     modal.setAttribute('aria-hidden', 'true');
     unlockPageScroll();
+    dialog.closed();
   }
 
   document.addEventListener('click', function(e){
     var trigger = e.target.closest('.inquire-trigger');
     if(!trigger) return;
     e.preventDefault();
-    open(trigger.dataset.act);
+    open(trigger.dataset.act, trigger);
   });
 
   modal.addEventListener('click', function(e){
@@ -2758,10 +2840,8 @@
       '\nPhone: ' + phone +
       (email ? '\nEmail: ' + email : '');
     var href = 'mailto:' + to + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
-    window.setTimeout(function(){
-      window.location.href = href;
-      close();
-    }, 350);
+    window.location.href = href;
+    close();
   });
 })();
 </script>
@@ -2776,52 +2856,102 @@ var MONEY = {
     'Stage-Worn Corduroy Vest': { price: 140, url: 'https://buy.stripe.com/14A9AS98t1e58iibFRcs800' }
   }
 };
-// Booking backend. Empty = the form opens an email draft (the original behavior).
+// Leave empty until online booking and email delivery have been verified.
 var BOOKING_API = '';
 (function () {
   var track = window.track || function () {};
-  // tip button
   if (MONEY.tipUrl) {
-    var row = document.getElementById('tipRow'), btn = document.getElementById('tipBtn');
-    btn.href = MONEY.tipUrl; row.hidden = false;
-    btn.addEventListener('click', function () { track('tip_click'); });
+    var row = document.getElementById('tipRow'), tipBtn = document.getElementById('tipBtn');
+    tipBtn.href = MONEY.tipUrl; row.hidden = false;
+    tipBtn.addEventListener('click', function () { track('tip_click'); });
   }
-  // closet buy-now buttons
   document.querySelectorAll('.item[data-item]').forEach(function (item) {
-    var cfg = MONEY.closetBuy[item.dataset.item], b = item.querySelector('.buy-btn');
-    if (!cfg || !b) return;
-    // No Stripe link yet: Buy now opens an email to booking@ instead.
-    b.href = cfg.url || 'mailto:booking@garrettsummersmusic.com?subject=' + encodeURIComponent('Buy: ' + item.dataset.item);
-    if (!cfg.url) b.removeAttribute('target'); b.textContent = 'Buy now' + (cfg.price ? ' $' + cfg.price : ''); b.hidden = false;
-    b.addEventListener('click', function () { track('closet_buy_click', { item: item.dataset.item, value: cfg.price || 0, currency: 'USD' }); });
+    var cfg = MONEY.closetBuy[item.dataset.item], buyBtn = item.querySelector('.buy-btn');
+    if (!cfg || !buyBtn) return;
+    buyBtn.href = cfg.url || 'mailto:booking@garrettsummersmusic.com?subject=' + encodeURIComponent('Buy: ' + item.dataset.item);
+    if (!cfg.url) buyBtn.removeAttribute('target');
+    buyBtn.textContent = 'Buy now' + (cfg.price ? ' $' + cfg.price : ''); buyBtn.hidden = false;
+    buyBtn.addEventListener('click', function () { track('closet_buy_click', { item: item.dataset.item, value: cfg.price || 0, currency: 'USD' }); });
   });
-  // booking form -> a filled-in email to booking@
+
   var form = document.getElementById('bookForm');
+  var btn = form.querySelector('button[type=submit]');
+  var status = document.getElementById('bookStatus');
+  var emailNote = document.getElementById('bookingEmailNote');
+  if (emailNote) emailNote.hidden = !!BOOKING_API;
+  var pending = false, lastRequest = null;
+  btn.textContent = BOOKING_API ? 'Send booking request' : 'Open email draft';
+
   form.addEventListener('submit', function (e) {
     e.preventDefault();
-    var f = form.elements, v = function (n) { return (f[n].value || '').trim(); };
-    var subject = 'Booking request: ' + v('act') + ' \u2014 ' + v('date') + (v('venue') ? ' \u2014 ' + v('venue') : '');
+    if (pending) return;
+    var f = form.elements, values = {};
+    ['name', 'email', 'date', 'venue', 'type', 'act', 'budget', 'capacity', 'notes', 'website'].forEach(function (name) {
+      values[name] = (f[name].value || '').trim();
+    });
+    var subject = 'Booking request: ' + values.act + ' \u2014 ' + values.date + (values.venue ? ' \u2014 ' + values.venue : '');
     var body = [
-      'Name: ' + v('name'), 'Email: ' + v('email'), 'Date: ' + v('date'), 'City & venue: ' + v('venue'),
-      'Type of gig: ' + v('type'), 'Act: ' + v('act'), 'Budget: ' + v('budget'), 'Venue capacity: ' + v('capacity'), '', v('notes')
+      'Name: ' + values.name, 'Email: ' + values.email, 'Date: ' + values.date, 'City & venue: ' + values.venue,
+      'Type of gig: ' + values.type, 'Act: ' + values.act, 'Budget: ' + values.budget, 'Venue capacity: ' + values.capacity, '', values.notes
     ].join('\n');
-    track('booking_request', { act: v('act'), gig_type: v('type'), budget: v('budget') });
-    var mailto = function () { window.location.href = 'mailto:booking@garrettsummersmusic.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body); };
-    if (!BOOKING_API) return mailto();
-    // Online submission: goes straight to booking@ via the booking backend. Any failure falls back to the email draft.
-    var btn = form.querySelector('button[type=submit]'), status = document.getElementById('bookStatus');
-    btn.disabled = true; status.textContent = 'Sending\u2026';
-    fetch(BOOKING_API + '/v1/inquiries', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Idempotency-Key': form.dataset.key || (form.dataset.key = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(36).slice(2)).replace(/[^A-Za-z0-9_-]/g, '')) },
-      body: JSON.stringify({ type: 'booking', name: v('name'), email: v('email'), phone: '', website: v('website'),
-        details: { date: v('date'), venue: v('venue'), gigType: v('type'), act: v('act'), budget: v('budget'), capacity: v('capacity'), notes: v('notes') } })
-    }).then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); }).then(function () {
-      status.textContent = 'Request sent! Garrett will get back to you at ' + v('email') + '.';
-      track('booking_request_sent', { act: v('act') }); form.reset(); delete form.dataset.key;
+    var mailHref = 'mailto:booking@garrettsummersmusic.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+    function openEmail() {
+      try { window.location.href = mailHref; }
+      catch (error) { status.textContent = 'Your mail app could not open. Email booking@garrettsummersmusic.com with your request.'; }
+    }
+    track('booking_request', { act: values.act, gig_type: values.type, budget: values.budget });
+    if (!BOOKING_API) {
+      status.textContent = 'Opening an email draft. Press Send in your mail app to complete your request. If it does not open, email booking@garrettsummersmusic.com.';
+      openEmail();
+      return;
+    }
+
+    var payload = JSON.stringify({ type: 'booking', name: values.name, email: values.email, phone: '', website: values.website,
+      details: { date: values.date, venue: values.venue, gigType: values.type, act: values.act, budget: values.budget, capacity: values.capacity, notes: values.notes } });
+    pending = true;
+    var controls = Array.prototype.map.call(form.elements, function (control) {
+      return { element: control, disabled: control.disabled };
+    });
+    controls.forEach(function (control) { control.element.disabled = true; });
+    status.textContent = 'Sending\u2026';
+    var timeoutId = null;
+
+    // Keep the same key for an unchanged retry after an uncertain response.
+    // Changed details receive a new key so they cannot collide with the previous request.
+    new Promise(function (resolve, reject) {
+      if (!lastRequest || lastRequest.payload !== payload) {
+        var requestKey = window.crypto && typeof window.crypto.randomUUID === 'function'
+          ? window.crypto.randomUUID()
+          : 'request_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+        lastRequest = { payload: payload, key: requestKey.replace(/[^A-Za-z0-9_-]/g, '') };
+      }
+      var controller = new AbortController();
+      timeoutId = window.setTimeout(function () {
+        reject(new Error('Request timed out'));
+        controller.abort();
+      }, 15000);
+      Promise.resolve(fetch(BOOKING_API + '/v1/inquiries', {
+        method: 'POST', signal: controller.signal,
+        headers: { 'Content-Type': 'application/json', 'Idempotency-Key': lastRequest.key },
+        body: payload
+      })).then(function (response) {
+        if (!response.ok) throw new Error('Request rejected: ' + response.status);
+        return response.json();
+      }).then(resolve, reject);
+    }).then(function (result) {
+      if (!result || typeof result.id !== 'string' || !result.id) throw new Error('Invalid response');
+      status.textContent = 'Request received! Garrett will get back to you at ' + values.email + '.';
+      track('booking_request_sent', { act: values.act });
+      form.reset(); lastRequest = null;
     }).catch(function () {
-      status.textContent = 'Couldn\u2019t send online \u2014 opening an email instead.'; track('booking_request_fallback'); mailto();
-    }).finally(function () { btn.disabled = false; });
+      status.textContent = 'Couldn\u2019t confirm online delivery. Opening an email draft instead; press Send in your mail app to complete your request. If it does not open, email booking@garrettsummersmusic.com.';
+      track('booking_request_fallback');
+      openEmail();
+    }).finally(function () {
+      if (timeoutId !== null) window.clearTimeout(timeoutId);
+      controls.forEach(function (control) { control.element.disabled = control.disabled; });
+      pending = false;
+    });
   });
 })();
 </script>

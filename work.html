@@ -131,6 +131,7 @@
     margin:0 0 14px;
   }
   form{display:flex;flex-direction:column;}
+  .form-note{font-size:0.88rem;color:var(--ink-dim);margin:0 0 20px;}
   .field{
     display:flex;
     flex-direction:column;
@@ -200,6 +201,7 @@
 
     <h2>Get In Touch</h2>
     <form id="workForm">
+      <p class="form-note">This opens a draft in your mail app. Press Send there to complete your inquiry. If your mail app does not open, email <a href="mailto:booking@garrettsummersmusic.com">booking@garrettsummersmusic.com</a>.</p>
       <label class="field">
         <span>Your name</span>
         <input type="text" id="name" placeholder="Full name" required>
@@ -222,7 +224,7 @@
         <span>Your email</span>
         <input type="email" id="email" placeholder="you@email.com" required>
       </label>
-      <button type="submit" class="submit">Send</button>
+      <button type="submit" class="submit">Open email draft</button>
     </form>
   </div>
 
