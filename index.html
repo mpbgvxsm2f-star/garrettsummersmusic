@@ -1423,6 +1423,16 @@
     "linkText": "Map"
   },
   {
+    "date": "OCT 31",
+    "venue": "Tune Up Bar &mdash; Halloween",
+    "city": "Bozeman, MT",
+    "addr": "24 W Mendenhall St",
+    "act": "Willy on the Wire",
+    "time": "9:00 PM",
+    "linkHref": "https://maps.apple.com/?q=24+W+Mendenhall+St,+Bozeman,+MT+59715",
+    "linkText": "Map"
+  },
+  {
     "date": "NOV 07",
     "venue": "Tune Up Bar",
     "city": "Bozeman, MT",
@@ -1604,7 +1614,7 @@
         <option>Bar / club show</option><option>Private party</option><option>Wedding</option><option>Festival</option><option>Corporate event</option><option>Studio session</option><option>Other</option>
       </select></label>
       <label>Who you want<select name="act">
-        <option>Willy on the Wire</option><option>Rob Wolf (with Garrett on keys)</option><option>Garrett solo keys</option><option>Not sure yet</option>
+        <option>Willy on the Wire</option><option>Rob Wolf</option><option>Garrett Summers (solo)</option>
       </select></label>
       <label>Budget<select name="budget">
         <option>Let&rsquo;s talk</option><option>Under $300</option><option>$300&ndash;$750</option><option>$750&ndash;$1,500</option><option>$1,500+</option>
@@ -1768,8 +1778,10 @@
   }
 
   // Doors are 8pm for every real show except the festival slot and the
-  // still-TBD tour dates, where there's no fixed time to show.
+  // still-TBD tour dates, where there's no fixed time to show. A show with
+  // its own "time" (e.g. Halloween at 9) shows that instead.
   function doorsText(s){
+    if(s.time) return ' · ' + s.time;
     if(s.private || /sweet pea/i.test(s.venue) || s.city === 'Venues TBD') return '';
     return ' · Doors 8:00 PM';
   }
