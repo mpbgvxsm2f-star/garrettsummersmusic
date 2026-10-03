@@ -1282,6 +1282,8 @@
   .cta.ghost{color:var(--brass);background:var(--chip-bg);}
   .cta.ghost:hover{color:var(--ink);border-color:var(--ink);}
   .listen-note, .book-note{font-family:var(--mono);font-size:0.72rem;color:var(--ink-dim);margin:-8px 0 16px;}
+  .book-form .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;}
+  .book-status{grid-column:1/-1;margin:0;font-family:var(--mono);font-size:.85rem;color:var(--brass);min-height:1.2em;}
   .spotify{width:100%;height:352px;border:0;border-radius:12px;display:block;}
   .tip-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;align-items:center;}
   .tip-row[hidden]{display:none;}
@@ -1622,6 +1624,8 @@
         <option>0&ndash;49</option><option>50&ndash;99</option><option>100&ndash;299</option><option>300&ndash;499</option><option>500+</option>
       </select></label>
       <label class="wide">Anything else<textarea name="notes" placeholder="Set length, load-in time, sound system, the vibe&hellip;"></textarea></label>
+      <label class="hp" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
+      <p class="book-status" id="bookStatus" role="status" aria-live="polite"></p>
       <button type="submit" class="cta primary">Send booking request</button>
     </form>
   </section>
@@ -2772,6 +2776,8 @@ var MONEY = {
     'Stage-Worn Corduroy Vest': { price: 140, url: 'https://buy.stripe.com/14A9AS98t1e58iibFRcs800' }
   }
 };
+// Booking backend. Empty = the form opens an email draft (the original behavior).
+var BOOKING_API = '';
 (function () {
   var track = window.track || function () {};
   // tip button
@@ -2800,7 +2806,22 @@ var MONEY = {
       'Type of gig: ' + v('type'), 'Act: ' + v('act'), 'Budget: ' + v('budget'), 'Venue capacity: ' + v('capacity'), '', v('notes')
     ].join('\n');
     track('booking_request', { act: v('act'), gig_type: v('type'), budget: v('budget') });
-    window.location.href = 'mailto:booking@garrettsummersmusic.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+    var mailto = function () { window.location.href = 'mailto:booking@garrettsummersmusic.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body); };
+    if (!BOOKING_API) return mailto();
+    // Online submission: goes straight to booking@ via the booking backend. Any failure falls back to the email draft.
+    var btn = form.querySelector('button[type=submit]'), status = document.getElementById('bookStatus');
+    btn.disabled = true; status.textContent = 'Sending\u2026';
+    fetch(BOOKING_API + '/v1/inquiries', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Idempotency-Key': form.dataset.key || (form.dataset.key = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(36).slice(2)).replace(/[^A-Za-z0-9_-]/g, '')) },
+      body: JSON.stringify({ type: 'booking', name: v('name'), email: v('email'), phone: '', website: v('website'),
+        details: { date: v('date'), venue: v('venue'), gigType: v('type'), act: v('act'), budget: v('budget'), capacity: v('capacity'), notes: v('notes') } })
+    }).then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); }).then(function () {
+      status.textContent = 'Request sent! Garrett will get back to you at ' + v('email') + '.';
+      track('booking_request_sent', { act: v('act') }); form.reset(); delete form.dataset.key;
+    }).catch(function () {
+      status.textContent = 'Couldn\u2019t send online \u2014 opening an email instead.'; track('booking_request_fallback'); mailto();
+    }).finally(function () { btn.disabled = false; });
   });
 })();
 </script>
