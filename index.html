@@ -1619,7 +1619,9 @@
       <label>Budget<select name="budget">
         <option>Let&rsquo;s talk</option><option>Under $300</option><option>$300&ndash;$750</option><option>$750&ndash;$1,500</option><option>$1,500+</option>
       </select></label>
-      <label>Crowd size<input name="crowd" inputmode="numeric" placeholder="e.g. 150"></label>
+      <label>Venue capacity<select name="capacity">
+        <option>0&ndash;49</option><option>50&ndash;99</option><option>100&ndash;299</option><option>300&ndash;499</option><option>500+</option>
+      </select></label>
       <label class="wide">Anything else<textarea name="notes" placeholder="Set length, load-in time, sound system, the vibe&hellip;"></textarea></label>
       <button type="submit" class="cta primary">Send booking request</button>
     </form>
@@ -2794,7 +2796,7 @@ var MONEY = {
     var subject = 'Booking request: ' + v('act') + ' \u2014 ' + v('date') + (v('venue') ? ' \u2014 ' + v('venue') : '');
     var body = [
       'Name: ' + v('name'), 'Email: ' + v('email'), 'Date: ' + v('date'), 'City & venue: ' + v('venue'),
-      'Type of gig: ' + v('type'), 'Act: ' + v('act'), 'Budget: ' + v('budget'), 'Crowd size: ' + v('crowd'), '', v('notes')
+      'Type of gig: ' + v('type'), 'Act: ' + v('act'), 'Budget: ' + v('budget'), 'Venue capacity: ' + v('capacity'), '', v('notes')
     ].join('\n');
     track('booking_request', { act: v('act'), gig_type: v('type'), budget: v('budget') });
     window.location.href = 'mailto:booking@garrettsummersmusic.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
