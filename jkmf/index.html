@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>JKMF Get Involved</title>
+<meta name="description" content="Help the Joe Kirchner Memorial Fund support Bozeman's music community. Volunteer, give, or reach out.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ebebe8; --ink:#2a2c26; --muted:#6f716a; --line:#d4d4cf;
+  --field:#dfdfdb; --accent:#5f6b2f; --accent-ink:#f3f3ef;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1e1f1c; --ink:#e6e6e0; --muted:#9a9b92; --line:#34362f;
+    --field:#2a2b27; --accent:#a4b069; --accent-ink:#1e1f1c;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1e1f1c; --ink:#e6e6e0; --muted:#9a9b92; --line:#34362f;
+  --field:#2a2b27; --accent:#a4b069; --accent-ink:#1e1f1c;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+  font-size:16px; line-height:1.5; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:980px; margin:0 auto; padding:0 16px}
+@media (min-width:720px){.wrap{padding:0 40px}}
+
+.top{display:flex; justify-content:space-between; align-items:center; padding:14px 0; border-bottom:1px solid var(--line)}
+.mark{font-weight:700; letter-spacing:.02em; font-size:15px}
+.toggle{background:none; border:0; color:var(--muted); font:inherit; font-size:13px; cursor:pointer; padding:4px 0}
+.toggle:hover{color:var(--ink)}
+
+.label{font-variant:small-caps; text-transform:lowercase; letter-spacing:.12em; font-size:14px; font-weight:600; color:var(--accent); margin:0 0 6px}
+
+/* hero, compact */
+.hero{padding:26px 0 18px}
+h1{font-size:clamp(28px,5vw,42px); line-height:1.05; letter-spacing:-.02em; font-weight:700; margin:0 0 8px}
+.lede{margin:0; color:var(--muted); max-width:52ch}
+
+/* intent tabs */
+.tabs{display:grid; grid-template-columns:repeat(2,1fr); gap:1px; background:var(--ink); border:1px solid var(--ink); margin:0 0 22px}
+@media (min-width:640px){.tabs{grid-template-columns:repeat(4,1fr)}}
+.tab{
+  background:var(--bg); border:0; color:var(--ink);
+  font:inherit; font-weight:600; font-size:15px; padding:12px 8px; cursor:pointer; text-align:center;
+}
+.tab small{display:block; font-weight:400; font-size:12px; color:var(--muted); margin-top:2px}
+.tab[aria-selected="true"]{background:var(--ink); color:var(--bg)}
+.tab[aria-selected="true"] small{color:var(--bg); opacity:.75}
+.tab:focus-visible{outline:2px solid var(--accent); outline-offset:-4px}
+
+/* forms */
+form{display:none; gap:18px; max-width:660px}
+form.on{display:grid}
+.row{display:grid; gap:14px}
+@media (min-width:560px){.row.two{grid-template-columns:1fr 1fr}}
+.field label,.field legend{display:block; font-size:13px; font-weight:600; margin:0 0 6px; padding:0}
+.hint{font-weight:400; color:var(--muted)}
+fieldset{border:0; margin:0; padding:0; min-width:0}
+input[type=text],input[type=email],input[type=tel],textarea{
+  width:100%; background:var(--field); color:var(--ink); border:1px solid transparent;
+  border-radius:0; padding:11px 12px; font:inherit; font-size:16px;
+}
+textarea{min-height:84px; resize:vertical}
+input:focus,textarea:focus{outline:none; border-color:var(--ink)}
+
+.chips{display:flex; flex-wrap:wrap; gap:6px}
+.chip input{position:absolute; opacity:0; pointer-events:none}
+.chip span{display:inline-block; padding:8px 12px; border:1px solid var(--line); cursor:pointer; font-size:14px; user-select:none; transition:background .15s,color .15s}
+.chip input:checked + span{background:var(--accent); border-color:var(--accent); color:var(--accent-ink)}
+.chips.sub .chip span{padding:6px 10px; font-size:13px; color:var(--muted)}
+.chips.sub .chip input:checked + span{color:var(--accent-ink)}
+.chip input:focus-visible + span{outline:2px solid var(--accent); outline-offset:2px}
+
+.reveal{display:none}
+.reveal.on{display:block}
+.hp{position:absolute; left:-9999px}
+
+.actions{display:flex; flex-wrap:wrap; align-items:center; gap:14px}
+button.send{background:var(--ink); color:var(--bg); border:0; padding:13px 26px; font:inherit; font-weight:600; cursor:pointer; border-radius:0}
+button.send:hover{background:var(--accent); color:var(--accent-ink)}
+.note{font-size:12px; color:var(--muted); margin:0}
+.error{color:var(--accent); font-size:13px; margin:0}
+.error:empty{display:none}
+
+/* mission strip */
+.mission{display:grid; gap:14px; padding:30px 0; margin-top:34px; border-top:1px solid var(--line)}
+@media (min-width:720px){.mission{grid-template-columns:repeat(3,1fr); gap:28px}}
+.mission p{margin:0; font-size:14px}
+.mission .n{color:var(--accent); font-weight:600; font-size:13px; display:block; margin-bottom:4px}
+
+footer{padding:16px 0 36px; border-top:1px solid var(--line); font-size:12px; color:var(--muted); display:flex; flex-wrap:wrap; gap:6px 20px; justify-content:space-between}
+footer a{color:inherit}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <span class="mark">JKMF</span>
+    <button class="toggle" id="themeToggle" type="button">Dark</button>
+  </header>
+
+  <div class="hero">
+    <p class="label">Get involved</p>
+    <h1>Joe Kirchner Memorial Fund</h1>
+    <p class="lede">A 501(c)(3) backing Bozeman's music community in Joe's name. Pick how you want to help.</p>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" aria-selected="true" data-form="volunteer">Volunteer<small>Time &amp; skills</small></button>
+    <button class="tab" role="tab" aria-selected="false" data-form="learn">Learn<small>Mentorship &amp; grants</small></button>
+    <button class="tab" role="tab" aria-selected="false" data-form="give">Give<small>Funds &amp; support</small></button>
+    <button class="tab" role="tab" aria-selected="false" data-form="chat">Let's chat<small>Board, ideas, stories</small></button>
+  </div>
+
+  <!-- VOLUNTEER -->
+  <form id="volunteer" class="on" data-subject="Volunteer" novalidate>
+    <div class="row two">
+      <div class="field"><label>Name</label><input type="text" name="Name" autocomplete="name" required></div>
+      <div class="field"><label>Phone</label><input type="tel" name="Phone" autocomplete="tel" required></div>
+    </div>
+    <div class="field"><label>Email <span class="hint">Optional</span></label><input type="email" name="Email" autocomplete="email"></div>
+    <fieldset class="field">
+      <legend>Where you'd help <span class="hint">Pick any</span></legend>
+      <div class="chips">
+        <label class="chip"><input type="checkbox" name="Help with" value="Events"><span>Events</span></label>
+        <label class="chip"><input type="checkbox" name="Help with" value="Promotion & marketing"><span>Promotion &amp; marketing</span></label>
+        <label class="chip"><input type="checkbox" name="Help with" value="Admin"><span>Admin</span></label>
+        <label class="chip"><input type="checkbox" name="Help with" value="Mentoring"><span>Mentoring</span></label>
+        <label class="chip"><input type="checkbox" name="Help with" value="Anything"><span>Anything</span></label>
+      </div>
+    </fieldset>
+    <fieldset class="field">
+      <legend>Hours per month</legend>
+      <div class="chips">
+        <label class="chip"><input type="radio" name="Hours/month" value="Up to 5"><span>Up to 5</span></label>
+        <label class="chip"><input type="radio" name="Hours/month" value="5–10"><span>5–10</span></label>
+        <label class="chip"><input type="radio" name="Hours/month" value="10–15"><span>10–15</span></label>
+        <label class="chip"><input type="radio" name="Hours/month" value="15–20"><span>15–20</span></label>
+      </div>
+    </fieldset>
+    <div class="field"><label>What do you bring? <span class="hint">Optional</span></label><textarea name="Skills" placeholder="Skills, trades, connections, gear"></textarea></div>
+    <fieldset class="field">
+      <legend>Open to a paid role if we hire?</legend>
+      <div class="chips">
+        <label class="chip"><input type="radio" name="Paid role" value="Yes"><span>Yes</span></label>
+        <label class="chip"><input type="radio" name="Paid role" value="Maybe"><span>Maybe</span></label>
+        <label class="chip"><input type="radio" name="Paid role" value="No"><span>No</span></label>
+      </div>
+    </fieldset>
+    <div class="hp" aria-hidden="true"><input type="text" name="website" tabindex="-1" autocomplete="off"></div>
+    <p class="error" role="alert"></p>
+    <div class="actions"><button class="send" type="submit">Sign me up</button><p class="note">Opens an email draft. Hit send.</p></div>
+  </form>
+
+  <!-- LEARN -->
+  <form id="learn" data-subject="Learn" novalidate>
+    <div class="row two">
+      <div class="field"><label>Name</label><input type="text" name="Name" autocomplete="name" required></div>
+      <div class="field"><label>Phone</label><input type="tel" name="Phone" autocomplete="tel" required></div>
+    </div>
+    <div class="field"><label>Email <span class="hint">Optional</span></label><input type="email" name="Email" autocomplete="email"></div>
+    <div class="field"><label>Instrument or role</label><input type="text" name="Instrument/role" placeholder="Drums, vocals, sound engineer, manager"></div>
+    <fieldset class="field">
+      <legend>What you're looking for <span class="hint">Pick any</span></legend>
+      <div class="chips">
+        <label class="chip"><input type="checkbox" name="Looking for" value="Mentorship"><span>Mentorship</span></label>
+        <label class="chip"><input type="checkbox" name="Looking for" value="Lessons & training"><span>Lessons &amp; training</span></label>
+        <label class="chip"><input type="checkbox" name="Looking for" value="Project grant"><span>Project grant</span></label>
+        <label class="chip"><input type="checkbox" name="Looking for" value="Recording & production"><span>Recording &amp; production</span></label>
+        <label class="chip"><input type="checkbox" name="Looking for" value="Music business help"><span>Music business help</span></label>
+      </div>
+    </fieldset>
+    <fieldset class="field">
+      <legend>Where you're at</legend>
+      <div class="chips">
+        <label class="chip"><input type="radio" name="Level" value="Just starting"><span>Just starting</span></label>
+        <label class="chip"><input type="radio" name="Level" value="Gigging"><span>Gigging</span></label>
+        <label class="chip"><input type="radio" name="Level" value="Working pro"><span>Working pro</span></label>
+      </div>
+    </fieldset>
+    <div class="field"><label>What are you working on?</label><textarea name="Project" placeholder="Your goals, a project, or where you're stuck"></textarea></div>
+    <div class="hp" aria-hidden="true"><input type="text" name="website" tabindex="-1" autocomplete="off"></div>
+    <p class="error" role="alert"></p>
+    <div class="actions"><button class="send" type="submit">Apply</button><p class="note">Opens an email draft. Hit send.</p></div>
+  </form>
+
+  <!-- GIVE -->
+  <form id="give" data-subject="Giving" novalidate>
+    <div class="row two">
+      <div class="field"><label>Name</label><input type="text" name="Name" autocomplete="name" required></div>
+      <div class="field"><label>Phone</label><input type="tel" name="Phone" autocomplete="tel" required></div>
+    </div>
+    <div class="field"><label>Email <span class="hint">Optional</span></label><input type="email" name="Email" autocomplete="email"></div>
+    <fieldset class="field">
+      <legend>What you're thinking</legend>
+      <div class="chips">
+        <label class="chip"><input type="checkbox" name="Interest" value="One-time gift"><span>One-time gift</span></label>
+        <label class="chip"><input type="checkbox" name="Interest" value="Recurring gift"><span>Recurring</span></label>
+        <label class="chip"><input type="checkbox" name="Interest" value="In-kind (gear, space, services)"><span>Gear, space, or services</span></label>
+        <label class="chip"><input type="checkbox" name="Interest" value="Fund a grant"><span>Fund a grant</span></label>
+      </div>
+    </fieldset>
+    <fieldset class="field">
+      <legend>More ways to give <span class="hint">Optional</span></legend>
+      <div class="chips sub">
+        <label class="chip"><input type="checkbox" name="Giving through" value="Endowment"><span>Endowment</span></label>
+        <label class="chip"><input type="checkbox" name="Giving through" value="Trust"><span>Trust</span></label>
+        <label class="chip"><input type="checkbox" name="Giving through" value="Insurance"><span>Insurance</span></label>
+        <label class="chip"><input type="checkbox" name="Giving through" value="Events"><span>Events</span></label>
+        <label class="chip"><input type="checkbox" name="Giving through" value="Business"><span>Business</span></label>
+        <label class="chip"><input type="checkbox" name="Giving through" value="Foundation"><span>Foundation</span></label>
+      </div>
+    </fieldset>
+    <div class="field"><label>Anything we should know? <span class="hint">Optional</span></label><textarea name="Notes" placeholder="Amount, timing, who it's in honor of"></textarea></div>
+    <div class="hp" aria-hidden="true"><input type="text" name="website" tabindex="-1" autocomplete="off"></div>
+    <p class="error" role="alert"></p>
+    <div class="actions"><button class="send" type="submit">Start the conversation</button><p class="note">We'll follow up with how to give.</p></div>
+  </form>
+
+  <!-- LET'S CHAT -->
+  <form id="chat" data-subject="Let's chat" novalidate>
+    <div class="row two">
+      <div class="field"><label>Name</label><input type="text" name="Name" autocomplete="name" required></div>
+      <div class="field"><label>Phone</label><input type="tel" name="Phone" autocomplete="tel" required></div>
+    </div>
+    <div class="field"><label>Email <span class="hint">Optional</span></label><input type="email" name="Email" autocomplete="email"></div>
+    <fieldset class="field">
+      <legend>About</legend>
+      <div class="chips">
+        <label class="chip"><input type="checkbox" name="Topic" value="Joining the board"><span>Joining the board</span></label>
+        <label class="chip"><input type="checkbox" name="Topic" value="Partnering"><span>Partnering</span></label>
+        <label class="chip"><input type="checkbox" name="Topic" value="Needing support"><span>Needing support</span></label>
+        <label class="chip"><input type="checkbox" name="Topic" value="A Joe story"><span>A Joe story</span></label>
+        <label class="chip"><input type="checkbox" name="Topic" value="Something else"><span>Something else</span></label>
+      </div>
+    </fieldset>
+    <div class="field"><label>What's on your mind?</label><textarea name="Message" placeholder="Questions, ideas, or how Joe left his mark on you"></textarea></div>
+    <div class="hp" aria-hidden="true"><input type="text" name="website" tabindex="-1" autocomplete="off"></div>
+    <p class="error" role="alert"></p>
+    <div class="actions"><button class="send" type="submit">Reach out</button><p class="note">Opens an email draft. Hit send.</p></div>
+  </form>
+
+  <div class="mission">
+    <p><span class="n">01</span>Show up when tragedy or a hard stretch hits.</p>
+    <p><span class="n">02</span>Grow young talent and working pros through mentorship, training, grants, and production support.</p>
+    <p><span class="n">03</span>Connect people to mental health care, addiction treatment, and other essential services.</p>
+  </div>
+
+  <footer>
+    <span>Joe Kirchner Memorial Fund · 501(c)(3) · Bozeman, MT</span>
+    <a id="mailLink" href="#"></a>
+  </footer>
+</div>
+
+<script>
+/* Set the JKMF inbox here */
+const JKMF_EMAIL = "jkmfbozeman@gmail.com";
+const CC_EMAIL = "booking@garrettsummersmusic.com";
+
+const $ = s => document.querySelector(s);
+$("#mailLink").textContent = JKMF_EMAIL;
+$("#mailLink").href = "mailto:" + JKMF_EMAIL;
+
+/* theme */
+const root = document.documentElement;
+const isDark = () => { const t = root.getAttribute("data-theme"); return t ? t === "dark" : matchMedia("(prefers-color-scheme: dark)").matches; };
+const sync = () => $("#themeToggle").textContent = isDark() ? "Light" : "Dark";
+try{ const s = localStorage.getItem("jkmf-theme"); if (s) root.setAttribute("data-theme", s); }catch(e){}
+sync();
+$("#themeToggle").onclick = () => {
+  const next = isDark() ? "light" : "dark";
+  root.setAttribute("data-theme", next);
+  try{ localStorage.setItem("jkmf-theme", next); }catch(e){}
+  sync();
+};
+
+/* tabs */
+const tabs = document.querySelectorAll(".tab");
+function show(id){
+  tabs.forEach(t => t.setAttribute("aria-selected", t.dataset.form === id));
+  document.querySelectorAll("form").forEach(f => f.classList.toggle("on", f.id === id));
+}
+tabs.forEach(t => t.onclick = () => { show(t.dataset.form); history.replaceState(null, "", "#" + t.dataset.form); });
+const hash = location.hash.slice(1);
+if (["volunteer","learn","give","chat"].includes(hash)) show(hash);
+
+/* submit -> mailto */
+document.querySelectorAll("form").forEach(form => {
+  form.addEventListener("submit", e => {
+    e.preventDefault();
+    if (form.website.value) return;
+    const err = form.querySelector(".error");
+    const name = form.Name.value.trim(), phone = form.Phone.value.trim(), email = form.Email.value.trim();
+    if (!name || phone.replace(/\D/g, "").length < 7) { err.textContent = "Add your name and a phone number."; return; }
+    if (email && !/^\S+@\S+\.\S+$/.test(email)) { err.textContent = "That email doesn't look right."; return; }
+    err.textContent = "";
+
+    const data = {};
+    new FormData(form).forEach((v, k) => {
+      v = String(v).trim();
+      if (!v || k === "website") return;
+      data[k] = data[k] ? data[k] + ", " + v : v;
+    });
+    const long = ["Skills","Notes","Message","Project"];
+    const body = Object.entries(data)
+      .map(([k, v]) => long.includes(k) ? `\n${k}:\n${v}` : `${k}: ${v}`)
+      .join("\n");
+    const subject = `${form.dataset.subject}: ${name}`;
+    location.href = `mailto:${JKMF_EMAIL}?cc=${CC_EMAIL}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  });
+});
+</script>
+</body>
+</html>
