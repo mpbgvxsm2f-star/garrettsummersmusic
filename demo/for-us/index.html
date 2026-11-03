@@ -272,9 +272,14 @@
   var unlocked = false, encBuf = null, pwInput = root.querySelector('#pw'), lockMsg = root.querySelector('.lock-msg');
   root.classList.add('locked'); document.documentElement.classList.add('gate');
   setTimeout(function () { if (!unlocked) try { pwInput.focus({ preventScroll: true }); } catch (e) {} }, 50);
-  function norm(p) { return p.trim().toLowerCase().replace(/\s+/g, ' '); }
+  function norm(p) { return (p || '').toLowerCase().normalize('NFKD').replace(/[^a-z0-9]/g, ''); }
   async function unlock(pw, remembered) {
-    if (!encBuf) encBuf = await (await fetch('/audio/for-us.enc')).arrayBuffer();
+    if (!encBuf) {
+      var res;
+      try { res = await fetch('/audio/for-us.enc', { cache: 'no-cache' }); } catch (e) { throw new Error('network'); }
+      if (!res.ok) throw new Error('network');
+      encBuf = await res.arrayBuffer();
+    }
     var salt = encBuf.slice(0, 16), iv = encBuf.slice(16, 28), ct = encBuf.slice(28);
     var base = await crypto.subtle.importKey('raw', new TextEncoder().encode(norm(pw)), 'PBKDF2', false, ['deriveKey']);
     var key = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt: salt, iterations: 310000, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
@@ -291,7 +296,8 @@
     unlock(pwInput.value).then(function () {
       lockMsg.textContent = '';
       audio.play().then(function () { if (!started) { started = true; track('track_play', { track: 'For Us', page: 'demo' }); } }, function () {});
-    }, function () {
+    }, function (err) {
+      if (err && err.message === 'network') { lockMsg.textContent = 'Couldn\u2019t load the song. Check your connection and try again.'; return; }
       lockMsg.textContent = 'Wrong password.'; pwInput.select();
       track('demo_unlock_fail', { item_id: 'for-us' });
     });
