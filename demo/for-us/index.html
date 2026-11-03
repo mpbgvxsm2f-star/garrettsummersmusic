@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<script>
+  window.GA_ID = 'G-9PKKBW8XG1';
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  window.track = function (name, params) { try { if (window.GA_ID) gtag('event', name, params || {}); } catch (e) {} };
+  if (window.GA_ID) {
+    var ga = document.createElement('script'); ga.async = true; ga.src = 'https://www.googletagmanager.com/gtag/js?id=' + window.GA_ID;
+    document.head.appendChild(ga);
+    gtag('js', new Date()); gtag('config', window.GA_ID);
+  }
+  // Someone opened a link that was shared with the Share button
+  try {
+    if (/[?&]s=share\b/.test(location.search)) {
+      track('shared_link_open', { item_id: 'for-us' });
+      history.replaceState(null, '', location.pathname + location.hash);
+    }
+  } catch (e) {}
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>For Us (Demo) | Garrett Summers</title>
+<meta name="description" content="For Us. A demo from Garrett Summers on keyboards, with lyrics, melody and lead guitar by Will Sandish.">
+<meta property="og:type" content="music.song">
+<meta property="og:site_name" content="Garrett Summers">
+<meta property="og:title" content="For Us (Demo)">
+<meta property="og:description" content="Garrett Summers on keyboards. Lyrics, melody and lead guitar by Will Sandish. Tap to listen.">
+<meta property="og:url" content="https://garrettsummersmusic.com/demo/for-us/">
+<meta property="og:image" content="https://garrettsummersmusic.com/images/for-us-cover-lg.jpg">
+<meta property="og:image:secure_url" content="https://garrettsummersmusic.com/images/for-us-cover-lg.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="1200">
+<meta property="og:image:alt" content="For Us cover: the title in large white type on black">
+<meta property="og:audio" content="https://garrettsummersmusic.com/audio/for-us.m4a">
+<meta property="og:audio:type" content="audio/mp4">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="For Us (Demo)">
+<meta name="twitter:description" content="Garrett Summers on keyboards. Lyrics, melody and lead guitar by Will Sandish.">
+<meta name="twitter:image" content="https://garrettsummersmusic.com/images/for-us-cover-lg.jpg">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  /* Swiss / International Typographic Style: one grotesk, black on white,
+     hard grid, hairline rules, flush-left type. The only color is Nord red
+     (#BF616A), used solid, on things you press. */
+  :root{
+    color-scheme:light dark;
+    --paper:#ffffff; --ink:#000000; --mute:#6b6b6b; --rule:#000000; --track:#d4d4d4;
+    --accent:#BF616A; --on-accent:#ffffff;
+    --grot:'Inter Tight','Helvetica Neue',Helvetica,Arial,sans-serif;
+    --gut:clamp(16px,3vw,32px);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --paper:#000000; --ink:#ffffff; --mute:#9a9a9a; --rule:#ffffff; --track:#333333; }
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;}
+  body{
+    background:var(--paper); color:var(--ink);
+    font-family:var(--grot); font-size:15px; line-height:1.4;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh; min-height:100dvh;
+    padding:calc(var(--gut) + env(safe-area-inset-top,0px)) var(--gut) calc(var(--gut) + env(safe-area-inset-bottom,0px));
+  }
+  a{color:inherit;}
+  main{max-width:1200px; margin:0 auto; display:grid; grid-template-columns:repeat(12,1fr); column-gap:var(--gut);}
+
+  /* Masthead */
+  .mast{grid-column:1/-1; display:grid; grid-template-columns:subgrid; align-items:center; align-self:start; position:sticky; top:0; z-index:20; background:var(--paper); border-top:3px solid var(--rule); border-bottom:1px solid transparent; padding:10px 0; min-height:58px; font-weight:700; font-size:0.8rem; letter-spacing:0.01em; transition:border-color .2s ease;}
+  .cover-out .mast{border-bottom-color:var(--rule);}
+  /* Mini cover: lives in the header, shows once the big cover scrolls away */
+  .mini{grid-column:1/7; display:none; align-items:center; gap:12px; min-width:0; padding:0; border:none; background:none; color:inherit; font:inherit; text-align:left; cursor:pointer; -webkit-appearance:none; appearance:none;}
+  .mini img{width:38px; height:38px; object-fit:cover; filter:grayscale(1) contrast(1.08); flex:none; display:block;}
+  .mini .mini-t{font-weight:800; font-size:1rem; letter-spacing:-0.02em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .mini .mini-p{width:38px; height:38px; flex:none; background:var(--accent); color:var(--on-accent); display:flex; align-items:center; justify-content:center; margin-left:auto;}
+  .mini:hover .mini-p{background:#a8525b;}
+  .mini .mini-p svg{width:16px; height:16px;}
+  .mini:focus-visible{outline:3px solid var(--accent); outline-offset:3px;}
+  .cover-out .mini{display:flex; animation:miniIn .22s ease;}
+  .cover-out .mast .who{display:none;}
+  @keyframes miniIn{from{opacity:0; transform:translateY(-6px);} to{opacity:1; transform:none;}}
+  .mast .who{grid-column:1/7; text-decoration:none;}
+  .mast .who:hover{text-decoration:underline; text-underline-offset:3px;}
+  .mast .kind{grid-column:7/10;}
+  .mast .yr{grid-column:10/-1; text-align:right;}
+  @supports not (grid-template-columns:subgrid){ .mast{display:flex; justify-content:space-between;} }
+
+  /* Cover */
+  .cover{grid-column:1/7; margin-top:var(--gut); position:relative; display:block; width:100%; aspect-ratio:1; padding:0; border:none; border-radius:0; overflow:hidden; cursor:pointer; background:var(--track); -webkit-appearance:none; appearance:none;}
+  .cover{box-shadow:0 0 0 1px var(--track);}
+  .cover img{width:100%; height:100%; object-fit:cover; display:block; filter:grayscale(1) contrast(1.08);}
+  .cover:focus-visible{outline:3px solid var(--accent); outline-offset:4px;}
+  .play{position:absolute; left:0; bottom:0; width:clamp(64px,9vw,88px); height:clamp(64px,9vw,88px); background:var(--accent); color:var(--on-accent); display:flex; align-items:center; justify-content:center; transition:background .12s ease;}
+  .cover:hover .play{background:#a8525b;}
+  .cover:active .play{background:#934750;}
+  .play svg{width:42%; height:42%;}
+  .i-pause, .playing .i-play{display:none;}
+  .playing .i-pause{display:block;}
+
+  /* Info column */
+  .info{grid-column:7/-1; margin-top:var(--gut); display:flex; flex-direction:column; min-width:0;}
+  .no{font-weight:500; font-size:0.8rem; color:var(--mute); font-variant-numeric:tabular-nums;}
+  h1{font-weight:800; font-size:clamp(4rem,11vw,9.5rem); line-height:0.84; letter-spacing:-0.055em; margin:0.12em 0 0 -0.05em;}
+  .meta{display:grid; grid-template-columns:repeat(3,1fr); gap:14px var(--gut); margin-top:auto; padding-top:20px;}
+  .meta div{border-top:1px solid var(--rule); padding-top:6px;}
+  .meta dt{font-size:0.72rem; font-weight:500; color:var(--mute);}
+  .meta dd{margin:2px 0 0; font-weight:700; font-size:0.95rem; font-variant-numeric:tabular-nums;}
+
+  .credits{margin:22px 0 0; border-top:1px solid var(--rule); padding-top:6px;}
+  .credits > dt{font-size:0.72rem; font-weight:500; color:var(--mute); margin-bottom:4px;}
+  .credits > div{display:grid; grid-template-columns:1fr 2fr; gap:var(--gut); padding:6px 0; border-bottom:1px solid var(--track);}
+  .credits > div:last-child{border-bottom:none;}
+  .credits dd{margin:0; font-size:0.95rem;}
+  .credits .who-c{font-weight:700;}
+  .credits .role{color:var(--ink);}
+  @media (max-width:760px){ .credits > div{grid-template-columns:1fr 1.3fr;} }
+  .wave{display:flex; align-items:center; gap:2px; height:64px; margin-top:28px; cursor:pointer; touch-action:pan-y; transition:transform .15s ease; transform-origin:center;}
+  .wave:focus-visible{outline:3px solid var(--accent); outline-offset:4px;}
+  .wave i{flex:1; min-width:1px; background:var(--track);}
+  .wave i.on{background:var(--ink);}
+  .scrubbing .wave{transform:scaleY(1.18);}
+  .scrub-hint{font-weight:500; color:var(--mute);}
+  .times{display:flex; justify-content:space-between; font-weight:700; font-size:0.8rem; font-variant-numeric:tabular-nums; margin-top:8px; padding-top:6px; border-top:1px solid var(--rule);}
+
+  .actions{display:grid; grid-template-columns:1fr 1fr; gap:var(--gut); margin-top:28px;}
+  .btn{font-family:var(--grot); font-weight:700; font-size:0.95rem; text-align:left; text-decoration:none; border-radius:0; padding:16px 16px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; -webkit-appearance:none; appearance:none; transition:background .12s ease, color .12s ease;}
+  .btn::after{content:"\2192"; font-weight:500;}
+  .btn.primary{background:var(--accent); color:var(--on-accent); border:2px solid var(--accent);}
+  .btn.primary:hover{background:#a8525b; border-color:#a8525b;}
+  .btn.ghost{background:transparent; color:var(--accent); border:2px solid var(--accent);}
+  .btn.ghost:hover{background:var(--accent); color:var(--on-accent);}
+  .btn:focus-visible{outline:3px solid var(--ink); outline-offset:3px;}
+
+  footer{grid-column:1/-1; display:grid; grid-template-columns:subgrid; margin-top:clamp(40px,8vw,96px); border-top:1px solid var(--rule); padding-top:8px; font-size:0.75rem; color:var(--mute);}
+  footer .l{grid-column:1/7;}
+  footer .r{grid-column:7/-1;}
+  footer a{color:var(--ink); font-weight:700; text-decoration:none;}
+  footer a:hover{text-decoration:underline; text-underline-offset:3px;}
+  @supports not (grid-template-columns:subgrid){ footer{display:flex; justify-content:space-between; gap:16px;} }
+
+  @media (max-width:760px){
+    .mast .who{grid-column:1/9;} .mast .kind{display:none;} .mast .yr{grid-column:10/-1;}
+    .mini{grid-column:1/10;}
+    .cover, .info{grid-column:1/-1;}
+    h1{font-size:clamp(4rem,24vw,7rem);}
+    .meta{margin-top:24px; padding-top:0; grid-template-columns:repeat(3,1fr);}
+    footer .l, footer .r{grid-column:1/-1;}
+    footer .r{margin-top:4px;}
+  }
+</style>
+</head>
+<body>
+<main id="player">
+  <header class="mast">
+    <a class="who" href="/">Garrett Summers</a>
+    <button class="mini" type="button" aria-label="Play For Us">
+      <img src="/images/for-us-cover.jpg" alt="" width="600" height="600">
+      <span class="mini-t">For Us</span>
+      <span class="mini-p" aria-hidden="true">
+        <svg class="i-play" viewBox="0 0 24 24"><path d="M7 4v16l13-8z" fill="currentColor"/></svg>
+        <svg class="i-pause" viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z" fill="currentColor"/></svg>
+      </span>
+    </button>
+    <span class="kind">Demo</span>
+    <span class="yr">2026</span>
+  </header>
+
+  <button class="cover" type="button" aria-label="Play For Us">
+    <img src="/images/for-us-cover-lg.jpg" alt="For Us cover: the title in large white type on black" width="1200" height="1200">
+    <span class="play" aria-hidden="true">
+      <svg class="i-play" viewBox="0 0 24 24"><path d="M7 4v16l13-8z" fill="currentColor"/></svg>
+      <svg class="i-pause" viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z" fill="currentColor"/></svg>
+    </span>
+  </button>
+
+  <section class="info">
+    <div class="no">02 / Demo</div>
+    <h1>For<br>Us</h1>
+    <dl class="meta">
+      <div><dt>Artist</dt><dd>Garrett Summers</dd></div>
+      <div><dt>Length</dt><dd class="t-dur">4:41</dd></div>
+      <div><dt>Status</dt><dd>Demo</dd></div>
+    </dl>
+    <dl class="credits">
+      <dt>Credits</dt>
+      <div><dd class="who-c">Garrett Summers</dd><dd class="role">Keyboards</dd></div>
+      <div><dd class="who-c">Will Sandish</dd><dd class="role">Lyrics, Melody, Lead Guitar</dd></div>
+    </dl>
+    <div class="wave" role="slider" tabindex="0" aria-label="Seek For Us" aria-valuemin="0" aria-valuemax="281" aria-valuenow="0" data-peaks="0.51,0.51,0.47,0.41,1.0,0.97,0.31,0.96,0.47,0.7,0.51,0.82,0.58,0.91,0.5,0.88,0.5,0.62,0.45,0.83,0.63,0.74,0.42,0.53,0.53,0.56,0.52,0.59,0.64,0.68,0.51,0.55,0.63,0.62,0.48,0.48,0.57,0.56,0.57,0.4,0.73,0.65,0.55,0.55,0.66,0.56,0.6,0.51,0.53,0.63,0.61,0.53,0.56,0.74,0.6,0.54,0.7,0.65,0.55,0.51,0.64,0.54,0.37,0.49,0.45,0.68,0.46,0.37,0.39,0.51,0.64,0.59,0.44,0.39,0.45,0.46,0.46,0.5,0.54,0.48,0.46,0.53,0.49,0.53,0.38,0.44,0.51,0.48,0.37,0.38,0.43,0.52,0.43,0.47,0.53,0.31"></div>
+    <div class="times"><span class="t-cur">0:00</span><span class="scrub-hint" aria-live="polite"></span><span class="t-left">4:41</span></div>
+    <div class="actions">
+      <button class="btn primary share" type="button">Share</button>
+      <a class="btn ghost" href="/#book">Book</a>
+    </div>
+  </section>
+
+  <footer>
+    <span class="l">Copyright &copy; 2026 Garrett Summers. All rights reserved.</span>
+    <span class="r">Shows and music at <a href="/">garrettsummersmusic.com</a></span>
+  </footer>
+
+  <audio preload="metadata" src="/audio/for-us.m4a"></audio>
+</main>
+
+<script>
+(function () {
+  var root = document.getElementById('player');
+  var mini = root.querySelector('.mini');
+  var audio = root.querySelector('audio'), btn = root.querySelector('.cover'), wave = root.querySelector('.wave');
+  var cur = root.querySelector('.t-cur'), dur = root.querySelector('.t-dur'), share = root.querySelector('.share');
+  var started = false, DUR = 281.1;
+  var bars = wave.dataset.peaks.split(',').map(function (v) {
+    var i = document.createElement('i'); i.style.height = Math.round(parseFloat(v) * 100) + '%'; wave.appendChild(i); return i;
+  });
+  function total() { return audio.duration || DUR; }
+  function fmt(s) { s = Math.max(0, Math.floor(s || 0)); return Math.floor(s / 60) + ':' + ('0' + (s % 60)).slice(-2); }
+  function paint(t) {
+    if (t == null) t = audio.currentTime;
+    var n = Math.floor(t / total() * bars.length);
+    bars.forEach(function (b, k) { b.classList.toggle('on', k < n); b.classList.toggle('head', k === n); });
+    cur.textContent = fmt(t);
+    var left = root.querySelector('.t-left'); if (left) left.textContent = '−' + fmt(total() - t);
+    wave.setAttribute('aria-valuenow', Math.floor(t));
+  }
+  function play() {
+    audio.play();
+    if (!started) { started = true; track('track_play', { track: 'For Us', page: 'demo' }); }
+  }
+  btn.addEventListener('click', function () { audio.paused ? play() : audio.pause(); });
+  mini.addEventListener('click', function () { audio.paused ? play() : audio.pause(); });
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (es) { root.classList.toggle('cover-out', !es[0].isIntersecting); }, { rootMargin: '-60px 0px 0px 0px' }).observe(btn);
+  }
+  audio.addEventListener('play', function () { root.classList.add('playing'); btn.setAttribute('aria-label', 'Pause For Us'); mini.setAttribute('aria-label', 'Pause For Us'); });
+  audio.addEventListener('pause', function () { root.classList.remove('playing'); btn.setAttribute('aria-label', 'Play For Us'); mini.setAttribute('aria-label', 'Play For Us'); });
+  audio.addEventListener('ended', function () { track('track_complete', { track: 'For Us', page: 'demo' }); audio.currentTime = 0; paint(0); });
+  audio.addEventListener('loadedmetadata', function () { dur.textContent = fmt(audio.duration); });
+  audio.addEventListener('timeupdate', function () { if (!(drag && drag.live)) paint(); });
+
+  // iOS/YouTube-style scrubbing. Touching the wave never jumps: you drag from
+  // where the song is, after an 8px dead zone. Vertical swipes scroll the page.
+  // Sliding your finger down below the wave slows the scrub (half, quarter, fine).
+  var drag = null, hint = root.querySelector('.scrub-hint');
+  var RATES = [[0, 1, ''], [50, 0.5, 'Half-speed scrubbing'], [110, 0.25, 'Quarter-speed scrubbing'], [170, 0.1, 'Fine scrubbing']];
+  function rateFor(dy) { var r = RATES[0]; for (var k = 0; k < RATES.length; k++) if (dy >= RATES[k][0]) r = RATES[k]; return r; }
+  function clampT(t) { return Math.min(total(), Math.max(0, t)); }
+  wave.addEventListener('pointerdown', function (e) {
+    if (e.button) return;
+    drag = { id: e.pointerId, x0: e.clientX, lastX: e.clientX, t: audio.currentTime, live: false };
+  });
+  wave.addEventListener('pointermove', function (e) {
+    if (!drag || e.pointerId !== drag.id) return;
+    if (!drag.live) {
+      if (Math.abs(e.clientX - drag.x0) < 8) return;
+      drag.live = true; drag.lastX = e.clientX;
+      try { wave.setPointerCapture(e.pointerId); } catch (err) {}
+      root.classList.add('scrubbing');
+      return;
+    }
+    var box = wave.getBoundingClientRect(), r = rateFor(Math.max(0, e.clientY - box.bottom));
+    drag.t = clampT(drag.t + (e.clientX - drag.lastX) / box.width * total() * r[1]);
+    drag.lastX = e.clientX;
+    if (hint) hint.textContent = r[2];
+    paint(drag.t);
+  });
+  function endDrag(e, commit) {
+    if (!drag || e.pointerId !== drag.id) return;
+    var d = drag; drag = null;
+    root.classList.remove('scrubbing'); if (hint) hint.textContent = '';
+    if (!commit) { paint(); return; }
+    if (d.live) { audio.currentTime = d.t; paint(d.t); }
+    else if (e.pointerType === 'mouse') {
+      var box = wave.getBoundingClientRect();
+      audio.currentTime = clampT((e.clientX - box.left) / box.width * total()); paint();
+      if (audio.paused) play();
+    }
+  }
+  wave.addEventListener('pointerup', function (e) { endDrag(e, true); });
+  wave.addEventListener('pointercancel', function (e) { endDrag(e, false); });
+  wave.addEventListener('keydown', function (e) {
+    var d = e.key === 'ArrowRight' ? 5 : e.key === 'ArrowLeft' ? -5 : 0;
+    if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); btn.click(); }
+    if (d) { e.preventDefault(); audio.currentTime = Math.min(total(), Math.max(0, audio.currentTime + d)); paint(); }
+  });
+
+  if ('mediaSession' in navigator) {
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: 'For Us (Demo)', artist: 'Garrett Summers',
+      artwork: [{ src: location.origin + '/images/for-us-cover-lg.jpg', sizes: '1200x1200', type: 'image/jpeg' }]
+    });
+    navigator.mediaSession.setActionHandler('play', play);
+    navigator.mediaSession.setActionHandler('pause', function () { audio.pause(); });
+    navigator.mediaSession.setActionHandler('seekto', function (d) { audio.currentTime = d.seekTime; paint(); });
+  }
+
+  share.addEventListener('click', function () {
+    // Shared links carry ?s=share so opens from a share can be counted too.
+    var url = location.origin + '/demo/for-us?s=share';
+    var ev = { method: '', content_type: 'audio', item_id: 'for-us', page: 'demo' };
+    track('share_click', { item_id: 'for-us', page: 'demo' });
+    if (navigator.share) {
+      navigator.share({ title: 'For Us (Demo) by Garrett Summers', url: url }).then(function () {
+        ev.method = 'share_sheet'; track('share', ev);
+      }, function () { track('share_cancel', { item_id: 'for-us', page: 'demo' }); });
+      return;
+    }
+    (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(function () {
+      ev.method = 'copy_link'; track('share', ev);
+      share.textContent = 'Link copied'; setTimeout(function () { share.textContent = 'Share'; }, 1800);
+    }, function () {});
+  });
+  paint(0);
+})();
+</script>
+</body>
+</html>

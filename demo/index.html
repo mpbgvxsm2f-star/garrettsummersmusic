@@ -2,11 +2,60 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Pre Demos | Garrett Summers</title>
-<meta http-equiv="refresh" content="0; url=/demo/tin-man/">
-<link rel="canonical" href="https://garrettsummersmusic.com/demo/tin-man/">
-<style>body{background:#1c1815;color:#f1ead9;font-family:Georgia,serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;}a{color:#c99a4b;}</style>
+<script>
+  window.GA_ID = 'G-9PKKBW8XG1';
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  if (window.GA_ID) {
+    var ga = document.createElement('script'); ga.async = true; ga.src = 'https://www.googletagmanager.com/gtag/js?id=' + window.GA_ID;
+    document.head.appendChild(ga);
+    gtag('js', new Date()); gtag('config', window.GA_ID);
+  }
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Demos | Garrett Summers</title>
+<meta name="description" content="Demos and works in progress from Garrett Summers.">
+<meta property="og:title" content="Demos | Garrett Summers">
+<meta property="og:description" content="Demos and works in progress from Garrett Summers.">
+<meta property="og:url" content="https://garrettsummersmusic.com/demo/">
+<meta property="og:image" content="https://garrettsummersmusic.com/images/tin-man-cover-lg.jpg">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:,">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{ color-scheme:light dark; --paper:#fff; --ink:#000; --mute:#6b6b6b; --rule:#000; --track:#d4d4d4; --accent:#BF616A;
+    --grot:'Inter Tight','Helvetica Neue',Helvetica,Arial,sans-serif; --gut:clamp(16px,3vw,32px); }
+  @media (prefers-color-scheme: dark){ :root{ --paper:#000; --ink:#fff; --mute:#9a9a9a; --rule:#fff; --track:#333; } }
+  *{box-sizing:border-box;} html,body{margin:0;}
+  body{background:var(--paper); color:var(--ink); font-family:var(--grot); -webkit-font-smoothing:antialiased;
+    padding:calc(var(--gut) + env(safe-area-inset-top,0px)) var(--gut) calc(var(--gut) + env(safe-area-inset-bottom,0px));}
+  main{max-width:1200px; margin:0 auto;}
+  .mast{display:flex; justify-content:space-between; border-top:3px solid var(--rule); padding-top:10px; font-weight:700; font-size:0.8rem;}
+  .mast a{color:inherit; text-decoration:none;} .mast a:hover{text-decoration:underline; text-underline-offset:3px;}
+  h1{font-weight:800; font-size:clamp(4rem,14vw,10rem); line-height:0.84; letter-spacing:-0.055em; margin:clamp(28px,6vw,64px) 0 clamp(24px,4vw,48px) -0.05em;}
+  ol{list-style:none; margin:0; padding:0; border-top:1px solid var(--rule);}
+  li a{display:grid; grid-template-columns:3rem 72px 1fr auto; gap:var(--gut); align-items:center; padding:14px 0; border-bottom:1px solid var(--rule); color:inherit; text-decoration:none;}
+  li a:hover .t{text-decoration:underline; text-underline-offset:5px; text-decoration-thickness:3px;}
+  li a:hover .go{background:var(--accent); color:#fff;}
+  .n{font-weight:500; color:var(--mute); font-variant-numeric:tabular-nums;}
+  li img{width:72px; height:72px; object-fit:cover; filter:grayscale(1); display:block;}
+  .t{font-weight:800; font-size:clamp(1.6rem,4vw,2.6rem); letter-spacing:-0.03em; line-height:1;}
+  .s{font-weight:500; font-size:0.8rem; color:var(--mute); margin-top:6px;}
+  .go{width:44px; height:44px; border:2px solid var(--accent); color:var(--accent); display:flex; align-items:center; justify-content:center; font-weight:500; font-size:1.1rem; transition:background .12s, color .12s;}
+  footer{margin-top:clamp(40px,8vw,96px); border-top:1px solid var(--rule); padding-top:8px; font-size:0.75rem; color:var(--mute);}
+  @media (max-width:560px){ li a{grid-template-columns:56px 1fr auto;} .n{display:none;} li img{width:56px; height:56px;} }
+</style>
 </head>
-<body><a href="/demo/tin-man/">Tin Man (Pre Demo)</a></body>
+<body>
+<main>
+  <header class="mast"><a href="/">Garrett Summers</a><span>2026</span></header>
+  <h1>Demos</h1>
+  <ol>
+    <li><a href="/demo/tin-man/"><span class="n">01</span><img src="/images/tin-man-cover.jpg" alt=""><span><div class="t">Tin Man</div><div class="s">Pre Demo, studio recording pending &middot; 3:07</div></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
+    <li><a href="/demo/for-us/"><span class="n">02</span><img src="/images/for-us-cover.jpg" alt=""><span><div class="t">For Us</div><div class="s">Demo &middot; with Will Sandish &middot; 4:41</div></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
+  </ol>
+  <footer>Copyright &copy; 2026 Garrett Summers. All rights reserved.</footer>
+</main>
+</body>
 </html>
