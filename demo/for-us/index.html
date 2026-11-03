@@ -27,7 +27,7 @@
 <meta property="og:type" content="music.song">
 <meta property="og:site_name" content="Garrett Summers">
 <meta property="og:title" content="For Us (Pre Demo, Jam) | Garrett Summers &amp; Will Sandish">
-<meta property="og:description" content="Garrett Summers &amp; Will Sandish. Pre Demo jam, studio recording pending. Recorded on iPhone. Garrett Summers on keyboards. Lyrics, melody and lead guitar by Will Sandish. Not for distribution. Tap to listen.">
+<meta property="og:description" content="Garrett Summers &amp; Will Sandish. Pre Demo jam, studio recording pending. Recorded on iPhone. Garrett Summers on keyboards. Lyrics, melody and lead guitar by Will Sandish. Not for distribution. Password protected.">
 <meta property="og:url" content="https://garrettsummersmusic.com/demo/for-us/">
 <meta property="og:image" content="https://garrettsummersmusic.com/images/for-us-elevator-lg.jpg">
 <meta property="og:image:secure_url" content="https://garrettsummersmusic.com/images/for-us-elevator-lg.jpg">
@@ -35,8 +35,6 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="1200">
 <meta property="og:image:alt" content="For Us cover: the old Montana Elevator Co. grain elevator against a blue sky">
-<meta property="og:audio" content="https://garrettsummersmusic.com/audio/for-us.m4a">
-<meta property="og:audio:type" content="audio/mp4">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="For Us (Pre Demo, Jam) | Garrett Summers &amp; Will Sandish">
 <meta name="twitter:description" content="Pre Demo jam, studio recording pending. Recorded on iPhone. Garrett Summers on keyboards. Lyrics, melody and lead guitar by Will Sandish.">
@@ -131,6 +129,21 @@
   .scrub-hint{font-weight:500; color:var(--mute);}
   .times{display:flex; justify-content:space-between; font-weight:700; font-size:0.8rem; font-variant-numeric:tabular-nums; margin-top:8px; padding-top:6px; border-top:1px solid var(--rule);}
 
+  .lock{margin-top:24px; border-top:3px solid var(--rule); padding-top:10px;}
+  .lock label{display:block; font-weight:700; font-size:0.8rem; margin-bottom:10px;}
+  .lock-row{display:grid; grid-template-columns:1fr auto; gap:0;}
+  .lock input{font-family:var(--grot); font-size:1rem; font-weight:500; color:var(--ink); background:var(--paper); border:2px solid var(--ink); border-right:none; border-radius:0; padding:14px 14px; min-width:0; -webkit-appearance:none; appearance:none;}
+  .lock input:focus{outline:none; border-color:var(--accent);}
+  .lock .unlock{padding:14px 18px; gap:18px;}
+  .lock-msg{margin:8px 0 0; min-height:1.2em; font-size:0.8rem; font-weight:700; color:var(--accent);}
+  .unlocked .lock{display:none;}
+  .locked .wave, .locked .times{opacity:0.35;}
+  .locked .wave{cursor:not-allowed;}
+  .play .i-lock{display:none;}
+  .locked .play .i-play, .locked .play .i-pause{display:none !important;}
+  .locked .play .i-lock{display:block;}
+  .locked .mini .mini-p svg{display:none !important;}
+  .locked .mini .mini-p svg.i-lock{display:block !important;}
   .actions{display:grid; grid-template-columns:1fr 1fr; gap:var(--gut); margin-top:28px;}
   .btn{font-family:var(--grot); font-weight:700; font-size:0.95rem; text-align:left; text-decoration:none; border-radius:0; padding:16px 16px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; -webkit-appearance:none; appearance:none; transition:background .12s ease, color .12s ease;}
   .btn::after{content:"\2192"; font-weight:500;}
@@ -168,6 +181,7 @@
       <span class="mini-p" aria-hidden="true">
         <svg class="i-play" viewBox="0 0 24 24"><path d="M7 4v16l13-8z" fill="currentColor"/></svg>
         <svg class="i-pause" viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z" fill="currentColor"/></svg>
+        <svg class="i-lock" viewBox="0 0 24 24"><path d="M7 10V7a5 5 0 0 1 10 0v3h1.5v11h-13V10H7zm2 0h6V7a3 3 0 0 0-6 0v3z" fill="currentColor"/></svg>
       </span>
     </button>
     <span class="kind">Pre Demo / Jam</span>
@@ -179,6 +193,7 @@
     <span class="play" aria-hidden="true">
       <svg class="i-play" viewBox="0 0 24 24"><path d="M7 4v16l13-8z" fill="currentColor"/></svg>
       <svg class="i-pause" viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z" fill="currentColor"/></svg>
+        <svg class="i-lock" viewBox="0 0 24 24"><path d="M7 10V7a5 5 0 0 1 10 0v3h1.5v11h-13V10H7zm2 0h6V7a3 3 0 0 0-6 0v3z" fill="currentColor"/></svg>
     </span>
   </button>
 
@@ -197,6 +212,14 @@
       <div><dd class="who-c">Garrett Summers</dd><dd class="role">Keyboards</dd></div>
       <div><dd class="who-c">Will Sandish</dd><dd class="role">Lyrics, Melody, Lead Guitar</dd></div>
     </dl>
+    <form class="lock" id="lock" autocomplete="on">
+      <label for="pw">Password protected</label>
+      <div class="lock-row">
+        <input id="pw" name="password" type="password" autocomplete="current-password" autocapitalize="none" spellcheck="false" placeholder="Password" required>
+        <button class="btn primary unlock" type="submit">Unlock</button>
+      </div>
+      <p class="lock-msg" aria-live="polite"></p>
+    </form>
     <div class="wave" role="slider" tabindex="0" aria-label="Seek For Us" aria-valuemin="0" aria-valuemax="281" aria-valuenow="0" data-peaks="0.51,0.51,0.47,0.41,1.0,0.97,0.31,0.96,0.47,0.7,0.51,0.82,0.58,0.91,0.5,0.88,0.5,0.62,0.45,0.83,0.63,0.74,0.42,0.53,0.53,0.56,0.52,0.59,0.64,0.68,0.51,0.55,0.63,0.62,0.48,0.48,0.57,0.56,0.57,0.4,0.73,0.65,0.55,0.55,0.66,0.56,0.6,0.51,0.53,0.63,0.61,0.53,0.56,0.74,0.6,0.54,0.7,0.65,0.55,0.51,0.64,0.54,0.37,0.49,0.45,0.68,0.46,0.37,0.39,0.51,0.64,0.59,0.44,0.39,0.45,0.46,0.46,0.5,0.54,0.48,0.46,0.53,0.49,0.53,0.38,0.44,0.51,0.48,0.37,0.38,0.43,0.52,0.43,0.47,0.53,0.31"></div>
     <div class="times"><span class="t-cur">0:00</span><span class="scrub-hint" aria-live="polite"></span><span class="t-left">4:41</span></div>
     <div class="actions">
@@ -210,7 +233,7 @@
     <span class="r">Shows and music at <a href="/">garrettsummersmusic.com</a></span>
   </footer>
 
-  <audio preload="metadata" src="/audio/for-us.m4a"></audio>
+  <audio preload="none"></audio>
 </main>
 
 <script>
@@ -233,7 +256,35 @@
     var left = root.querySelector('.t-left'); if (left) left.textContent = '−' + fmt(total() - t);
     wave.setAttribute('aria-valuenow', Math.floor(t));
   }
+  var unlocked = false, encBuf = null, pwInput = root.querySelector('#pw'), lockMsg = root.querySelector('.lock-msg');
+  root.classList.add('locked');
+  function norm(p) { return p.trim().toLowerCase().replace(/\s+/g, ' '); }
+  async function unlock(pw, remembered) {
+    if (!encBuf) encBuf = await (await fetch('/audio/for-us.enc')).arrayBuffer();
+    var salt = encBuf.slice(0, 16), iv = encBuf.slice(16, 28), ct = encBuf.slice(28);
+    var base = await crypto.subtle.importKey('raw', new TextEncoder().encode(norm(pw)), 'PBKDF2', false, ['deriveKey']);
+    var key = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt: salt, iterations: 310000, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+    var plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: iv }, key, ct);
+    audio.src = URL.createObjectURL(new Blob([plain], { type: 'audio/mp4' }));
+    audio.load();
+    unlocked = true; root.classList.remove('locked'); root.classList.add('unlocked');
+    try { localStorage.setItem('forus-pw', norm(pw)); } catch (e) {}
+    if (!remembered) track('demo_unlock', { item_id: 'for-us' });
+  }
+  root.querySelector('#lock').addEventListener('submit', function (e) {
+    e.preventDefault();
+    lockMsg.textContent = 'Unlocking\u2026';
+    unlock(pwInput.value).then(function () {
+      lockMsg.textContent = '';
+      audio.play().then(function () { if (!started) { started = true; track('track_play', { track: 'For Us', page: 'demo' }); } }, function () {});
+    }, function () {
+      lockMsg.textContent = 'Wrong password.'; pwInput.select();
+      track('demo_unlock_fail', { item_id: 'for-us' });
+    });
+  });
+  try { var saved = localStorage.getItem('forus-pw'); if (saved) unlock(saved, true).catch(function () { try { localStorage.removeItem('forus-pw'); } catch (e) {} }); } catch (e) {}
   function play() {
+    if (!unlocked) { pwInput.focus(); pwInput.scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
     audio.play();
     if (!started) { started = true; track('track_play', { track: 'For Us', page: 'demo' }); }
   }
@@ -256,7 +307,7 @@
   function rateFor(dy) { var r = RATES[0]; for (var k = 0; k < RATES.length; k++) if (dy >= RATES[k][0]) r = RATES[k]; return r; }
   function clampT(t) { return Math.min(total(), Math.max(0, t)); }
   wave.addEventListener('pointerdown', function (e) {
-    if (e.button) return;
+    if (e.button || !unlocked) return;
     drag = { id: e.pointerId, x0: e.clientX, lastX: e.clientX, t: audio.currentTime, live: false };
   });
   wave.addEventListener('pointermove', function (e) {
@@ -289,6 +340,7 @@
   wave.addEventListener('pointerup', function (e) { endDrag(e, true); });
   wave.addEventListener('pointercancel', function (e) { endDrag(e, false); });
   wave.addEventListener('keydown', function (e) {
+    if (!unlocked) return;
     var d = e.key === 'ArrowRight' ? 5 : e.key === 'ArrowLeft' ? -5 : 0;
     if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); btn.click(); }
     if (d) { e.preventDefault(); audio.currentTime = Math.min(total(), Math.max(0, audio.currentTime + d)); paint(); }
