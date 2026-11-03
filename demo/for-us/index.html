@@ -29,8 +29,8 @@
 <meta property="og:title" content="For Us (Demo) | Garrett Summers &amp; Will Sandish">
 <meta property="og:description" content="Garrett Summers &amp; Will Sandish. Demo recorded on iPhone. Garrett Summers on keyboards. Lyrics, melody and lead guitar by Will Sandish. Not for distribution. Tap to listen.">
 <meta property="og:url" content="https://garrettsummersmusic.com/demo/for-us/">
-<meta property="og:image" content="https://garrettsummersmusic.com/images/for-us-cover-lg.jpg">
-<meta property="og:image:secure_url" content="https://garrettsummersmusic.com/images/for-us-cover-lg.jpg">
+<meta property="og:image" content="https://garrettsummersmusic.com/images/for-us-elevator-lg.jpg">
+<meta property="og:image:secure_url" content="https://garrettsummersmusic.com/images/for-us-elevator-lg.jpg">
 <meta property="og:image:type" content="image/jpeg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="1200">
@@ -40,7 +40,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="For Us (Demo) | Garrett Summers &amp; Will Sandish">
 <meta name="twitter:description" content="Demo recorded on iPhone. Garrett Summers on keyboards. Lyrics, melody and lead guitar by Will Sandish.">
-<meta name="twitter:image" content="https://garrettsummersmusic.com/images/for-us-cover-lg.jpg">
+<meta name="twitter:image" content="https://garrettsummersmusic.com/images/for-us-elevator-lg.jpg">
 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="data:,">
@@ -163,7 +163,7 @@
   <header class="mast">
     <a class="who" href="/">Garrett Summers &amp; Will Sandish</a>
     <button class="mini" type="button" aria-label="Play For Us">
-      <img src="/images/for-us-cover.jpg" alt="" width="600" height="600">
+      <img src="/images/for-us-elevator.jpg" alt="" width="600" height="600">
       <span class="mini-t">For Us</span>
       <span class="mini-p" aria-hidden="true">
         <svg class="i-play" viewBox="0 0 24 24"><path d="M7 4v16l13-8z" fill="currentColor"/></svg>
@@ -175,7 +175,7 @@
   </header>
 
   <button class="cover" type="button" aria-label="Play For Us">
-    <img src="/images/for-us-cover-lg.jpg" alt="For Us cover: the old Montana Elevator Co. grain elevator against a blue sky" width="1200" height="1200">
+    <img src="/images/for-us-elevator-lg.jpg" alt="For Us cover: the old Montana Elevator Co. grain elevator against a blue sky" width="1200" height="1200">
     <span class="play" aria-hidden="true">
       <svg class="i-play" viewBox="0 0 24 24"><path d="M7 4v16l13-8z" fill="currentColor"/></svg>
       <svg class="i-pause" viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z" fill="currentColor"/></svg>
@@ -297,7 +297,7 @@
   if ('mediaSession' in navigator) {
     navigator.mediaSession.metadata = new MediaMetadata({
       title: 'For Us (Demo)', artist: 'Garrett Summers & Will Sandish',
-      artwork: [{ src: location.origin + '/images/for-us-cover-lg.jpg', sizes: '1200x1200', type: 'image/jpeg' }]
+      artwork: [{ src: location.origin + '/images/for-us-elevator-lg.jpg', sizes: '1200x1200', type: 'image/jpeg' }]
     });
     navigator.mediaSession.setActionHandler('play', play);
     navigator.mediaSession.setActionHandler('pause', function () { audio.pause(); });
