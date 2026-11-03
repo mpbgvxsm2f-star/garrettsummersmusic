@@ -14,12 +14,12 @@
   }
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Tin Man (Demo) | Garrett Summers</title>
-<meta name="description" content="Tin Man, an unreleased demo from Garrett Summers. Recorded on iPhone in Bozeman, Montana, 11/2/26.">
+<title>Tin Man (Pre-demo) | Garrett Summers</title>
+<meta name="description" content="Tin Man, an unreleased pre-demo from Garrett Summers. Recorded on iPhone in Bozeman, Montana, 11/2/26.">
 <meta property="og:type" content="music.song">
 <meta property="og:site_name" content="Garrett Summers">
-<meta property="og:title" content="Tin Man (Unreleased Demo)">
-<meta property="og:description" content="Unreleased demo from Garrett Summers. Recorded on iPhone in Bozeman, Montana, 11/2/26. Tap to listen.">
+<meta property="og:title" content="Tin Man (Unreleased Pre-demo)">
+<meta property="og:description" content="Unreleased pre-demo from Garrett Summers. Recorded on iPhone in Bozeman, Montana, 11/2/26. Tap to listen.">
 <meta property="og:url" content="https://garrettsummersmusic.com/demo/tin-man/">
 <meta property="og:image" content="https://garrettsummersmusic.com/images/tin-man-cover-lg.jpg">
 <meta property="og:image:secure_url" content="https://garrettsummersmusic.com/images/tin-man-cover-lg.jpg">
@@ -30,8 +30,8 @@
 <meta property="og:audio" content="https://garrettsummersmusic.com/audio/tin-man.m4a">
 <meta property="og:audio:type" content="audio/mp4">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Tin Man (Demo)">
-<meta name="twitter:description" content="Unreleased demo from Garrett Summers. Recorded on iPhone in Bozeman, Montana, 11/2/26.">
+<meta name="twitter:title" content="Tin Man (Pre-demo)">
+<meta name="twitter:description" content="Unreleased pre-demo from Garrett Summers. Recorded on iPhone in Bozeman, Montana, 11/2/26.">
 <meta name="twitter:image" content="https://garrettsummersmusic.com/images/tin-man-cover-lg.jpg">
 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
@@ -142,7 +142,7 @@
   </button>
 
   <section class="info">
-    <div class="no">01 / Unreleased demo</div>
+    <div class="no">01 / Unreleased pre-demo</div>
     <h1>Tin<br>Man</h1>
     <dl class="meta">
       <div><dt>Artist</dt><dd>Garrett Summers</dd></div>
@@ -214,7 +214,7 @@
 
   if ('mediaSession' in navigator) {
     navigator.mediaSession.metadata = new MediaMetadata({
-      title: 'Tin Man (Demo)', artist: 'Garrett Summers',
+      title: 'Tin Man (Pre-demo)', artist: 'Garrett Summers',
       artwork: [{ src: location.origin + '/images/tin-man-cover-lg.jpg', sizes: '1200x1200', type: 'image/jpeg' }]
     });
     navigator.mediaSession.setActionHandler('play', play);
@@ -225,7 +225,7 @@
   share.addEventListener('click', function () {
     var url = location.origin + '/demo/tin-man';
     track('track_share', { track: 'Tin Man', page: 'demo' });
-    if (navigator.share) { navigator.share({ title: 'Tin Man (Demo) by Garrett Summers', url: url }).catch(function () {}); return; }
+    if (navigator.share) { navigator.share({ title: 'Tin Man (Pre-demo) by Garrett Summers', url: url }).catch(function () {}); return; }
     (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(function () {
       share.textContent = 'Link copied'; setTimeout(function () { share.textContent = 'Share'; }, 1800);
     }, function () {});
