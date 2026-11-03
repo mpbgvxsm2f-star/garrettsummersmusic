@@ -22,12 +22,12 @@
 </script>
 <meta name="robots" content="noindex">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>For Us (Demo) | Garrett Summers &amp; Will Sandish</title>
-<meta name="description" content="For Us by Garrett Summers &amp; Will Sandish. Demo recorded on iPhone. Garrett Summers on keyboards; lyrics, melody and lead guitar by Will Sandish.">
+<title>For Us (Pre Demo) | Garrett Summers &amp; Will Sandish</title>
+<meta name="description" content="For Us by Garrett Summers &amp; Will Sandish. Pre Demo, studio recording pending. Recorded on iPhone. Garrett Summers on keyboards; lyrics, melody and lead guitar by Will Sandish.">
 <meta property="og:type" content="music.song">
 <meta property="og:site_name" content="Garrett Summers">
-<meta property="og:title" content="For Us (Demo) | Garrett Summers &amp; Will Sandish">
-<meta property="og:description" content="Garrett Summers &amp; Will Sandish. Demo recorded on iPhone. Garrett Summers on keyboards. Lyrics, melody and lead guitar by Will Sandish. Not for distribution. Tap to listen.">
+<meta property="og:title" content="For Us (Pre Demo) | Garrett Summers &amp; Will Sandish">
+<meta property="og:description" content="Garrett Summers &amp; Will Sandish. Pre Demo, studio recording pending. Recorded on iPhone. Garrett Summers on keyboards. Lyrics, melody and lead guitar by Will Sandish. Not for distribution. Tap to listen.">
 <meta property="og:url" content="https://garrettsummersmusic.com/demo/for-us/">
 <meta property="og:image" content="https://garrettsummersmusic.com/images/for-us-elevator-lg.jpg">
 <meta property="og:image:secure_url" content="https://garrettsummersmusic.com/images/for-us-elevator-lg.jpg">
@@ -38,8 +38,8 @@
 <meta property="og:audio" content="https://garrettsummersmusic.com/audio/for-us.m4a">
 <meta property="og:audio:type" content="audio/mp4">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="For Us (Demo) | Garrett Summers &amp; Will Sandish">
-<meta name="twitter:description" content="Demo recorded on iPhone. Garrett Summers on keyboards. Lyrics, melody and lead guitar by Will Sandish.">
+<meta name="twitter:title" content="For Us (Pre Demo) | Garrett Summers &amp; Will Sandish">
+<meta name="twitter:description" content="Pre Demo, studio recording pending. Recorded on iPhone. Garrett Summers on keyboards. Lyrics, melody and lead guitar by Will Sandish.">
 <meta name="twitter:image" content="https://garrettsummersmusic.com/images/for-us-elevator-lg.jpg">
 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
@@ -170,7 +170,7 @@
         <svg class="i-pause" viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z" fill="currentColor"/></svg>
       </span>
     </button>
-    <span class="kind">Demo</span>
+    <span class="kind">Pre Demo</span>
     <span class="yr">2026</span>
   </header>
 
@@ -183,13 +183,13 @@
   </button>
 
   <section class="info">
-    <div class="no">02 / Demo</div>
+    <div class="no">02 / Pre Demo, studio recording pending</div>
     <div class="nfd">Not for distribution</div>
     <h1>For<br>Us</h1>
     <dl class="meta">
       <div><dt>Artists</dt><dd>Garrett Summers &amp; Will Sandish</dd></div>
       <div><dt>Length</dt><dd class="t-dur">4:41</dd></div>
-      <div><dt>Status</dt><dd>Demo</dd></div>
+      <div><dt>Status</dt><dd>Studio recording pending</dd></div>
       <div><dt>Device</dt><dd>iPhone</dd></div>
     </dl>
     <dl class="credits">
@@ -296,7 +296,7 @@
 
   if ('mediaSession' in navigator) {
     navigator.mediaSession.metadata = new MediaMetadata({
-      title: 'For Us (Demo)', artist: 'Garrett Summers & Will Sandish',
+      title: 'For Us (Pre Demo)', artist: 'Garrett Summers & Will Sandish',
       artwork: [{ src: location.origin + '/images/for-us-elevator-lg.jpg', sizes: '1200x1200', type: 'image/jpeg' }]
     });
     navigator.mediaSession.setActionHandler('play', play);
@@ -310,7 +310,7 @@
     var ev = { method: '', content_type: 'audio', item_id: 'for-us', page: 'demo' };
     track('share_click', { item_id: 'for-us', page: 'demo' });
     if (navigator.share) {
-      navigator.share({ title: 'For Us (Demo) by Garrett Summers & Will Sandish', url: url }).then(function () {
+      navigator.share({ title: 'For Us (Pre Demo) by Garrett Summers & Will Sandish', url: url }).then(function () {
         ev.method = 'share_sheet'; track('share', ev);
       }, function () { track('share_cancel', { item_id: 'for-us', page: 'demo' }); });
       return;
