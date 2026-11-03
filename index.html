@@ -1306,23 +1306,30 @@
   .book-status{grid-column:1/-1;margin:0;font-family:var(--mono);font-size:.85rem;color:var(--brass);min-height:1.2em;}
   .spotify{width:100%;height:352px;border:0;border-radius:12px;display:block;}
   /* Self-hosted track player -- same brass/rust hardware look as the reel cards. */
-  .track{display:flex;align-items:center;gap:16px;background:var(--ground-raised);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin-bottom:14px;}
-  .track-play{flex:none;width:48px;height:48px;border-radius:50%;border:none;background:var(--brass);color:var(--ground);display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-appearance:none;appearance:none;transition:transform .12s ease, box-shadow .12s ease;}
-  .track-play:hover{box-shadow:0 0 18px rgba(201,154,75,0.35);}
-  .track-play:active{transform:scale(0.94);}
-  .track-play:focus-visible{outline:2px solid var(--brass);outline-offset:3px;}
+  .track{display:grid;grid-template-columns:168px 1fr;gap:22px;align-items:center;background:var(--ground-raised);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px;}
+  @media (max-width:560px){ .track{grid-template-columns:1fr;gap:16px;} .track .track-cover{width:100%;} .track .track-play{width:58px;height:58px;right:14px;bottom:14px;} }
+  .track-cover{position:relative;width:168px;aspect-ratio:1;padding:0;border:none;border-radius:10px;overflow:hidden;cursor:pointer;background:var(--ground);-webkit-appearance:none;appearance:none;}
+  .track-cover img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s ease, filter .3s ease;}
+  .track-cover:hover img{transform:scale(1.04);}
+  .track.playing .track-cover img{filter:brightness(0.85);}
+  .track-cover:focus-visible{outline:2px solid var(--brass);outline-offset:3px;}
+  .track-play{position:absolute;right:10px;bottom:10px;width:50px;height:50px;border-radius:50%;background:var(--brass);color:#1c1815;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(0,0,0,0.45);transition:transform .12s ease;}
+  .track-cover:active .track-play{transform:scale(0.92);}
   .track-play svg{width:22px;height:22px;display:block;}
   .track-play .i-pause, .track.playing .track-play .i-play{display:none;}
   .track.playing .track-play .i-pause{display:block;}
-  .track-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;}
-  .track-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;}
-  .track-title{font-family:var(--serif);font-size:1.2rem;font-weight:600;line-height:1.1;}
-  .track-time{font-family:var(--mono);font-size:0.68rem;color:var(--ink-dim);white-space:nowrap;}
-  .track-artist{font-family:var(--mono);font-size:0.62rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-dim);}
-  .track-seek{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:2px;margin:4px 0;cursor:pointer;background:linear-gradient(90deg,var(--brass) var(--p,0%),var(--line) var(--p,0%));}
-  .track-seek::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--brass);border:2px solid var(--ground-raised);}
-  .track-seek::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:var(--brass);border:2px solid var(--ground-raised);}
-  .track-seek:focus-visible{outline:2px solid var(--brass);outline-offset:4px;}
+  .track-body{min-width:0;display:flex;flex-direction:column;}
+  .track-kicker{font-family:var(--mono);font-size:0.6rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--brass);}
+  .track-title{font-family:var(--serif);font-size:clamp(1.8rem,5vw,2.3rem);font-weight:600;line-height:1;margin-top:6px;}
+  .track-artist{font-family:var(--mono);font-size:0.66rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-dim);margin-top:6px;}
+  .track-wave{display:flex;align-items:center;gap:2px;height:46px;margin-top:16px;cursor:pointer;touch-action:none;}
+  .track-wave:focus-visible{outline:2px solid var(--brass);outline-offset:4px;border-radius:4px;}
+  .track-wave i{flex:1;min-width:1px;border-radius:2px;background:var(--line);transition:background .15s ease;}
+  .track-wave i.on{background:var(--brass);}
+  .track.playing .track-wave i.head{background:var(--rust);}
+  .track-foot{display:flex;justify-content:space-between;align-items:center;margin-top:8px;font-family:var(--mono);font-size:0.66rem;color:var(--ink-dim);}
+  .track-share{font-family:var(--mono);font-size:0.6rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--brass);background:transparent;border:1px solid var(--line);border-radius:20px;padding:4px 12px;cursor:pointer;}
+  .track-share:hover{border-color:var(--brass);}
   .tip-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;align-items:center;}
   .tip-row[hidden]{display:none;}
   .tip-row small{font-family:var(--mono);font-size:0.68rem;color:var(--ink-dim);}
@@ -1544,17 +1551,24 @@
     <h2>Listen</h2>
     <p class="listen-note">Stream it, follow it, share it &mdash; every play helps.</p>
     <div class="track" id="tinMan">
-      <button class="track-play" type="button" aria-label="Play Tin Man">
-        <svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>
-        <svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor"/></svg>
+      <button class="track-cover" type="button" aria-label="Play Tin Man">
+        <img src="images/tin-man-cover.jpg" alt="Tin Man cover: Garrett Summers in sunglasses, mountains behind" width="600" height="600">
+        <span class="track-play" aria-hidden="true">
+          <svg class="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>
+          <svg class="i-pause" viewBox="0 0 24 24"><path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor"/></svg>
+        </span>
       </button>
       <div class="track-body">
-        <div class="track-head">
-          <span class="track-title">Tin Man</span>
-          <span class="track-time"><span class="t-cur">0:00</span> / <span class="t-dur">3:10</span></span>
-        </div>
-        <input class="track-seek" type="range" min="0" max="1000" value="0" step="1" aria-label="Seek Tin Man">
+        <div class="track-kicker">New</div>
+        <div class="track-title">Tin Man</div>
         <div class="track-artist">Garrett Summers</div>
+        <div class="track-wave" role="slider" tabindex="0" aria-label="Seek Tin Man" aria-valuemin="0" aria-valuemax="190" aria-valuenow="0"
+             data-peaks="0.12,0.3,0.61,0.53,0.55,0.43,0.29,0.56,0.68,0.63,0.61,0.21,0.27,0.29,0.83,0.82,0.96,0.57,0.54,0.83,0.58,0.31,0.81,0.48,0.89,0.75,0.61,0.28,0.45,0.3,0.32,0.42,0.42,0.57,0.67,0.78,0.66,0.33,0.27,0.66,0.77,1.0,0.74,0.55,0.26,0.46,0.3,0.37,0.35,0.7,0.68,0.4,0.61,0.6,0.38,0.52,0.66,0.89,0.76,0.25,0.28,0.58,0.31,0.36,0.38,0.47,0.55,0.5,0.53,0.33,0.62,0.67,0.71,0.44,0.52,0.33,0.27,0.46,0.42,0.58,0.51,0.41,0.29,0.36,0.28,0.3,0.46,0.3,0.32,0.36,0.28,0.31,0.24,0.53,0.47,0.27"></div>
+        <div class="track-foot">
+          <span class="t-cur">0:00</span>
+          <button class="track-share" type="button">Share</button>
+          <span class="t-dur">3:10</span>
+        </div>
       </div>
       <audio preload="metadata" src="audio/tin-man.m4a"></audio>
     </div>
@@ -2993,35 +3007,67 @@ var BOOKING_API = '';
 (function () {
   var root = document.getElementById('tinMan');
   if (!root) return;
-  var audio = root.querySelector('audio'), btn = root.querySelector('.track-play'), seek = root.querySelector('.track-seek');
-  var cur = root.querySelector('.t-cur'), dur = root.querySelector('.t-dur'), started = false, seeking = false;
-  function fmt(s) { s = Math.max(0, Math.floor(s || 0)); return Math.floor(s / 60) + ':' + ('0' + (s % 60)).slice(-2); }
-  function paint() {
-    var p = audio.duration ? audio.currentTime / audio.duration : 0;
-    if (!seeking) seek.value = Math.round(p * 1000);
-    seek.style.setProperty('--p', (seek.value / 10) + '%');
-    cur.textContent = fmt(audio.currentTime);
-  }
-  btn.addEventListener('click', function () {
-    if (audio.paused) {
-      audio.play();
-      if (!started) { started = true; track('track_play', { track: 'Tin Man' }); }
-    } else audio.pause();
+  var audio = root.querySelector('audio'), btn = root.querySelector('.track-cover'), wave = root.querySelector('.track-wave');
+  var cur = root.querySelector('.t-cur'), dur = root.querySelector('.t-dur'), share = root.querySelector('.track-share');
+  var started = false, DUR = 190.4;
+  var bars = wave.dataset.peaks.split(',').map(function (v) {
+    var i = document.createElement('i'); i.style.height = Math.round(parseFloat(v) * 100) + '%'; wave.appendChild(i); return i;
   });
+  function total() { return audio.duration || DUR; }
+  function fmt(s) { s = Math.max(0, Math.floor(s || 0)); return Math.floor(s / 60) + ':' + ('0' + (s % 60)).slice(-2); }
+  function paint(t) {
+    if (t == null) t = audio.currentTime;
+    var n = Math.floor(t / total() * bars.length);
+    bars.forEach(function (b, k) { b.classList.toggle('on', k < n); b.classList.toggle('head', k === n); });
+    cur.textContent = fmt(t);
+    wave.setAttribute('aria-valuenow', Math.floor(t));
+  }
+  function play() {
+    audio.play();
+    if (!started) { started = true; track('track_play', { track: 'Tin Man' }); }
+  }
+  btn.addEventListener('click', function () { audio.paused ? play() : audio.pause(); });
   audio.addEventListener('play', function () { root.classList.add('playing'); btn.setAttribute('aria-label', 'Pause Tin Man'); });
   audio.addEventListener('pause', function () { root.classList.remove('playing'); btn.setAttribute('aria-label', 'Play Tin Man'); });
-  audio.addEventListener('ended', function () { track('track_complete', { track: 'Tin Man' }); audio.currentTime = 0; paint(); });
+  audio.addEventListener('ended', function () { track('track_complete', { track: 'Tin Man' }); audio.currentTime = 0; paint(0); });
   audio.addEventListener('loadedmetadata', function () { dur.textContent = fmt(audio.duration); });
-  audio.addEventListener('timeupdate', paint);
-  seek.addEventListener('input', function () {
-    seeking = true;
-    seek.style.setProperty('--p', (seek.value / 10) + '%');
-    if (audio.duration) cur.textContent = fmt(seek.value / 1000 * audio.duration);
+  audio.addEventListener('timeupdate', function () { paint(); });
+
+  // Tap or drag on the waveform to seek
+  function at(e) { var r = wave.getBoundingClientRect(); return Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)) * total(); }
+  var dragging = false;
+  wave.addEventListener('pointerdown', function (e) { dragging = true; wave.setPointerCapture(e.pointerId); paint(at(e)); });
+  wave.addEventListener('pointermove', function (e) { if (dragging) paint(at(e)); });
+  wave.addEventListener('pointerup', function (e) {
+    if (!dragging) return; dragging = false;
+    audio.currentTime = at(e); if (audio.paused) play();
   });
-  seek.addEventListener('change', function () {
-    if (audio.duration) audio.currentTime = seek.value / 1000 * audio.duration;
-    seeking = false;
+  wave.addEventListener('keydown', function (e) {
+    var d = e.key === 'ArrowRight' ? 5 : e.key === 'ArrowLeft' ? -5 : 0;
+    if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); btn.click(); }
+    if (d) { e.preventDefault(); audio.currentTime = Math.min(total(), Math.max(0, audio.currentTime + d)); paint(); }
   });
+
+  // Phone lock screen / Control Center shows the cover and title
+  if ('mediaSession' in navigator) {
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: 'Tin Man', artist: 'Garrett Summers',
+      artwork: [{ src: new URL('images/tin-man-cover.jpg', location.href).href, sizes: '600x600', type: 'image/jpeg' }]
+    });
+    navigator.mediaSession.setActionHandler('play', play);
+    navigator.mediaSession.setActionHandler('pause', function () { audio.pause(); });
+    navigator.mediaSession.setActionHandler('seekto', function (d) { audio.currentTime = d.seekTime; paint(); });
+  }
+
+  share.addEventListener('click', function () {
+    var url = location.origin + location.pathname + '#listen';
+    track('track_share', { track: 'Tin Man' });
+    if (navigator.share) { navigator.share({ title: 'Tin Man by Garrett Summers', url: url }).catch(function () {}); return; }
+    (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(function () {
+      share.textContent = 'Link copied'; setTimeout(function () { share.textContent = 'Share'; }, 1800);
+    }, function () {});
+  });
+  paint(0);
 })();
 </script>
 </body>
