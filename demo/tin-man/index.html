@@ -14,12 +14,12 @@
   }
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Tin Man (Pre-demo) | Garrett Summers</title>
-<meta name="description" content="Tin Man, an unreleased pre-demo from Garrett Summers. Recorded on iPhone in Bozeman, Montana, 11/2/26.">
+<title>Tin Man (Pre Demo) | Garrett Summers</title>
+<meta name="description" content="Tin Man. Pre Demo from Garrett Summers, studio recording pending. Recorded on iPhone in Bozeman, Montana, 11/2/26.">
 <meta property="og:type" content="music.song">
 <meta property="og:site_name" content="Garrett Summers">
-<meta property="og:title" content="Tin Man (Unreleased Pre-demo)">
-<meta property="og:description" content="Unreleased pre-demo from Garrett Summers. Recorded on iPhone in Bozeman, Montana, 11/2/26. Tap to listen.">
+<meta property="og:title" content="Tin Man (Pre Demo)">
+<meta property="og:description" content="Pre Demo from Garrett Summers, studio recording pending. Recorded on iPhone in Bozeman, Montana, 11/2/26. Tap to listen.">
 <meta property="og:url" content="https://garrettsummersmusic.com/demo/tin-man/">
 <meta property="og:image" content="https://garrettsummersmusic.com/images/tin-man-cover-lg.jpg">
 <meta property="og:image:secure_url" content="https://garrettsummersmusic.com/images/tin-man-cover-lg.jpg">
@@ -30,8 +30,8 @@
 <meta property="og:audio" content="https://garrettsummersmusic.com/audio/tin-man.m4a">
 <meta property="og:audio:type" content="audio/mp4">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Tin Man (Pre-demo)">
-<meta name="twitter:description" content="Unreleased pre-demo from Garrett Summers. Recorded on iPhone in Bozeman, Montana, 11/2/26.">
+<meta name="twitter:title" content="Tin Man (Pre Demo)">
+<meta name="twitter:description" content="Pre Demo from Garrett Summers, studio recording pending. Recorded on iPhone in Bozeman, Montana, 11/2/26.">
 <meta name="twitter:image" content="https://garrettsummersmusic.com/images/tin-man-cover-lg.jpg">
 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
@@ -66,7 +66,19 @@
   main{max-width:1200px; margin:0 auto; display:grid; grid-template-columns:repeat(12,1fr); column-gap:var(--gut);}
 
   /* Masthead */
-  .mast{grid-column:1/-1; display:grid; grid-template-columns:subgrid; border-top:3px solid var(--rule); padding-top:10px; font-weight:700; font-size:0.8rem; letter-spacing:0.01em;}
+  .mast{grid-column:1/-1; display:grid; grid-template-columns:subgrid; align-items:center; align-self:start; position:sticky; top:0; z-index:20; background:var(--paper); border-top:3px solid var(--rule); border-bottom:1px solid transparent; padding:10px 0; min-height:58px; font-weight:700; font-size:0.8rem; letter-spacing:0.01em; transition:border-color .2s ease;}
+  .cover-out .mast{border-bottom-color:var(--rule);}
+  /* Mini cover: lives in the header, shows once the big cover scrolls away */
+  .mini{grid-column:1/7; display:none; align-items:center; gap:12px; min-width:0; padding:0; border:none; background:none; color:inherit; font:inherit; text-align:left; cursor:pointer; -webkit-appearance:none; appearance:none;}
+  .mini img{width:38px; height:38px; object-fit:cover; filter:grayscale(1) contrast(1.08); flex:none; display:block;}
+  .mini .mini-t{font-weight:800; font-size:1rem; letter-spacing:-0.02em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .mini .mini-p{width:38px; height:38px; flex:none; background:var(--accent); color:var(--on-accent); display:flex; align-items:center; justify-content:center; margin-left:auto;}
+  .mini:hover .mini-p{background:#a8525b;}
+  .mini .mini-p svg{width:16px; height:16px;}
+  .mini:focus-visible{outline:3px solid var(--accent); outline-offset:3px;}
+  .cover-out .mini{display:flex; animation:miniIn .22s ease;}
+  .cover-out .mast .who{display:none;}
+  @keyframes miniIn{from{opacity:0; transform:translateY(-6px);} to{opacity:1; transform:none;}}
   .mast .who{grid-column:1/7; text-decoration:none;}
   .mast .who:hover{text-decoration:underline; text-underline-offset:3px;}
   .mast .kind{grid-column:7/10;}
@@ -118,7 +130,8 @@
   @supports not (grid-template-columns:subgrid){ footer{display:flex; justify-content:space-between; gap:16px;} }
 
   @media (max-width:760px){
-    .mast .who{grid-column:1/9;} .mast .kind{display:none;} .mast .yr{grid-column:9/-1;}
+    .mast .who{grid-column:1/9;} .mast .kind{display:none;} .mast .yr{grid-column:10/-1;}
+    .mini{grid-column:1/10;}
     .cover, .info{grid-column:1/-1;}
     h1{font-size:clamp(4rem,24vw,7rem);}
     .meta{margin-top:24px; padding-top:0; grid-template-columns:repeat(2,1fr);}
@@ -131,7 +144,15 @@
 <main id="player">
   <header class="mast">
     <a class="who" href="/">Garrett Summers</a>
-    <span class="kind">Unreleased</span>
+    <button class="mini" type="button" aria-label="Play Tin Man">
+      <img src="/images/tin-man-cover.jpg" alt="" width="600" height="600">
+      <span class="mini-t">Tin Man</span>
+      <span class="mini-p" aria-hidden="true">
+        <svg class="i-play" viewBox="0 0 24 24"><path d="M7 4v16l13-8z" fill="currentColor"/></svg>
+        <svg class="i-pause" viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z" fill="currentColor"/></svg>
+      </span>
+    </button>
+    <span class="kind">Pre Demo</span>
     <span class="yr">2026</span>
   </header>
 
@@ -144,12 +165,12 @@
   </button>
 
   <section class="info">
-    <div class="no">01 / Unreleased pre-demo</div>
+    <div class="no">01 / Pre Demo, studio recording pending</div>
     <h1>Tin<br>Man</h1>
     <dl class="meta">
       <div><dt>Artist</dt><dd>Garrett Summers</dd></div>
       <div><dt>Length</dt><dd class="t-dur">3:07</dd></div>
-      <div><dt>Status</dt><dd>Unreleased</dd></div>
+      <div><dt>Status</dt><dd>Studio recording pending</dd></div>
       <div><dt>Recorded</dt><dd>11/2/26</dd></div>
       <div><dt>Device</dt><dd>iPhone</dd></div>
       <div><dt>Location</dt><dd>Bozeman, Montana</dd></div>
@@ -163,7 +184,7 @@
   </section>
 
   <footer>
-    <span class="l">&copy; &#8471; 2026 Garrett Summers. All rights reserved.</span>
+    <span class="l">Copyright &copy; 2026 Garrett Summers. All rights reserved.</span>
     <span class="r">Shows and music at <a href="/">garrettsummersmusic.com</a></span>
   </footer>
 
@@ -173,6 +194,7 @@
 <script>
 (function () {
   var root = document.getElementById('player');
+  var mini = root.querySelector('.mini');
   var audio = root.querySelector('audio'), btn = root.querySelector('.cover'), wave = root.querySelector('.wave');
   var cur = root.querySelector('.t-cur'), dur = root.querySelector('.t-dur'), share = root.querySelector('.share');
   var started = false, DUR = 187.4;
@@ -194,8 +216,12 @@
     if (!started) { started = true; track('track_play', { track: 'Tin Man', page: 'demo' }); }
   }
   btn.addEventListener('click', function () { audio.paused ? play() : audio.pause(); });
-  audio.addEventListener('play', function () { root.classList.add('playing'); btn.setAttribute('aria-label', 'Pause Tin Man'); });
-  audio.addEventListener('pause', function () { root.classList.remove('playing'); btn.setAttribute('aria-label', 'Play Tin Man'); });
+  mini.addEventListener('click', function () { audio.paused ? play() : audio.pause(); });
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (es) { root.classList.toggle('cover-out', !es[0].isIntersecting); }, { rootMargin: '-60px 0px 0px 0px' }).observe(btn);
+  }
+  audio.addEventListener('play', function () { root.classList.add('playing'); btn.setAttribute('aria-label', 'Pause Tin Man'); mini.setAttribute('aria-label', 'Pause Tin Man'); });
+  audio.addEventListener('pause', function () { root.classList.remove('playing'); btn.setAttribute('aria-label', 'Play Tin Man'); mini.setAttribute('aria-label', 'Play Tin Man'); });
   audio.addEventListener('ended', function () { track('track_complete', { track: 'Tin Man', page: 'demo' }); audio.currentTime = 0; paint(0); });
   audio.addEventListener('loadedmetadata', function () { dur.textContent = fmt(audio.duration); });
   audio.addEventListener('timeupdate', function () { if (!(drag && drag.live)) paint(); });
@@ -248,7 +274,7 @@
 
   if ('mediaSession' in navigator) {
     navigator.mediaSession.metadata = new MediaMetadata({
-      title: 'Tin Man (Pre-demo)', artist: 'Garrett Summers',
+      title: 'Tin Man (Pre Demo)', artist: 'Garrett Summers',
       artwork: [{ src: location.origin + '/images/tin-man-cover-lg.jpg', sizes: '1200x1200', type: 'image/jpeg' }]
     });
     navigator.mediaSession.setActionHandler('play', play);
@@ -259,7 +285,7 @@
   share.addEventListener('click', function () {
     var url = location.origin + '/demo/tin-man';
     track('track_share', { track: 'Tin Man', page: 'demo' });
-    if (navigator.share) { navigator.share({ title: 'Tin Man (Pre-demo) by Garrett Summers', url: url }).catch(function () {}); return; }
+    if (navigator.share) { navigator.share({ title: 'Tin Man (Pre Demo) by Garrett Summers', url: url }).catch(function () {}); return; }
     (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(function () {
       share.textContent = 'Link copied'; setTimeout(function () { share.textContent = 'Share'; }, 1800);
     }, function () {});
