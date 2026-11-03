@@ -129,8 +129,15 @@
   .scrub-hint{font-weight:500; color:var(--mute);}
   .times{display:flex; justify-content:space-between; font-weight:700; font-size:0.8rem; font-variant-numeric:tabular-nums; margin-top:8px; padding-top:6px; border-top:1px solid var(--rule);}
 
-  .lock{margin-top:24px; border-top:3px solid var(--rule); padding-top:10px;}
-  .lock label{display:block; font-weight:700; font-size:0.8rem; margin-bottom:10px;}
+  .lock{position:fixed; inset:0; z-index:100; background:var(--paper); display:flex; align-items:center; justify-content:center; overflow-y:auto;
+    padding:calc(var(--gut) + env(safe-area-inset-top,0px)) var(--gut) calc(var(--gut) + env(safe-area-inset-bottom,0px));}
+  .lock-inner{width:100%; max-width:420px;}
+  .lock-mast{display:flex; justify-content:space-between; gap:12px; border-top:3px solid var(--rule); padding-top:10px; font-weight:700; font-size:0.8rem;}
+  .lock-cover{display:block; width:112px; height:112px; object-fit:cover; filter:grayscale(1) contrast(1.08); margin-top:clamp(28px,8vh,64px);}
+  .lock-title{font-weight:800; font-size:clamp(3.4rem,16vw,5rem); line-height:0.86; letter-spacing:-0.055em; margin:18px 0 0 -0.04em;}
+  .lock-sub{font-weight:500; font-size:0.8rem; color:var(--mute); margin-top:10px;}
+  .lock label{display:block; font-weight:700; font-size:0.8rem; margin:clamp(28px,6vh,48px) 0 10px; border-top:1px solid var(--rule); padding-top:8px;}
+  html.gate{overflow:hidden;}
   .lock-row{display:grid; grid-template-columns:1fr auto; gap:0;}
   .lock input{font-family:var(--grot); font-size:1rem; font-weight:500; color:var(--ink); background:var(--paper); border:2px solid var(--ink); border-right:none; border-radius:0; padding:14px 14px; min-width:0; -webkit-appearance:none; appearance:none;}
   .lock input:focus{outline:none; border-color:var(--accent);}
@@ -213,12 +220,18 @@
       <div><dd class="who-c">Will Sandish</dd><dd class="role">Lyrics, Melody, Lead Guitar</dd></div>
     </dl>
     <form class="lock" id="lock" autocomplete="on">
-      <label for="pw">Password protected</label>
+      <div class="lock-inner">
+      <div class="lock-mast"><span>Garrett Summers &amp; Will Sandish</span><span>2026</span></div>
+      <img class="lock-cover" src="/images/for-us-elevator.jpg" alt="" width="600" height="600">
+      <div class="lock-title">For Us</div>
+      <div class="lock-sub">Pre Demo, Jam &middot; Not for distribution</div>
+      <label for="pw">This demo is password protected</label>
       <div class="lock-row">
         <input id="pw" name="password" type="password" autocomplete="current-password" autocapitalize="none" spellcheck="false" placeholder="Password" required>
         <button class="btn primary unlock" type="submit">Unlock</button>
       </div>
       <p class="lock-msg" aria-live="polite"></p>
+      </div>
     </form>
     <div class="wave" role="slider" tabindex="0" aria-label="Seek For Us" aria-valuemin="0" aria-valuemax="281" aria-valuenow="0" data-peaks="0.51,0.51,0.47,0.41,1.0,0.97,0.31,0.96,0.47,0.7,0.51,0.82,0.58,0.91,0.5,0.88,0.5,0.62,0.45,0.83,0.63,0.74,0.42,0.53,0.53,0.56,0.52,0.59,0.64,0.68,0.51,0.55,0.63,0.62,0.48,0.48,0.57,0.56,0.57,0.4,0.73,0.65,0.55,0.55,0.66,0.56,0.6,0.51,0.53,0.63,0.61,0.53,0.56,0.74,0.6,0.54,0.7,0.65,0.55,0.51,0.64,0.54,0.37,0.49,0.45,0.68,0.46,0.37,0.39,0.51,0.64,0.59,0.44,0.39,0.45,0.46,0.46,0.5,0.54,0.48,0.46,0.53,0.49,0.53,0.38,0.44,0.51,0.48,0.37,0.38,0.43,0.52,0.43,0.47,0.53,0.31"></div>
     <div class="times"><span class="t-cur">0:00</span><span class="scrub-hint" aria-live="polite"></span><span class="t-left">4:41</span></div>
@@ -257,7 +270,8 @@
     wave.setAttribute('aria-valuenow', Math.floor(t));
   }
   var unlocked = false, encBuf = null, pwInput = root.querySelector('#pw'), lockMsg = root.querySelector('.lock-msg');
-  root.classList.add('locked');
+  root.classList.add('locked'); document.documentElement.classList.add('gate');
+  setTimeout(function () { if (!unlocked) try { pwInput.focus({ preventScroll: true }); } catch (e) {} }, 50);
   function norm(p) { return p.trim().toLowerCase().replace(/\s+/g, ' '); }
   async function unlock(pw, remembered) {
     if (!encBuf) encBuf = await (await fetch('/audio/for-us.enc')).arrayBuffer();
@@ -267,7 +281,7 @@
     var plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: iv }, key, ct);
     audio.src = URL.createObjectURL(new Blob([plain], { type: 'audio/mp4' }));
     audio.load();
-    unlocked = true; root.classList.remove('locked'); root.classList.add('unlocked');
+    unlocked = true; root.classList.remove('locked'); root.classList.add('unlocked'); document.documentElement.classList.remove('gate');
     try { localStorage.setItem('forus-pw', norm(pw)); } catch (e) {}
     if (!remembered) track('demo_unlock', { item_id: 'for-us' });
   }
@@ -282,7 +296,7 @@
       track('demo_unlock_fail', { item_id: 'for-us' });
     });
   });
-  try { var saved = localStorage.getItem('forus-pw'); if (saved) unlock(saved, true).catch(function () { try { localStorage.removeItem('forus-pw'); } catch (e) {} }); } catch (e) {}
+  try { var saved = localStorage.getItem('forus-pw'); if (saved) { lockMsg.textContent = 'Unlocking\u2026'; unlock(saved, true).then(function () { lockMsg.textContent = ''; }, function () { lockMsg.textContent = ''; try { localStorage.removeItem('forus-pw'); } catch (e) {} }); } } catch (e) {}
   function play() {
     if (!unlocked) { pwInput.focus(); pwInput.scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
     audio.play();
