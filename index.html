@@ -3095,10 +3095,18 @@ var BOOKING_API = '';
   }
 
   share.addEventListener('click', function () {
-    var url = location.origin + '/demo/tin-man';
-    track('track_share', { track: 'Tin Man' });
-    if (navigator.share) { navigator.share({ title: 'Tin Man by Garrett Summers', url: url }).catch(function () {}); return; }
+    // Shared links carry ?s=share so opens from a share can be counted too.
+    var url = location.origin + '/demo/tin-man?s=share';
+    var ev = { method: '', content_type: 'audio', item_id: 'tin-man', page: 'home' };
+    track('share_click', { item_id: 'tin-man', page: 'home' });
+    if (navigator.share) {
+      navigator.share({ title: 'Tin Man by Garrett Summers', url: url }).then(function () {
+        ev.method = 'share_sheet'; track('share', ev);
+      }, function () { track('share_cancel', { item_id: 'tin-man', page: 'home' }); });
+      return;
+    }
     (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(function () {
+      ev.method = 'copy_link'; track('share', ev);
       share.textContent = 'Link copied'; setTimeout(function () { share.textContent = 'Share'; }, 1800);
     }, function () {});
   });

@@ -12,6 +12,13 @@
     document.head.appendChild(ga);
     gtag('js', new Date()); gtag('config', window.GA_ID);
   }
+  // Someone opened a link that was shared with the Share button
+  try {
+    if (/[?&]s=share\b/.test(location.search)) {
+      track('shared_link_open', { item_id: 'tin-man' });
+      history.replaceState(null, '', location.pathname + location.hash);
+    }
+  } catch (e) {}
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Tin Man (Pre Demo) | Garrett Summers</title>
@@ -283,10 +290,18 @@
   }
 
   share.addEventListener('click', function () {
-    var url = location.origin + '/demo/tin-man';
-    track('track_share', { track: 'Tin Man', page: 'demo' });
-    if (navigator.share) { navigator.share({ title: 'Tin Man (Pre Demo) by Garrett Summers', url: url }).catch(function () {}); return; }
+    // Shared links carry ?s=share so opens from a share can be counted too.
+    var url = location.origin + '/demo/tin-man?s=share';
+    var ev = { method: '', content_type: 'audio', item_id: 'tin-man', page: 'demo' };
+    track('share_click', { item_id: 'tin-man', page: 'demo' });
+    if (navigator.share) {
+      navigator.share({ title: 'Tin Man (Pre Demo) by Garrett Summers', url: url }).then(function () {
+        ev.method = 'share_sheet'; track('share', ev);
+      }, function () { track('share_cancel', { item_id: 'tin-man', page: 'demo' }); });
+      return;
+    }
     (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(function () {
+      ev.method = 'copy_link'; track('share', ev);
       share.textContent = 'Link copied'; setTimeout(function () { share.textContent = 'Share'; }, 1800);
     }, function () {});
   });
