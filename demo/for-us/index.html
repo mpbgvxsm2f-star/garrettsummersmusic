@@ -153,6 +153,7 @@
   .locked .mini .mini-p svg{display:none !important;}
   .locked .mini .mini-p svg.i-lock{display:block !important;}
   .actions{display:grid; grid-template-columns:1fr 1fr; gap:var(--gut); margin-top:28px;}
+  .actions .more{grid-column:1/-1;}
   .btn{font-family:var(--grot); font-weight:700; font-size:0.95rem; text-align:left; text-decoration:none; border-radius:0; padding:16px 16px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; -webkit-appearance:none; appearance:none; transition:background .12s ease, color .12s ease;}
   .btn::after{content:"\2192"; font-weight:500;}
   .btn.primary{background:var(--accent); color:var(--on-accent); border:2px solid var(--accent);}
@@ -240,6 +241,7 @@
     <div class="actions">
       <button class="btn primary share" type="button">Share</button>
       <a class="btn ghost" href="/#book">Book</a>
+      <a class="btn ghost more" href="/listen/">See other songs</a>
     </div>
   </section>
 
